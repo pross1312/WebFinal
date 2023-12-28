@@ -1,0 +1,22 @@
+{
+  "name": "web_final",
+  "version": "1.0.0",
+  "description": "HCMUS - Web development - Final project",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pross1312/WebFinal.git"
+  },
+  "author": "21127720 - 21127617 - 21127642",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pross1312/WebFinal/issues"
+  },
+  "homepage": "https://github.com/pross1312/WebFinal#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
