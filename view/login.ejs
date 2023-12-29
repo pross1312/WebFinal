@@ -1,0 +1,32 @@
+<%- include("partials/header") %>
+
+<div class="container-lg mt-5 pt-5">
+    <form action="/auth/login" method="POST" class="my-auto pt-5">
+        <div class="form-floating my-1">
+            <input type="text" class="form-control" id="floatingInput" name="email" placeholder="Email" required>
+            <label for="floatingInput">Email</label>
+        </div>
+        <div class="form-floating my-1">
+            <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password" required>
+            <label for="floatingPassword">Password</label>
+        </div>
+        <% if (error) {%>
+            <p class="text-danger"><%-error%></p>
+        <% } %>
+        <div class="container-fluid px-0 mx-0">
+            <button class="btn btn-primary w-100 mx-0" type="submit">Submit</button>
+        </div>
+        <div class="form-check mt-1 mb-4">
+            <input class="form-check-input" name="remember" type="checkbox" value="true" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault">
+                Remember me
+            </label>
+        </div>
+        <div class="d-flex">
+            <a class="d-block me-5" href="/auth/register">Register account</a>
+            <a href="/auth/google" class="d-block"><img style="width: 10%; height: auto;" src="/resources/google.png"/></a>
+        </div>
+    </form>
+</div>
+
+<%- include("partials/footer") %>
