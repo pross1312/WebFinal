@@ -61,16 +61,14 @@ Post    - /make_transact
 
 ### Database
 #### Payment system
-Account {
-    id,
-    email,
-    password,
+PaymentAccount {
+    email (reference Account(email)),
     cash,
 }
 Transaction {
     id,
-    from_id (reference Account(id)),
-    to_id (reference Account(id)),
+    from (reference Account(email)),
+    to (reference Account(email)),
     amount,
     date,
 }
@@ -83,15 +81,13 @@ Product {
     price
 }
 Account {
-    id,
-    email (unique),
-    password,
-    payment_account_id,
+    email,
+    password
 }
-BuyerInfo {
-    id
+UserInfo {
     email (reference Account(email)),
-    name,
+    fullname,
+    avatar,
 }
 Cart {
     account_id,

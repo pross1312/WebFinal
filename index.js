@@ -36,8 +36,15 @@ app.get("/", (req, res) => {
     if (req.isAuthenticated()) {
         res.status(200).send("Welcome bro");
     } else {
-        res.redirect()
+        res.redirect("/auth/login");
     }
 });
 
-app.listen(13123);
+app.use((err, req, res, next) => { // guard exception
+    console.log(err);
+    res.status(500).send("Internal server error");
+});
+
+app.listen(13123, async () => {
+    await require("./module/database").init_if_not_exist("./init.sql");
+});
