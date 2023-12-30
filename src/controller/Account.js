@@ -1,0 +1,43 @@
+const AccountModel = require("../model/Account.model");
+const UserModel = require("../model/User.model");
+const bcrypt = require("bcrypt");
+require("dotenv").config;
+const saltRounds = Number(process.env.SALT)
+module.exports = {
+    async register(req, res, next) {
+        // update with jquery
+        email = req.body.email;
+        password = req.body.password;
+        if (!email || !password) {
+            res.render('register', {error: "Can't load your data"});
+        }
+        try {
+            let acc = await AccountModel.get(email);
+            console.log("ACC" , acc);
+            if (acc) {
+                res.render('register', {error: "Email existed"});
+                return;
+            }
+            // salt 10
+            const hashedPassword = await bcrypt.hash(
+                password,
+                saltRounds || 10
+            );
+
+            acc = new AccountModel.Account({
+                email: email,
+                password: hashedPassword,
+            });
+            const result = await AccountModel.add(acc);
+            user_profile = new UserModel.UserInfo({
+                name: "",
+                avatar: "",
+                email: email,
+            });
+            await UserModel.add(user_profile);
+            res.render('login', {error: ""})
+        } catch (err) {
+            next(err);
+        }
+    },
+};
