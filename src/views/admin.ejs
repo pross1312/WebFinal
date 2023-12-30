@@ -1,0 +1,55 @@
+<%- include("partials/header") %>
+
+<%- include("partials/navbarAdmin") %>
+<div class="container-sm">
+    <h1>Order Statistics</h1>
+
+    <div class="container-sm">
+        <canvas id="orderChart"></canvas>
+    </div>
+</div>
+<script>
+    var ctx = document.getElementById('orderChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [<%- orderData.map(data => `'${data.date}'`).join(', ') %>],
+                datasets: [
+                    {
+                        label: 'Order Count',
+                        data: [<%- orderData.map(data => data.count).join(', ') %>],
+                        borderColor: 'rgba(173, 216, 230, 1)', // Light blue
+                        borderWidth: 1,
+                        fill: false
+                    },
+                    {
+                        label: 'Admin Account Cash',
+                        data: [<%- orderData.map(data => data.cash).join(', ') %>],
+                        borderColor: 'rgba(255, 182, 193, 1)', // Light pink
+                        borderWidth: 1,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    x: {
+                        ticks: {
+                            color: 'white' // X-axis label color
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // X-axis grid color
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            color: 'white' // Y-axis label color
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)' // Y-axis grid color
+                        }
+                    }
+                }
+            }
+        });
+</script>

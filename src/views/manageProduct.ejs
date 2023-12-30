@@ -1,0 +1,123 @@
+<%- include("partials/header") %>
+<%- include("partials/navbarAdmin") %>
+<style>
+    .sortable {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .sorted-asc::after {
+        content: ' ▲';
+        color:deepskyblue; 
+
+    }
+    .sorted-desc::after {
+        content: ' ▼';
+        color:deepskyblue; 
+    }
+    tbody tr:nth-child(even) {
+        --bs-table-bg: #272f3c ;
+    }
+</style>
+<div class="container mt-5">
+    <h1 class="mb-4">Product Information</h1>
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th class="sortable" data-column="id" onclick="sortTable('id')">ID</th>
+                <th class="sortable" data-column="name">Product Name</th>
+                <th class="sortable" data-column="category" onclick="sortTable('category')">Category</th>
+                <th class="sortable" data-column="price" >Price</th>
+                <th class="sortable" data-column="stockQuantity" >Stock Quantity</th>
+                <th class="sortable" data-column="description">Description</th>
+                <th class="sortable" data-column="manufacturer" >Manufacturer</th>
+                <th class="sortable" data-column="releaseDate">Release Date</th>
+                <th class="sortable" data-column="rating">Rating</th>
+                <th>Image</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% products.forEach((product, index) => { %>
+                <tr>
+                    <td><%= product.id %></td>
+                    <td><%= product.name %></td>
+                    <td><%= product.category %></td>
+                    <td><%= product.price %></td>
+                    <td><%= product.stockQuantity %></td>
+                    <td><%= product.description %></td>
+                    <td><%= product.manufacturer %></td>
+                    <td><%= product.releaseDate %></td>
+                    <td><%= product.rating %></td>
+                    <td>
+                        <img src="<%= product.image %>" alt="<%= product.name %>" style="max-width: 100px; max-height: 100px;">
+                    </td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="editProduct(<%= product.id %>)">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteProduct(<%= product.id %>)">Delete</button>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</div>
+<script>
+     function sortTable(columnName) {
+            const table = document.querySelector('table');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            const order = table.classList.contains('sorted-asc') ? 'desc' : 'asc';
+
+            rows.sort((a, b) => {
+                const aValue = a.querySelector(`td:nth-child(${getColumnIndex(columnName)})`).textContent;
+                const bValue = b.querySelector(`td:nth-child(${getColumnIndex(columnName)})`).textContent;
+
+                if (order === 'asc') {
+                    return aValue.localeCompare(bValue, undefined, { numeric: true });
+                } else {
+                    return bValue.localeCompare(aValue, undefined, { numeric: true });
+                }
+            });
+
+            tbody.innerHTML = '';
+            rows.forEach(row => tbody.appendChild(row));
+
+            // Toggle 
+            table.classList.toggle('sorted-asc');
+
+            // Remove 
+            const sortableHeaders = table.querySelectorAll('.sortable');
+            sortableHeaders.forEach(header => {
+                if (header.textContent.toLowerCase() !== columnName.toLowerCase()) {
+                    header.classList.remove('sorted');
+                }
+            });
+
+            // Add 
+            const currentHeader = table.querySelector(`th[data-column="${columnName}"]`);
+            currentHeader.classList.toggle('sorted');
+
+            // Remove 
+            sortableHeaders.forEach(header => {
+                if (header !== currentHeader) {
+                    header.classList.remove('sorted-asc', 'sorted-desc');
+                }
+            });
+
+            // Add 
+            currentHeader.classList.toggle(order === 'asc' ? 'sorted-asc' : 'sorted-desc');
+        }
+
+        function getColumnIndex(columnName) {
+            const headers = document.querySelectorAll('th');
+            for (let i = 0; i < headers.length; i++) {
+                if (headers[i].textContent.trim().toLowerCase() === columnName.toLowerCase()) {
+                    return i + 1; // Return 1-based index
+                }
+            }
+            return -1; // Column not found
+        }
+
+        // Other functions (editProduct, deleteProduct) remain unchanged
+    </script>

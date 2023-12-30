@@ -1,0 +1,121 @@
+<%- include("partials/header") %>
+<%- include("partials/navbarAdmin") %>
+
+<div class="container mt-5">
+    <h1 class="mb-4">Account Management</h1>
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% users.forEach(user => { %>
+                <tr>
+                    <td><%= user.id %></td>
+                    <td>
+                        <span class="editable" contenteditable="false"><%= user.email %></span>
+                        <button class="btn btn-link" onclick="enableEditing(this)"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-link" onclick="updateUser(this, <%= user.id %>)" style="display: none;"><i class="fas fa-check"></i></button>
+                    </td>
+                    <td>
+                        <button class="btn btn-link text-danger" onclick="confirmDelete(<%= user.id %>)"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+        <td>
+            <button class="btn btn-link" onclick="showCreateForm()"><i class="fas fa-user-plus"></i></button>
+        </td>
+    </table>
+    <div class="modal" id="createAccountModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Create Account</h4>
+                    <button type="button" class="btn btn-danger rounded-circle close" 
+                    onclick="$('.modal').modal('hide')"
+                    data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+    
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="createAccountForm">
+                        <div class="form-group">
+                            <label for="newEmail">Email:</label>
+                            <input type="email" class="form-control" id="newEmail" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="newPassword">Password:</label>
+                            <input type="password" class="form-control" id="newPassword" required>
+                        </div>
+                
+                        <button type="button" class="btn btn-primary" onclick="submitCreateForm()">Create Account</button>
+                    </form>
+                </div>
+    
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                  @CineClick
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function enableEditing(button) {
+            const emailSpan = button.parentElement.querySelector('.editable');
+            emailSpan.setAttribute('contenteditable', 'true');
+            button.style.display = 'none';
+            button.nextElementSibling.style.display = 'inline-block';
+        }
+
+        function updateUser(button, userId) {
+            const emailSpan = button.parentElement.querySelector('.editable');
+            const newEmail = emailSpan.innerText.trim();
+            console.log(`Updating email for user with ID ${userId} to: ${newEmail}`);
+            // TODO  /manage/account/udpate           
+            emailSpan.setAttribute('contenteditable', 'false');
+            button.style.display = 'inline-block';
+            button.previousElementSibling.style.display = 'inline-block';
+            button.style.display = 'none';
+        }
+         function confirmDelete(userId) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                deleteUser(userId);
+            }
+        }
+        function deleteUser(userId) {
+            //TODO POST data admin/manage/account/delete?id={}
+            alert('Deleting user with ID:', userId);
+        }
+
+        function showCreateForm() {
+        $('#createAccountModal').modal('show');
+    }
+
+        
+        function submitCreateForm() {
+            const newEmail = $('#newEmail').val().trim();
+            const newPassword = $('#newPassword').val().trim();
+
+            // Validate the form data (add additional validation as needed)
+            if (!newEmail || !newPassword) {
+                toastr.error('Please fill in all fields');
+                return;
+            }
+
+            // TODO: Send a request to create a new account (POST /manage/account/create)
+
+            $('#createAccountModal').modal('hide');
+            toastr.success('Account created successfully!');
+        }
+    </script>
+</div>
+
+<%- include("partials/footer") %>

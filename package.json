@@ -4,8 +4,10 @@
   "description": "HCMUS - Web development - Final project",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "beautiful": "lint-staged",
+    "start": "nodemon ./src/index.js",
+    "dev": "nodemon ./src/index.js",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -17,6 +19,9 @@
     "url": "https://github.com/pross1312/WebFinal/issues"
   },
   "homepage": "https://github.com/pross1312/WebFinal#readme",
+  "lint-staged": {
+    "./src/**/*.js": "prettier --single-quote --trailing-comma all --tab-width 4 --write"
+  },
   "dependencies": {
     "bcrypt": "^5.1.1",
     "dotenv": "^16.3.1",
@@ -26,9 +31,13 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
-    "pg-promise": "^11.5.4"
+    "pg-promise": "^11.5.4",
+    "toastr": "^2.1.4"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "husky": "^8.0.0",
+    "lint-staged": "^15.2.0",
+    "nodemon": "^3.0.2",
+    "prettier": "^3.1.1"
   }
 }
