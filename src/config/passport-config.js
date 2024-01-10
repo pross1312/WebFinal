@@ -13,7 +13,7 @@ passport.serializeUser((profile, done) => {
 
 passport.deserializeUser(async (email, done) => {
     try {
-        if (email) done(null, await UserModel.get(email));
+        if (email) done(null, await AccountModel.get(email));
         else done('Deserialize error: Missing email');
     } catch (err) {
         done(err);
@@ -40,6 +40,7 @@ module.exports = async (app) => {
                         acc = new AccountModel.Account({
                             email: profile.email,
                             password: null,
+                            type: "customer"
                         });
                         await AccountModel.add(acc);
                         user_profile = new UserModel.UserInfo({
@@ -48,8 +49,8 @@ module.exports = async (app) => {
                             email: profile.email,
                         });
                         await UserModel.add(user_profile);
-                    } else await UserModel.get(acc.email);
-                    done(null, user_profile);
+                    }
+                    done(null, acc);
                 } catch (err) {
                     done(err, null);
                 }
@@ -66,7 +67,7 @@ module.exports = async (app) => {
                 try {
                     const acc = await AccountModel.get(email);
                     if (acc && bcrypt.compareSync(password, acc.password)) {
-                        done(null, await UserModel.get(email));
+                        done(null, acc);
                     } else {
                         done(null, false, {
                             message: 'Invalid email or password',
@@ -81,8 +82,8 @@ module.exports = async (app) => {
 
     app.get('/logout', function(req, res, next) {
         req.logout(function(err) {
-          if (err) { return next(err); }
-          res.redirect('/');
+            if (err) { return next(err); }
+            res.redirect('/');
         });
-      });
+    });
 };

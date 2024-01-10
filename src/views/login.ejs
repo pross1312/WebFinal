@@ -12,7 +12,9 @@
             <label for="floatingPassword">Password</label>
         </div>
         <% if (error) {%>
-            <p class="text-danger"><%-error%></p>
+            <script>
+                toastr.error('<%= error %>');
+            </script>
         <% } %>
         <div class="container-fluid px-0 mx-0">
             <button class="btn btn-primary w-100 mx-0" type="submit">Submit</button>
@@ -25,8 +27,8 @@
         </div>
     </form>
     <div class="d-flex">
-        <a class="d-block me-5" href="/auth/register">Register account</a>
-        <a href="/auth/google" class="d-block"><img style="width: 10%; height: auto;" src="/resources/google.png"/></a>
+        <a style="width: 30%;" class="flex-grow-0 d-inline-block" href="/auth/register">Register account</a>
+        <a style="width: fit-content;" href="/auth/google" class="d-inline-block"><img style="width: 10%; height: auto;" src="/resources/google.png"/></a>
     </div>
 </div>
 

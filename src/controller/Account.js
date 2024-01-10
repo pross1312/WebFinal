@@ -13,7 +13,6 @@ module.exports = {
         }
         try {
             let acc = await AccountModel.get(email);
-            console.log("ACC" , acc);
             if (acc) {
                 res.render('register', {error: "Email existed"});
                 return;
@@ -27,6 +26,7 @@ module.exports = {
             acc = new AccountModel.Account({
                 email: email,
                 password: hashedPassword,
+                type: "customer"
             });
             const result = await AccountModel.add(acc);
             user_profile = new UserModel.UserInfo({

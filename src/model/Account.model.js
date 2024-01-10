@@ -1,9 +1,10 @@
 const db = require("../module/database");
 module.exports = {
     Account: class {
-        constructor({ email, password }) {
+        constructor({ email, password, type = "customer"}) {
             this.email = email;
             this.password = password;
+            this.type = type.toLowerCase();
         }
     },
     async add(account) {
@@ -16,7 +17,7 @@ module.exports = {
             throw new Error("Invalid arguments type");
         }
         try {
-            db.add("Account", ["email", "password"], account);
+            db.add("Account", ["email", "password", "type"], account);
         } catch (err) {
             next(err);
         }
@@ -28,7 +29,6 @@ module.exports = {
                     "one",
                     `SELECT * FROM "Account" WHERE email = '${email}'`
                 );
-                console.log("Result", result);
                 return result ? new this.Account(result) : null;
             } else throw new Error("Missing arguments");
         } catch (err) {

@@ -22,16 +22,14 @@ app.set('view engine', 'ejs');
 // -----
 
 app.use((req, res, next) => {
-    console.log(req.session);
+    console.log("[INFO] %s", req.path);
+    console.log("[INFO]", req.session);
     next();
 });
 
 app.use('/auth', require('./route/auth.route'));
-
-
 app.use((req, res, next) => {
     // authentication guard
-    console.log(req.user);
     if (req.isAuthenticated()) {
         next();
     } else {
@@ -40,11 +38,12 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res) => {
-    if (req.isAuthenticated()) {
+    if (req.user?.type === "customer") {
         res.render('user/homepage'); 
-        // res.status(200).send('Welcome bro');
+    } else if (req.user?.type === "admin") {
+        res.redirect("/admin");
     } else {
-        res.redirect('/auth/login');
+        next(new Error("Invalid type " + req.user?.type));
     }
 });
 
@@ -54,13 +53,11 @@ app.use((err, req, res, next) => {
     res.status(500).send('Internal server error');
 });
 
-
 const ensureAuthorization = (req, res, next) => {
     // TODO Check Account type
-    if (true) {
+    if (req.user?.type === "admin") {
         next();
-    }
-    else{
+    } else{
         res.redirect("/");
     }
 };

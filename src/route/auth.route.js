@@ -10,7 +10,6 @@ router.post(
         failureRedirect: "/auth/login",
     }),
     (req, res) => {
-        console.log(req.user);
         if (req.body.remember) {
             req.session.cookie.maxAge = 10 * 60 * 1000; // 10mins
         } else {
@@ -33,12 +32,8 @@ router.get("/google/callback", passport.authenticate("google"), (req, res) => {
 
 
 router.get("/login", (req, res) => {
-    if (!req.isAuthenticated()) {
-        const error = req.session?.messages?.pop();
-        res.render("login", { error });
-    } else {
-        res.redirect("/");
-    }
+    const error = req.session?.messages?.pop();
+    res.render("login", { error });
 });
 
 router.get("/register", (req, res) => {

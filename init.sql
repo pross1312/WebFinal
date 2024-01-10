@@ -7,6 +7,8 @@ create table "PaymentAccount"(
     email varchar(512) primary key references "Account"(email),
     cash float not null
 );
+insert into "Account" values ('a', '$2b$10$9Nc8Lw0QOFgRJo.HCVjt5.kCIa3m3LpBVetXTVtnoDCN19ypICPzS', 'admin');
+
 create table "UserInfo"(
     email varchar(512) primary key references "Account"(email),
     name varchar(512),
