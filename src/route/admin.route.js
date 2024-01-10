@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
         { date: '2023-01-02', count: 15, cash: 1500 },
     ];
 
-    res.render('admin', { orderData });
+    res.render('admin/admin', { orderData });
 });
 
 router.get('/manage/account', (req, res) => { 
@@ -18,14 +18,14 @@ router.get('/manage/account', (req, res) => {
         { id: 1, email: 'user1@example.com', password: 'password1' },
         { id: 2, email: 'user2@example.com', password: 'password2' },
     ];
-    res.render('manageAccount', {users})
+    res.render('admin/manageAccount', {users})
 })
 
 router.get('/manage/product', (req, res) => { 
-    res.render('manageProduct', {products: require('../module/mockdatabase').products})
+    res.render('admin/manageProduct', {products: require('../module/mockdatabase').products})
 })
 
 router.get('/manage/order', (req, res) => { 
-    res.render('manageOrder', {orders: require('../module/mockdatabase').mockOrders})
+    res.render('admin/manageOrder', {orders: require('../module/mockdatabase').mockOrders})
 })
 module.exports = router;
