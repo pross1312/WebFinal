@@ -1,0 +1,29 @@
+<%- include("../partials/header") %>
+
+<div class="container-lg mt-5 pt-5 mx-auto" style="max-width: 678px;">
+    <h2 class="text-center">Payment log in</h2>
+    <form action="/payment/login" method="POST" class="my-auto pt-5">
+        <div class="form-floating my-1">
+            <input type="text" class="form-control" id="floatingInput" name="email" placeholder="Email" required>
+            <label for="floatingInput">Email</label>
+        </div>
+        <div class="form-floating my-1">
+            <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password" required>
+            <label for="floatingPassword">Password</label>
+        </div>
+        <% if (error) {%>
+            <script>
+                toastr.error('<%= error %>');
+            </script>
+        <% } %>
+        <div class="container-fluid px-0 mx-0">
+            <button class="btn btn-primary w-100 mx-0" type="submit">Submit</button>
+        </div>
+    </form>
+    <div class="d-flex mt-5">
+        <a href="/payment/google" class="d-block"><img style="width: 10%; height: auto;" src="/resources/google.png"/></a>
+    </div>
+</div>
+
+<%- include("../partials/footer") %>
+

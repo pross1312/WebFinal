@@ -4,6 +4,7 @@ const app = express();
 const session = require('express-session');
 const path = require('path');
 const PORT = process.env.PORT || 1234
+const payment_req = require("./module/payment_req");
 // config
 app.use('/resources', express.static(path.join(__dirname, 'resources')));
 app.use(express.json());
@@ -37,6 +38,7 @@ app.use((req, res, next) => {
     }
 });
 
+app.use('/payment', require('./route/payment.route'));
 app.get('/', (req, res) => {
     if (req.user?.type === "customer") {
         res.render('user/homepage'); 

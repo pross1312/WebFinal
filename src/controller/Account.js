@@ -1,6 +1,7 @@
 const AccountModel = require("../model/Account.model");
 const UserModel = require("../model/User.model");
 const bcrypt = require("bcrypt");
+const payment_req = require("../module/payment_req");
 require("dotenv").config;
 const saltRounds = Number(process.env.SALT)
 module.exports = {
@@ -35,6 +36,10 @@ module.exports = {
                 email: email,
             });
             await UserModel.add(user_profile);
+            const response = await payment_req.post("/register", JSON.stringify({
+                email,
+                password
+            }));
             res.render('login', {error: ""})
         } catch (err) {
             next(err);

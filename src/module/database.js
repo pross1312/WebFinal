@@ -53,12 +53,12 @@ module.exports = {
         }
     },
     // NOTE: func: [one, none, ...] check pg-promise connection for more information
-    async exec(func, sql) {
+    async exec(func, sql, args) {
         if (!func || !sql) throw new Error("Missing arguments");
         let conn = null;
         try {
             conn = await db.connect();
-            return await conn[func](sql);
+            return await conn[func](sql, args);
         } catch (err) {
             if (err instanceof QRE && err.code === qrec.noData) {
                return null 
