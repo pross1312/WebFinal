@@ -30,7 +30,6 @@
                 <th class="sortable" data-column="price" >Price</th>
                 <th class="sortable" data-column="stockQuantity" >Stock Quantity</th>
                 <th class="sortable" data-column="description">Description</th>
-                <th class="sortable" data-column="manufacturer" >Manufacturer</th>
                 <th class="sortable" data-column="releaseDate">Release Date</th>
                 <th class="sortable" data-column="rating">Rating</th>
                 <th>Image</th>
@@ -46,7 +45,6 @@
                     <td><%= product.price %></td>
                     <td><%= product.stockQuantity %></td>
                     <td><%= product.description %></td>
-                    <td><%= product.manufacturer %></td>
                     <td><%= product.releaseDate %></td>
                     <td><%= product.rating %></td>
                     <td>
@@ -54,12 +52,17 @@
                     </td>
                     <td>
                         <button class="btn btn-primary btn-sm" onclick="editProduct(<%= product.id %>)">Edit</button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteProduct(<%= product.id %>)">Delete</button>
+                        <!-- <button class="btn btn-danger btn-sm" onclick="deleteProduct(<%= product.id %>)">Delete</button>    -->
                     </td>
                 </tr>
             <% }); %>
         </tbody>
     </table>
+   <div class="mt-5">
+    <button type="button" class="btn btn-success p-3 me-2">Add new Product</button>
+    <button type="button" class="btn btn-danger p-3">Delete Product</button>
+   </div>
+    
 </div>
 <script>
      function sortTable(columnName) {

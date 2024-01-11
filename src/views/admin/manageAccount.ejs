@@ -6,22 +6,24 @@
     <table class="table">
         <thead class="thead-dark">
             <tr>
-                <th>ID</th>
                 <th>Email</th>
+                <th>Type</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            <% users.forEach(user => { %>
+            <% accounts.forEach(account => { %>
                 <tr>
-                    <td><%= user.id %></td>
                     <td>
-                        <span class="editable" contenteditable="false"><%= user.email %></span>
+                        <span class="editable" contenteditable="false"><%= account.email %></span>
                         <button class="btn btn-link" onclick="enableEditing(this)"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-link" onclick="updateUser(this, <%= user.id %>)" style="display: none;"><i class="fas fa-check"></i></button>
+                        <button class="btn btn-link" onclick="updateUser(this, <%= account.email %>)" style="display: none;"><i class="fas fa-check"></i></button>
                     </td>
                     <td>
-                        <button class="btn btn-link text-danger" onclick="confirmDelete(<%= user.id %>)"><i class="fas fa-trash-alt"></i></button>
+                        <span class="editable" contenteditable="false"><%= account.type %></span>
+                    </td>
+                    <td>
+                        <button class="btn btn-link text-danger" onclick="confirmDelete('<%= account.email %>')"><i class="fas fa-trash-alt"></i></button>
                     </td>
                 </tr>
             <% }); %>
@@ -54,7 +56,13 @@
                             <label for="newPassword">Password:</label>
                             <input type="password" class="form-control" id="newPassword" required>
                         </div>
-                
+                        <div class="form-group mb-4">
+                            <label for="newPassword">Type:</label>
+                            <select class="form-select" aria-label="Default select example" id="newType">
+                                <option value="admin">admin</option>
+                                <option value="customer">customer</option>
+                            </select>
+                        </div>
                         <button type="button" class="btn btn-primary" onclick="submitCreateForm()">Create Account</button>
                     </form>
                 </div>
@@ -85,35 +93,37 @@
             button.previousElementSibling.style.display = 'inline-block';
             button.style.display = 'none';
         }
-         function confirmDelete(userId) {
+         function confirmDelete(email) {
             if (confirm('Are you sure you want to delete this user?')) {
-                deleteUser(userId);
+                deleteUser(email);
             }
         }
-        function deleteUser(userId) {
+        function deleteUser(email) {
             //TODO POST data admin/manage/account/delete?id={}
-            alert('Deleting user with ID:', userId);
+            $.post("/admin/account/delete", {email}, function(data, status){ 
+            
+            });
         }
 
         function showCreateForm() {
-        $('#createAccountModal').modal('show');
-    }
-
+            $('#createAccountModal').modal('show');
+        }
         
         function submitCreateForm() {
-            const newEmail = $('#newEmail').val().trim();
-            const newPassword = $('#newPassword').val().trim();
+            const email = $('#newEmail').val().trim();
+            const password= $('#newPassword').val().trim();
+            const type = $('#newType').val(); 
 
-            // Validate the form data (add additional validation as needed)
-            if (!newEmail || !newPassword) {
+            if (!email || !password || !type) {
                 toastr.error('Please fill in all fields');
                 return;
             }
 
-            // TODO: Send a request to create a new account (POST /manage/account/create)
+            $.post("/admin/account", {email, password, type}, function(data, status){ 
+               
+            });
 
             $('#createAccountModal').modal('hide');
-            toastr.success('Account created successfully!');
         }
     </script>
 </div>

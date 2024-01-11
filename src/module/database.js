@@ -61,10 +61,9 @@ module.exports = {
             return await conn[func](sql, args);
         } catch (err) {
             if (err instanceof QRE && err.code === qrec.noData) {
-               return null 
-            }
-            else {
-                throw err
+                return null;
+            } else {
+                throw err;
             }
         } finally {
             if (conn) conn.done();
@@ -74,4 +73,12 @@ module.exports = {
         const sql = pgp.helpers.insert(obj, keys, table);
         await this.exec("none", sql);
     },
+
+    async all(tb_name) {
+        try {
+            return await this.exec('any', `SELECT * FROM "${tb_name}"`, []);
+        } catch (error) {
+            throw error;
+        }
+    }
 };

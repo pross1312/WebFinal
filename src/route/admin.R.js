@@ -2,7 +2,7 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 const fs = require('fs')
-
+const adminController = require('../controller/admin.C')
 router.get('/', (req, res) => {
     // Mock data 
     const orderData = [
@@ -13,19 +13,21 @@ router.get('/', (req, res) => {
     res.render('admin/admin', { orderData });
 });
 
-router.get('/manage/account', (req, res) => { 
-    const users = [
-        { id: 1, email: 'user1@example.com', password: 'password1' },
-        { id: 2, email: 'user2@example.com', password: 'password2' },
-    ];
-    res.render('admin/manageAccount', {users})
+router.get('/list/account', adminController.getAllAccount)
+router.post('/account', adminController.addAccount)
+router.post('/account/delete', (req, res, next) => { 
+    const {email} = req.body; 
+    console.log(email);
 })
 
-router.get('/manage/product', (req, res) => { 
-    res.render('admin/manageProduct', {products: require('../module/mockdatabase').products})
-})
+router.get('/list/product', adminController.getAllProduct)
+router.post('/product', adminController.addProduct)
 
-router.get('/manage/order', (req, res) => { 
+
+
+//TODO: finish when have dbo order
+router.get('/list/order', (req, res) => { 
     res.render('admin/manageOrder', {orders: require('../module/mockdatabase').mockOrders})
 })
+
 module.exports = router;
