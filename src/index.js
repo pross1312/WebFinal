@@ -1,12 +1,12 @@
-require('dotenv').config();
-const express = require('express');
+require("dotenv").config();
+const express = require("express");
 const app = express();
 const session = require('express-session');
 const path = require('path');
 const PORT = process.env.PORT || 1234
 const payment_req = require("./module/payment_req");
 // config
-app.use('/resources', express.static(path.join(__dirname, 'resources')));
+app.use("/resources", express.static(path.join(__dirname, "resources")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
@@ -14,12 +14,12 @@ app.use(
         secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
-    }),
+    })
 );
 
-require('./config/passport-config')(app);
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+require("./config/passport-config")(app);
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
 // -----
 
 app.use((req, res, next) => {
@@ -29,12 +29,13 @@ app.use((req, res, next) => {
 });
 
 app.use('/auth', require('./route/auth.route'));
+
 app.use((req, res, next) => {
     // authentication guard
     if (req.isAuthenticated()) {
         next();
     } else {
-        res.redirect('/auth/login');
+        res.redirect("/auth/login");
     }
 });
 
@@ -56,7 +57,7 @@ app.get('/', (req, res) => {
 app.use((err, req, res, next) => {
     // guard exception
     console.log(err);
-    res.status(500).send('Internal server error');
+    res.status(500).send("Internal server error");
 });
 
 const ensureAuthorization = (req, res, next) => {
@@ -67,7 +68,7 @@ const ensureAuthorization = (req, res, next) => {
         res.redirect("/");
     }
 };
-app.use('/admin', ensureAuthorization, require('./route/admin.route'))
+app.use("/admin", ensureAuthorization, require("./route/admin.route"));
 
 app.use((req, res, next) => {
     res.status(404).send("Not found");
