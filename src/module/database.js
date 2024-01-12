@@ -43,8 +43,10 @@ module.exports = {
                 await conn.none(
                     fs.readFileSync(file_path, { encoding: "utf-8" })
                 );
+                return true;
             } else {
                 console.log(`[INFO] Database '${DB_NAME}' found`);
+                return false;
             }
         } catch (err) {
             throw err;

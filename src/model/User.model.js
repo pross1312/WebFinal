@@ -17,7 +17,7 @@ module.exports = {
         ) {
             throw new Error('Invalid arguments type');
         }
-        await db.add('UserInfo', Object.keys(userinfo), userinfo);
+        await db.add('UserInfo', Object.keys(Array.isArray(userinfo) ? userinfo[0] : userinfo), userinfo);
     },
     async get(email) {
         if (email) {
