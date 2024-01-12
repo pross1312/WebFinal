@@ -1,8 +1,11 @@
 const express = require('express');
-const passport = require('passport');
 const router = express.Router();
-const fs = require('fs')
 const adminController = require('../controller/admin.C')
+const multer = require('multer');
+
+const storage = multer.memoryStorage(); // Store files in memory
+const upload = multer({ storage: storage });
+
 router.get('/', (req, res) => {
     // Mock data 
     const orderData = [
@@ -13,15 +16,13 @@ router.get('/', (req, res) => {
     res.render('admin/admin', { orderData });
 });
 
-router.get('/list/account', adminController.getAllAccount)
-router.post('/account', adminController.addAccount)
-router.post('/account/delete', (req, res, next) => { 
-    const {email} = req.body; 
-    console.log(email);
-})
+router.get('/account/list', adminController.getAllAccount)
+router.post('/account/add', adminController.addAccount)
+router.post('/account/delete', adminController.deleteAccount)
+router.post('/account/update', adminController.updateAccount)
 
-router.get('/list/product', adminController.getAllProduct)
-router.post('/product', adminController.addProduct)
+router.get('/product/list', adminController.getAllProduct)
+router.post('/product/add', upload.single('image'), adminController.addProduct)
 
 
 

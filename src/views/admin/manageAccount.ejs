@@ -17,7 +17,7 @@
                     <td>
                         <span class="editable" contenteditable="false"><%= account.email %></span>
                         <button class="btn btn-link" onclick="enableEditing(this)"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-link" onclick="updateUser(this, <%= account.email %>)" style="display: none;"><i class="fas fa-check"></i></button>
+                        <button class="btn btn-link" onclick="updateUser(this, '<%=account.email%>')" style="display: none;"><i class="fas fa-check"></i></button>
                     </td>
                     <td>
                         <span class="editable" contenteditable="false"><%= account.type %></span>
@@ -83,11 +83,13 @@
             button.nextElementSibling.style.display = 'inline-block';
         }
 
-        function updateUser(button, userId) {
+        function updateUser(button, email) {
             const emailSpan = button.parentElement.querySelector('.editable');
             const newEmail = emailSpan.innerText.trim();
-            console.log(`Updating email for user with ID ${userId} to: ${newEmail}`);
-            // TODO  /manage/account/udpate           
+            if(email === newEmail)
+                toastr.warning("Canceled edit")
+            console.log(`Updating email for user with ID ${email} to: ${newEmail}`);
+            // TODO /manage/account/udpate           
             emailSpan.setAttribute('contenteditable', 'false');
             button.style.display = 'inline-block';
             button.previousElementSibling.style.display = 'inline-block';
@@ -98,11 +100,15 @@
                 deleteUser(email);
             }
         }
-        function deleteUser(email) {
+        function deleteUser(email_delete) {
             //TODO POST data admin/manage/account/delete?id={}
-            $.post("/admin/account/delete", {email}, function(data, status){ 
-            
-            });
+            $.post("/admin/account/delete", {email_delete}) 
+                .done(function(data){ 
+                    location.reload()
+                })
+                .fail(function(xhr, status, error){ 
+                    toastr.error(xhr.responseText)
+                })
         }
 
         function showCreateForm() {
@@ -119,9 +125,13 @@
                 return;
             }
 
-            $.post("/admin/account", {email, password, type}, function(data, status){ 
-               
-            });
+            $.post("/admin/account/add", {email, password, type}) 
+            .done(function(data){ 
+                location.reload()
+            })
+            .fail(function(xhr, status, error){ 
+                toastr.error(xhr.responseText)
+            })
 
             $('#createAccountModal').modal('hide');
         }

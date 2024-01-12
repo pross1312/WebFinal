@@ -1,7 +1,7 @@
 const db = require("../module/database");
 module.exports = {
     Account: class {
-        constructor({ email, password, type = "customer"}) {
+        constructor({ email, password, type = "customer" }) {
             this.email = email;
             this.password = password;
             this.type = type.toLowerCase();
@@ -32,10 +32,23 @@ module.exports = {
                 return result ? new this.Account(result) : null;
             } else throw new Error("Missing arguments");
         } catch (err) {
-            throw(err)
+            throw err;
         }
     },
-    async delete(email){ 
-        
-    }
+    async delete(email) {
+        try {
+            const condition = ` email = '${email}'`;
+            await db.delete("UserInfo", condition);
+            await db.delete("Account", condition);
+        } catch (err) {
+            throw err;
+        }
+    },
+    async update(email, newEmail, newType, newPassword) {
+        try {
+            
+        } catch (err) {
+            throw err;
+        }
+    },
 };

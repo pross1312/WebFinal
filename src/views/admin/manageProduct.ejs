@@ -18,6 +18,19 @@
     tbody tr:nth-child(even) {
         --bs-table-bg: #272f3c ;
     }
+    .holder{ 
+        height: 300px;
+        width: 450px;
+        border: 2px solid black;
+        display: none;
+        margin-top: 20px;
+    }
+    #imgPreview {
+        max-width: 450px;
+        max-height: 300px;
+        min-width: 450px;
+        min-height: 300px;
+    }
 </style>
 <div class="container mt-5">
     <h1 class="mb-4">Product Information</h1>
@@ -52,19 +65,92 @@
                     </td>
                     <td>
                         <button class="btn btn-primary btn-sm" onclick="editProduct(<%= product.id %>)">Edit</button>
-                        <!-- <button class="btn btn-danger btn-sm" onclick="deleteProduct(<%= product.id %>)">Delete</button>    -->
+                        <button class="btn btn-danger btn-sm" onclick="deleteProduct(<%= product.id %>)">Delete</button>   
                     </td>
                 </tr>
             <% }); %>
         </tbody>
     </table>
+    <div class="modal" id="createProductModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Create Account</h4>
+                    <button type="button" class="btn btn-danger rounded-circle close" 
+                    onclick="closeModal()"
+                    data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+    
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="createProductForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="p_name">Product Name:</label>
+                            <input type="text" class="form-control" id="p_name" name="name" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="p_cate">Category:</label>
+                            <input type="text" class="form-control" id="p_cate" name="category" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="p_price">Price:</label>
+                            <input type="text" class="form-control" id="p_price" name="price" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="p_quantity">Stock Quantity:</label>
+                            <input type="text" class="form-control" id="p_quantity" name="quantity" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="p_desc">Description:</label>
+                            <input type="text" class="form-control" id="p_desc" name="desc"required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="p_image">Image:</label>
+                            <input type="file" class="form-control" id="p_image" name='image' required>
+                            <div class="holder">
+                                <img src="" alt="pic" id="imgPreview">
+                            </div>
+                        </div>
+                    
+                        <button type="button" class="btn btn-primary" onclick="addProduct()">Create Product</button>
+                    </form>
+                </div>
+    
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                  @CineClick
+                </div>
+            </div>
+        </div>
+    </div>
    <div class="mt-5">
-    <button type="button" class="btn btn-success p-3 me-2">Add new Product</button>
-    <button type="button" class="btn btn-danger p-3">Delete Product</button>
+    <button type="button" class="btn btn-success p-3 me-2" onclick="showModal()">Add New Product</button>
    </div>
     
 </div>
 <script>
+    $(document).ready(() => { 
+        const photoPreview = $('#p_image')
+        const boxPreview = $('.holder')
+        photoPreview.change(e => { 
+            boxPreview.css('display', 'block')
+            const files = photoPreview.prop('files');
+            if (files.length > 0) { 
+                const file = files[0];
+                let reader = new FileReader(); 
+
+                reader.onload = function (event){ 
+                    console.log('FileReader onload event triggered');
+                    $("#imgPreview").attr("src", event.target.result);
+                };
+
+                reader.readAsDataURL(file);
+        }
+    })
+    })
      function sortTable(columnName) {
             const table = document.querySelector('table');
             const tbody = table.querySelector('tbody');
@@ -112,6 +198,11 @@
             currentHeader.classList.toggle(order === 'asc' ? 'sorted-asc' : 'sorted-desc');
         }
 
+        function closeModal(){ 
+            $("#createProductForm input").val("");
+            $(".holder").css("display", 'none');
+            $('.modal').modal('hide')
+        }
         function getColumnIndex(columnName) {
             const headers = document.querySelectorAll('th');
             for (let i = 0; i < headers.length; i++) {
@@ -122,5 +213,25 @@
             return -1; // Column not found
         }
 
-        // Other functions (editProduct, deleteProduct) remain unchanged
+        function showModal(){ 
+            $('#createProductModal').modal('show')
+        }
+        function addProduct(){ 
+            const form = $('#createProductForm')[0]
+            const formData = new FormData(form)
+            $.ajax({
+                url: "/admin/product/add",
+                type: "POST",
+                data: formData,
+                processData: false,  
+                contentType: false,  
+                success: function (data) {
+                    toastr.success(data);
+                },
+                error: function (err) {
+                    toastr.error(err.responseText);
+                }
+            });
+        }
     </script>
+    <%- include("../partials/footer") %>   

@@ -9,7 +9,7 @@ const CustomError = require("./module/CustomErr");
 // config
 app.use("/resources", express.static(path.join(__dirname, "resources")));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 app.use(
     session({
         secret: process.env.SESSION_SECRET,

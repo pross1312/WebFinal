@@ -77,8 +77,33 @@ module.exports = {
     async all(tb_name) {
         try {
             return await this.exec('any', `SELECT * FROM "${tb_name}"`, []);
-        } catch (error) {
-            throw error;
+        } catch (err) {
+            throw err;
+        }
+    }, 
+    async delete(tb_name,condition){ 
+        try{ 
+            return await this.exec('none', `DELETE FROM "${tb_name}" WHERE ${condition}`)
+        }
+        catch(err){ 
+            throw(err)
+        }
+    }, 
+
+    async find(tb_name, condition){ 
+        try{ 
+            return await this.exec('any', `SELECT * FROM "${tb_name}" WHERE ${condition}`)
+        }
+        catch(err){ 
+            throw(err)
+        }
+    }, 
+    async update(tb_name, condition, update){ 
+        try{ 
+            return await this.exec('any', `UPDATE "${tb_name}" WHERE ${condition} SET ${update}`)
+        }  
+        catch(err){ 
+            throw(err)
         }
     }
 };
