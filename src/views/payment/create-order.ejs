@@ -1,30 +1,86 @@
 <%- include("../partials/header") %>
 
-<div id="container" >
-    <div class="container-lg mt-5 pt-5 mx-auto" style="max-width: 678px;">
-        <h2 class="text-center">Payment log in</h2>
-        <form action="/payment/login" method="POST" class="my-auto pt-5" onsubmit="submit_login(event)">
-            <div class="form-floating my-1">
-                <input type="text" class="form-control" id="floatingInput" name="email" placeholder="Email" required>
-                <label for="floatingInput">Email</label>
-            </div>
-            <div class="form-floating my-1">
-                <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password" required>
-                <label for="floatingPassword">Password</label>
-            </div>
-            <% if (error) {%>
-                <script>
-                    toastr.error('<%= error %>');
-                </script>
-            <% } %>
-            <div class="container-fluid px-0 mx-0">
-                <button class="btn btn-primary w-100 mx-0" type="submit">Submit</button>
-            </div>
-        </form>
-        <div class="d-flex mt-5">
-            <a href="/payment/google" class="d-block"><img style="width: 10%; height: auto;" src="/resources/google.png"/></a>
+<div id="container" data-bs-theme="light">
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+}
+
+#container {
+    min-width: 400px;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-size: 22px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 0px;
+    color: #003087;
+}
+
+form {
+    margin-top: 20px;
+}
+
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: white;
+}
+
+input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #003087;
+    color: white;
+    cursor: pointer;
+}
+.label {
+    color: #aaa;
+}
+
+input[type="submit"]:hover {
+    background-color: #001e55;
+}
+</style>
+    <h1>Login</h1>
+    <form action="/auth" method="POST" onsubmit="submit_login(event)">
+        <div class="form-floating my-1">
+            <input type="text" class="form-control" id="floatingInput" name="email" placeholder="Email" required>
+            <label class="label" for="floatingInput">Email</label>
         </div>
-    </div>
+        <div class="form-floating my-1">
+            <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password" required>
+            <label class="label" for="floatingPassword">Password</label>
+        </div>
+        <input type="submit" value="Login">
+    </form>
+    <% if (error) {%>
+    <script>
+        toastr.error('<%= error %>');
+    </script>
+    <% } %>
 </div>
 <script>
     function submit_login(event) {

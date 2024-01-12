@@ -1,8 +1,121 @@
-<div>
-    INIT: <%-transaction.initiator%></br>
-    TO: <%-transaction.receiver%></br>
-    TIME: <%-transaction.ts%></br>
-    AMOUNT: <%-transaction.amount%></br>
-    DESC: <%-transaction.description%></br>
-    <a href="/payment/confirm-transaction" class="btn btn-primary">Complete purchase</a>
+<style>
+/* PayPal theme styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+}
+.container {
+    width: 500px;
+    margin: 50px auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,.1);
+    position: relative;
+    overflow: hidden;
+}
+
+h1 {
+    font-weight: bolder;
+    font-size: 40px;
+    text-align: center;
+    margin-top: 0;
+    color: #009CDE;
+}
+
+.info-container {
+    padding-top: 20px;
+    border-top: 1px solid #d0d0d0;
+    border-bottom: 1px solid #d0d0d0;
+}
+
+.info {
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.info-label {
+    font-size: 23px;
+    font-weight: bold;
+}
+
+/* Modern scrollbar styles */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #888;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+.cancel-btn {
+    background-color: #e0e0e0;
+    color: #333;
+    margin-right: 10px;
+}
+.cancel-btn:hover {
+    background-color: #f0f0f0;
+}
+.confirm-btn {
+    background-color: #0070ba;
+    color: white;
+}
+.confirm-btn:hover {
+    background-color: #009CDE;
+}
+
+</style>
+<div class="container">
+    <h1>Confirm Payment</h1>
+    <div class="info-container">
+        <div class="info">
+            <span class="info-label">Initiator:</span> <%= transaction.initiator %>
+        </div>
+        <div class="info">
+            <span class="info-label">Receiver:</span> <%= transaction.receiver %>
+        </div>
+        <div class="info">
+            <span class="info-label">Timestamp:</span> <%= transaction.ts %>
+        </div>
+        <div class="info">
+            <span class="info-label">Amount:</span> <%= transaction.amount %>
+        </div>
+        <div class="info">
+            <span class="info-label">Description:</span> <%= transaction.description %>
+        </div>
+    </div>
+    <div class="buttons">
+        <a href="/payment/cancel-transaction" class="button cancel-btn">Cancel</a>
+        <a href="/payment/confirm-transaction" class="button confirm-btn">Confirm Order</a>
+    </div>
 </div>

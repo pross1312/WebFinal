@@ -27,10 +27,16 @@ module.exports = {
         const cart = req.body;
         let amount = 0;
         try {
+            const promises = cart.map(async x => {
+                return {
+                    ...await ProductModel.get(x.id),
+                    count: x.count,
+                };
+            });
+            const products = await Promise.all(promises);
             const order = new Order({
                 email: req.user?.email,
-                ts: new Date(),
-                products: cart,
+                products,
             });
             unconfirmed_order.put(req.user?.email, order, 10*60*1000); // NOTE: automatically remove unconfirmed transaction after 10 mins
             res.render("payment/confirm-order", {
@@ -44,6 +50,10 @@ module.exports = {
         const {order_id} = req.params;
         try {
             const order = unconfirmed_order.get(req.user?.email);
+            if (order == null) {
+                res.redirect("/");
+                return;
+            }
             let sum = 0;
             for (var product of order.products) {
                 const product_data = await ProductModel.get(product.id);
@@ -74,6 +84,11 @@ module.exports = {
     async confirm_transaction(req, res, next) {
         try {
             const order = unconfirmed_order.pop(req.user?.email);
+            if (order == null) {
+                res.redirect("/");
+                return;
+            }
+            order.ts = new Date();
             await OrderModel.add(order);
             const transaction = unconfirmed_transaction.pop(req.user?.email);
             transaction.ts = new Date();
@@ -85,9 +100,9 @@ module.exports = {
             });
             delete req.session.payment_access_token;
             if (response.code !== 200) {
-                res.status(response.code).send(response.data);
+                res.redirect("/");
             } else {
-                res.status(200).send("OK");
+                res.render("payment/payment-successful");
             }
         } catch(err) {
             if (err instanceof TimeoutError) {
