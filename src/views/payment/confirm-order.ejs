@@ -1,0 +1,20 @@
+<div class="mt-5">
+    <div class="card my-auto mx-auto" style="width: 40rem;">
+        <div class="card-body">
+            <h2 class="card-title text-bold text-center text-primary">Confirm transaction</h2>
+        </div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                <% for (var product of order.products) {  %>
+                <li class="list-group-item px-0 py-0">
+                    <div class="input-group d-flex justify-content-between">
+                        <span style="min-width: 30%;" class="flex-start input-group-text" id="basic-addon1"><%-product.id%></span>
+                        <span class="justify-content-end text-info flex-grow-1 flex-end input-group-text my-auto"><%-product.count%></span>
+                    </div>
+                </li>
+                <% } %>
+            </ul>
+            <div class="w-100"><a href="/payment/confirm-order" class="card-link btn btn-success mt-3 mx-auto align-end">Confirm</a></div>
+        </div>
+    </div>
+</div>

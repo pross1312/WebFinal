@@ -23,7 +23,7 @@ app.set('view engine', 'ejs');
 // -----
 
 app.use((req, res, next) => {
-    console.log("[INFO] %s", req.path);
+    console.log("[INFO] %s %s", req.method, req.path);
     console.log("[INFO]", req.session);
     next();
 });
@@ -39,6 +39,10 @@ app.use((req, res, next) => {
 });
 
 app.use('/payment', require('./route/payment.route'));
+app.use((req, res, next) => { // NOTE: payment_access_token should not be allowed to pass payment route
+    if (req.session.payment_access_token) delete req.session.payment_access_token;
+    next();
+});
 app.get('/', (req, res) => {
     if (req.user?.type === "customer") {
         res.render('user/homepage'); 
@@ -75,7 +79,7 @@ app.use((err, req, res, next) => {
     res.status(500).send('Internal server error');
 });
 
-// have fun when use PORT
+// have fun when use PORT -_-
 const reset = "\x1b[0m";
 const cyan = "\x1b[96m";
 const underline = "\x1b[4m";

@@ -29,7 +29,6 @@ module.exports = {
                     "one",
                     `SELECT pd.*, ct.category as category FROM "Product" pd LEFT JOIN "Category" ct ON ct.id = pd.category WHERE pd.id = ${id}`
                 );
-                console.log(result);
                 return result ? new this.Product(result) : null;
             } else throw new Error("Missing arguments");
         } catch (err) {

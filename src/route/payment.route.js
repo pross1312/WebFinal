@@ -2,17 +2,29 @@ const express = require("express");
 const router = express.Router();
 const PaymentController = require("../controller/Payment");
 
-router.get("/login", (req, res, next) => {
-    res.render("payment/login", {error: null});
+router.get("/create-order", (req, res, next) => {
+    res.render("payment/create-order", {
+        error: null,
+        cart: JSON.stringify([
+            {id: 1, count: 5},
+            {id: 2, count: 6},
+            {id: 3, count: 8},
+        ])
+    });
 });
 router.post("/login", PaymentController.login);
-router.get("/google", (req, res, next) => {
+router.get("/google", (req, res, next) => { // TODO:
     res.render("payment/login", {error: null});
 });
-router.post("/create-order", (req, res, next) => {
-    console.log("TOKEN:", req.session.payment_access_token || "");
-    req.session.payment_access_token = undefined;
-    res.redirect("/");
+router.use((req, res, next) => { // NOTE: after login, access token must exist in session
+    if (req.session.payment_access_token === undefined) {
+        res.status(400).send("Missing access token");
+    } else {
+        next();
+    }
 });
+router.post("/create-order", PaymentController.create_order);
+router.get("/confirm-order", PaymentController.confirm_order);
+router.get("/confirm-transaction", PaymentController.confirm_transaction);
 
 module.exports = router;

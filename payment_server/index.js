@@ -12,6 +12,10 @@ const PORT = process.env.PAYMENT_PORT || 9999;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 app.use(express.json());
+app.use((req, res, next) => {
+    console.log("[INFO] %s %s", req.method, req.path);
+    next();
+});
 
 app.post("/google-login", async (req, res, next) => {
     const {access_token} = req.body;
@@ -22,7 +26,7 @@ app.post("/google-login", async (req, res, next) => {
         const response = await fetch(url);
         const acc = await response.json();
         if (res.status === 200) {
-            const jwt_token = jwt.sign(JSON.stringify(acc.email), JWT_SECRET);
+            const jwt_token = jwt.sign(acc.email, JWT_SECRET);
             res.status(200).send(jwt_token);
         } else {
             res.status(response.status).send(await response.text());
@@ -41,7 +45,7 @@ app.post("/login", async (req, res, next) => {
         } else if (acc.password === null) { // NOTE: google account, use google-login api
             res.status(400).send("Incorrect email or password");
         } else if (bcrypt.compareSync(password, acc.password)) {
-            const jwt_token = jwt.sign(JSON.stringify(acc.email), JWT_SECRET);
+            const jwt_token = jwt.sign(acc.email, JWT_SECRET);
             res.status(200).send(jwt_token);
         } else {
             res.status(400).send("Incorrect email or password");
@@ -69,7 +73,34 @@ app.post("/register", async (req, res, next) => {
     }
 });
 
-app.post("/order/create", (req, res, next) => {
+app.post("/transaction/create", async (req, res, next) => {
+    const transaction = req.body;
+    const authorization = req.headers.authorization;
+    if (!authorization) {
+        res.status(401).send("Unauthorized");
+    } else try {
+        const author = jwt.verify(authorization, JWT_SECRET);
+        if (!transaction.initiator && author !== transaction.initiator) {
+            res.status(400).send("Bad request");
+        } else {
+            transaction.initiator = author;
+            transaction.ts = new Date();
+            await db.add("Transaction", Object.keys(transaction), transaction);
+            res.status(200).setHeader("Content-Type", "application/json").send(JSON.stringify(transaction));
+        }
+    } catch(err) {
+        next(err);
+    }
+});
+
+app.use((req, res, next) => {
+    res.status(404).send("Not found");
+});
+
+app.use((err, req, res, next) => {
+    // guard exception
+    console.log(err);
+    res.status(500).send('Internal server error');
 });
 
 const server = https.createServer({

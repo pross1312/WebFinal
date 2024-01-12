@@ -52,16 +52,19 @@ create table "Cart"(
     primary key(email, product)
 );
 
+-- NOTE: maybe remove password field here and skip login when purchase
 create table "PaymentAccount"(
     email varchar(512) primary key,
     password varchar(512),
     balance float not null
 );
 
+insert into "PaymentAccount" values('admin@gmail.com', null, 1000000.0);
+
 create table "Transaction"(
     id serial unique,
-    initiator varchar(512),
-    receiver varchar(512),
+    initiator varchar(512) references "PaymentAccount"(email),
+    receiver varchar(512) references "PaymentAccount"(email),
     ts timestamp not null,
     amount float not null,
     description varchar(1024),

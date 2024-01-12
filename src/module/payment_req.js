@@ -26,14 +26,14 @@ module.exports = {
             }).on("error", err => reject(err));
         });
     },
-    post: function(path, data, content_type) {
+    post: function(path, data, headers) {
         return new Promise((resolve, reject) => {
             const req = https.request({
                 ...OPTION,
                 method: "POST",
                 path: path,
-                headers: {
-                    "Content-Type": content_type || "application/json",
+                headers: headers || {
+                    "Content-Type": "application/json",
                     "Content-Length": data?.length || 0,
                 }
             }, res => {
