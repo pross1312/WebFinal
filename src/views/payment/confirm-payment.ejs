@@ -1,3 +1,5 @@
+<%- include("../partials/cdn") %>
+<div class="container">
 <style>
 /* PayPal theme styles */
 body {
@@ -95,7 +97,6 @@ h1 {
 }
 
 </style>
-<div class="container">
     <h1>Confirm Payment</h1>
     <div class="info-container">
         <div class="info">
@@ -103,9 +104,6 @@ h1 {
         </div>
         <div class="info">
             <span class="info-label">Receiver:</span> <%= transaction.receiver %>
-        </div>
-        <div class="info">
-            <span class="info-label">Timestamp:</span> <%= transaction.ts %>
         </div>
         <div class="info">
             <span class="info-label">Amount:</span> <%= transaction.amount %>
@@ -119,3 +117,9 @@ h1 {
         <a href="/payment/confirm-transaction" class="button confirm-btn">Confirm Order</a>
     </div>
 </div>
+<% if (error) {%>
+<script>
+    toastr.error('<%= error %>');
+</script>
+<% } %>
+<%- include("../partials/footer") %>

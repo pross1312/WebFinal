@@ -71,7 +71,7 @@ module.exports = {
             };
             unconfirmed_transaction.put(req.user?.email, transaction, 10*60*1000);
             res.render("payment/confirm-payment", {
-                transaction
+                transaction, error: null,
             });
         } catch(err) {
             if (err instanceof TimeoutError) {
@@ -102,7 +102,14 @@ module.exports = {
             if (response.code !== 200) {
                 res.redirect("/");
             } else {
-                res.render("payment/payment-successful");
+                const obj = JSON.parse(response.data);
+                if (obj.error) {
+                    res.render("payment/confirm-payment", {
+                        transaction, error: obj.error,
+                    });
+                } else {
+                    res.render("payment/payment-successful");
+                }
             }
         } catch(err) {
             if (err instanceof TimeoutError) {

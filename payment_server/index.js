@@ -82,11 +82,26 @@ app.post("/transaction/create", async (req, res, next) => {
         const author = jwt.verify(authorization, JWT_SECRET);
         if (!transaction.initiator && author !== transaction.initiator) {
             res.status(400).send("Bad request");
+        } else if (isNaN(transaction.amount)) {
+            res.status(400).send("Amount must be a number");
         } else {
-            transaction.initiator = author;
-            transaction.ts = new Date();
-            await db.add("Transaction", Object.keys(transaction), transaction);
-            res.status(200).setHeader("Content-Type", "application/json").send(JSON.stringify(transaction));
+            const acc = await db.exec("one", `SELECT * FROM "PaymentAccount" WHERE email = $1`, author);
+            if (Number(acc.balance) < Number(transaction.amount)) {
+                res.status(200).setHeader("Content-Type", "application/json").send(JSON.stringify({
+                    error: "You don't have enough balance in your account to make this transaction!",
+                    data: null,
+                }));
+            } else {
+                transaction.initiator = author;
+                transaction.ts = new Date();
+                await db.add("Transaction", Object.keys(transaction), transaction);
+                await db.exec("none",
+                    `UPDATE "PaymentAccount" SET balance = balance - ${Number(transaction.amount)} WHERE email = '${author}'`);
+                res.status(200).setHeader("Content-Type", "application/json").send(JSON.stringify({
+                    error: null,
+                    data: transaction
+                }));
+            }
         }
     } catch(err) {
         next(err);

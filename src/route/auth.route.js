@@ -27,7 +27,7 @@ router.get(
 );
 
 router.get("/google/callback", passport.authenticate("google"), (req, res) => {
-    res.status(200).send("OK");
+    res.redirect("/");
 });
 
 

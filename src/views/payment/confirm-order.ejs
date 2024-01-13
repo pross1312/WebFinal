@@ -49,6 +49,15 @@ h1 {
     color: #555;
     font-weight: bold;
 }
+.total-amount .label {
+    font-size: 1.3em;
+    color: #009CDE;
+    font-weight: bold;
+}
+.total-amount {
+    margin-top: 15px;
+    color: #555;
+}
 
 .buttons {
     display: flex;
@@ -111,6 +120,7 @@ h1 {
         </div>
         <% } %>
     </div>
+    <div class="total-amount"><span class="label">Total:</span>&nbsp;123123</div>
     <div class="buttons">
         <a href="/payment/cancel-order" class="button cancel-btn">Cancel</a>
         <a href="/payment/confirm-order" class="button confirm-btn">Confirm Order</a>
