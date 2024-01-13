@@ -61,4 +61,37 @@ module.exports = {
             throw err;
         }
     },
+
+    async getCategory(condition){ 
+        try{ 
+            return await db.find('Category', condition)
+        }
+        catch(err){ 
+            throw(err)    
+        }
+    }, 
+    async deleteCategory(id){ 
+        try{ 
+            // first delete reference to this category 
+            await db.update("Category",` parent_id = NULL `, ` parent_id = '${id}'`) 
+            await db.delete("Category", ` id = '${id}'`)
+        }
+        catch(err){ 
+            throw(err)  
+        }
+    }, 
+
+    async addCategory(categoryObj){ 
+        try{ 
+            if(categoryObj.parent_id === "-1"){ 
+                await db.add("Category", ['name'],  {name: categoryObj.name})
+            }
+            else if(categoryObj.parent_id !== "-1"){  
+                await db.add("Category", ['name', 'parent_id'], categoryObj )
+            }
+        }
+        catch(err){ 
+            throw(err)
+        }
+    }, 
 };

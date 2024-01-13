@@ -45,5 +45,7 @@ router.post('/product/update', upload.single('image'), adminController.updatePro
 
 // get all category 
 router.get('/category/list', adminController.getAllCategory)
-
+router.post('/category/delete', adminController.deleteCategory)
+router.post('/category/add', adminController.addCategory)
+router.post('/category/update',adminController.updateCategory)
 module.exports = router;

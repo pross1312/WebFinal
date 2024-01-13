@@ -52,20 +52,18 @@ module.exports = {
         if (!email || !email_delete) res.status(400).send("Missing email");
         else {
             if (email_delete === email)
-                res.status(406).send(
-                    "Not Acceptable, you are deleting current account"
-                );
-            else {
-                try {
-                    const result = await accountModel.get(email_delete);
-                    if (!result) {
-                        res.status(400).send("Not Found Email in Database");
-                    }
-                    await accountModel.delete(email_delete);
-                    res.status(200).send("Delete Successfully");
-                } catch (err) {
-                    next(err);
+                return res
+                    .status(406)
+                    .send("Not Acceptable, you are deleting current account");
+            try {
+                const result = await accountModel.get(email_delete);
+                if (!result) {
+                    return res.status(400).send("Not Found Email in Database");
                 }
+                await accountModel.delete(email_delete);
+                res.status(200).send("Delete Successfully");
+            } catch (err) {
+                next(err);
             }
         }
     },
@@ -73,28 +71,17 @@ module.exports = {
     async updateAccount(req, res, next) {
         const { email, updatePassword, updateType } = req.body;
         if (!email || !updatePassword || !updateType)
-            res.status(400).send("Missing some data");
-        else {
-            try {
-                const account = await accountModel.get(email);
-                if (!account) {
-                    res.status(400).send("Not found Email in Database");
-                } else {
-                    const salt = bcrypt.genSaltSync(Number(saltRounds));
-                    const hashed_password = bcrypt.hashSync(
-                        updatePassword,
-                        salt
-                    );
-                    await accountModel.update(
-                        email,
-                        hashed_password,
-                        updateType
-                    );
-                    res.status(200).send("Update Account Successful");
-                }
-            } catch (err) {
-                next(err);
-            }
+            return res.status(400).send("Missing some data");
+        try {
+            const account = await accountModel.get(email);
+            if (!account)
+                return res.status(400).send("Not found Email in Database");
+            const salt = bcrypt.genSaltSync(Number(saltRounds));
+            const hashed_password = bcrypt.hashSync(updatePassword, salt);
+            await accountModel.update(email, hashed_password, updateType);
+            res.status(200).send("Update Account Successful");
+        } catch (err) {
+            next(err);
         }
     },
     // ======  Product ======
@@ -131,22 +118,24 @@ module.exports = {
             !stockQuantity ||
             !description ||
             !fileName
-        ) {
-            res.status(400).send("Missing some arguments");
-        } else {
-            try {
-                await adminModel.add("Products", {
-                    p_name,
-                    category,
-                    price,
-                    stockQuantity,
-                    description,
-                    image: fileName,
-                });
-                res.status(200).send("Add new product successful");
-            } catch (err) {
-                next(err);
-            }
+        )
+            return res.status(400).send("Missing some arguments");
+        if (!(!isNaN(parseFloat(price)) && isFinite(price)))
+            return res.status(500).send("Price must be Numeric");
+        if (isNaN(parseInt(stockQuantity)))
+            return res.status(500).send("stockQuantity must be Integer");
+        try {
+            await adminModel.add("Products", {
+                p_name,
+                category,
+                price,
+                stockQuantity,
+                description,
+                image: fileName,
+            });
+            res.status(200).send("Add new product successful");
+        } catch (err) {
+            next(err);
         }
     },
 
@@ -166,7 +155,11 @@ module.exports = {
             !stockQuantity ||
             !description
         )
-            res.status(400).send("Missing some arguments");
+            return res.status(400).send("Missing some arguments");
+        if (!(!isNaN(parseFloat(price)) && isFinite(price)))
+            return res.status(500).send("Price must be Numeric");
+        if (isNaN(parseInt(stockQuantity)))
+            return res.status(500).send("stockQuantity must be Integer");
         let fileName;
         const imageData = req?.file;
         try {
@@ -196,15 +189,12 @@ module.exports = {
     async deleteProduct(req, res, next) {
         const { productId } = req.body;
         console.log(productId);
-        if (!productId) {
-            res.status(400).send("Missing product Id");
-        } else {
-            try {
-                await adminModel.deleteProduct(productId);
-                res.status(200).send("Delete Successful");
-            } catch (err) {
-                next(err);
-            }
+        if (!productId) return res.status(400).send("Missing product Id");
+        try {
+            await adminModel.deleteProduct(productId);
+            res.status(200).send("Delete Successful");
+        } catch (err) {
+            next(err);
         }
     },
     async getLastIdProduct() {
@@ -222,22 +212,92 @@ module.exports = {
             // handle cates -> display sub cate as name
             if (!cates) next(new Error("Error occurred, Please try again"));
             else {
-                cates = cates.map(cate => { 
-                    return ({...cate, child_cate: findNameCate(cates, cate.child_cate)})
-                })
+                cates = cates.map((cate) => {
+                    return {
+                        ...cate,
+                        parent_id: findNameCate(cates, cate.parent_id),
+                    };
+                });
                 res.status(200).render("admin/manageCategory", { cates });
             }
         } catch (err) {
             throw err;
         }
     },
+
+    async deleteCategory(req, res, next) {
+        const { id } = req.body;
+        if (!id) res.status(400).send("Missing some arguments");
+        else {
+            try {
+                await adminModel.deleteCategory(id);
+                res.status(200).send("Delete Category Successful");
+            } catch (err) {
+                next(err);
+            }
+        }
+    },
+    async addCategory(req, res, next) {
+        let { name, parent_id } = req.body;
+        if (!name || !parent_id) res.status(400).send("Missing some arguments");
+        else {
+            try {
+                const checkValid = await checkValidCategory(name, parent_id);
+                if (checkValid.statusCode === true) {
+                    await adminModel.addCategory({
+                        name: name.toLowerCase(),
+                        parent_id,
+                    });
+                    return res.status(200).send("Add Category Successful");
+                }
+                return res.status(checkValid.statusCode).send(checkValid.msg)
+            } catch (err) {
+                next(err);
+            }
+        }
+    },
+    async updateCategory(req, res, next) {
+        const { id, name, parent_id } = req.body;
+        if (!id || !name || !parent_id)
+            return res.status(400).send("Missing some arguments");
+        try {
+            const checkValid = await checkValidCategory(name, parent_id)
+            if(checkValid.statusCode === true){ 
+                await adminModel.update(
+                    "Category",
+                    ` id = '${id}'`,
+                    ` name = '${name}', parent_id = '${parent_id}'`
+                );
+                res.status(200).send("Update Category Successful");
+            }
+            return res.status(checkValid?.statusCode).send(checkValid?.msg)
+        } catch (err) {
+            next(err);
+        }
+    },
 };
 
-function findNameCate(cates, cateId){ 
-    return cates.filter(cate => cate.id === cateId)[0]?.name
+function findNameCate(cates, cateId) {
+    return cates.filter((cate) => cate.id === cateId)[0]?.name;
 }
 
-function mergeSameFields(cates, cate_id){ 
-    process_cates = cates.filter(cate => cate.id === cate_id)
-    
+async function checkValidCategory(name, parent_id) {
+    const categories = await adminModel.getCategory(
+        ` name = '${name.toLowerCase()}' and parent_id = '${parent_id}'`
+    );
+    // iphone not can be child iphone
+    const category = await adminModel.getCategory(` id = ${parent_id}`);
+    if (category && category.length > 0) {
+        if (category[0].name.toLowerCase() === name.toLowerCase()) {
+            return {
+                statusCode: 409,
+                msg: "The parent category and the category cannot have the same name",
+            };
+        }
+    }
+    if (categories && categories.length > 0) {
+        return { statusCode: 409, msg: "Category existed in database" };
+    } else {
+        return { statusCode: true, msg: "true" };
+    }
 }
