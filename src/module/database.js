@@ -98,12 +98,20 @@ module.exports = {
             throw(err)
         }
     }, 
-    async update(tb_name, condition, update){ 
+    async update(tb_name, update, condition){ 
         try{ 
-            return await this.exec('any', `UPDATE "${tb_name}" WHERE ${condition} SET ${update}`)
+            return await this.exec('any', `UPDATE "${tb_name}" SET ${update}  WHERE ${condition}`)
         }  
         catch(err){ 
             throw(err)
         }
-    }
+    }, 
+    async getMax(tb_name, key){ 
+        try{ 
+            return await this.exec('one', `SELECT * from "${tb_name}" ORDER BY ${key} desc limit 1`)
+        }
+        catch(err){ 
+            throw(err)
+        }
+    } 
 };

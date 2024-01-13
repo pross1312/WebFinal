@@ -16,20 +16,20 @@
                 <tr>
                     <td>
                         <span class="editable" contenteditable="false"><%= account.email %></span>
-                        <button class="btn btn-link" onclick="enableEditing(this)"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-link" onclick="updateUser(this, '<%=account.email%>')" style="display: none;"><i class="fas fa-check"></i></button>
+                     
                     </td>
                     <td>
                         <span class="editable" contenteditable="false"><%= account.type %></span>
                     </td>
                     <td>
-                        <button class="btn btn-link text-danger" onclick="confirmDelete('<%= account.email %>')"><i class="fas fa-trash-alt"></i></button>
+                        <button class="btn btn-danger" onclick="confirmDelete('<%= account.email %>')">Delete</button>
+                        <button class="btn btn-primary" onclick="showUpdateForm('<%= account.email %>')">Edit</button>
                     </td>
                 </tr>
             <% }); %>
         </tbody>
         <td>
-            <button class="btn btn-link" onclick="showCreateForm()"><i class="fas fa-user-plus"></i></button>
+                <button type="button" class="btn btn-success p-3 mt-4" onclick="showCreateForm()()">Add New Account</button>
         </td>
     </table>
     <div class="modal" id="createAccountModal">
@@ -75,6 +75,48 @@
         </div>
     </div>
 
+    <div class="modal" id="updateAccountModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Update Account</h4>
+                    <button type="button" class="btn btn-danger rounded-circle close" 
+                    onclick="$('.modal').modal('hide')"
+                    data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+    
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="createAccountForm">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" class="form-control" id="updateEmail" disabled>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="updatePassword">Password:</label>
+                            <input type="password" class="form-control" id="updatePassword" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="updateType">Type:</label>
+                            <select class="form-select" aria-label="Default select example" id="updateType">
+                                <option value="admin">admin</option>
+                                <option value="customer">customer</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="submitUpdateForm()">Update Account</button>
+                    </form>
+                </div>
+    
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                  @CineClick
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         function enableEditing(button) {
             const emailSpan = button.parentElement.querySelector('.editable');
@@ -115,6 +157,33 @@
             $('#createAccountModal').modal('show');
         }
         
+        function showUpdateForm(email){ 
+            $('#updateAccountModal').modal('show');
+            $('#updateEmail').val(email) 
+            
+        }
+
+        // reuse function 
+        function submitUpdateForm(){ 
+            const email = $('#updateEmail').val().trim();
+            const password= $('#updatePassword').val().trim();
+            const type = $('#updateType').val(); 
+
+            console.log(password, type);
+            if (!password || !type) {
+                toastr.error('Please fill in all fields');
+                return;
+            }
+            $.post("/admin/account/update", {email, updatePassword: password, updateType: type}) 
+            .done(function(data){ 
+                location.reload()
+            })
+            .fail(function(xhr, status, error){ 
+                toastr.error(xhr.responseText)
+            })
+            $('#updateAccountModal').modal('hide');
+        }
+
         function submitCreateForm() {
             const email = $('#newEmail').val().trim();
             const password= $('#newPassword').val().trim();

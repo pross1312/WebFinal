@@ -3,9 +3,9 @@ const accountModel = require("../model/Account.model");
 const userModel = require("../model/User.model");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
-
+const path = require("path");
 const saltRounds = process.env.SALT || 10;
-
+const product_image_folder = process.env.PRODUCT_IMAGE_FOLDER;
 module.exports = {
     // ======  Account ======
     async getAllAccount(req, res, next) {
@@ -71,14 +71,26 @@ module.exports = {
     },
     // update email, type, password
     async updateAccount(req, res, next) {
-        const { email, newEmail } = req.body;
-        if (!email || !newEmail) res.status(400).send("Missing email");
+        const { email, updatePassword, updateType } = req.body;
+        if (!email || !updatePassword || !updateType)
+            res.status(400).send("Missing some data");
         else {
             try {
-                const account = accountModel.get(email);
+                const account = await accountModel.get(email);
                 if (!account) {
                     res.status(400).send("Not found Email in Database");
                 } else {
+                    const salt = bcrypt.genSaltSync(Number(saltRounds));
+                    const hashed_password = bcrypt.hashSync(
+                        updatePassword,
+                        salt
+                    );
+                    await accountModel.update(
+                        email,
+                        hashed_password,
+                        updateType
+                    );
+                    res.status(200).send("Update Account Successful");
                 }
             } catch (err) {
                 next(err);
@@ -88,7 +100,12 @@ module.exports = {
     // ======  Product ======
     async getAllProduct(req, res, next) {
         try {
-            const products = await adminModel.getAll("products");
+            let raw_products = await adminModel.getAll("Products");
+            products = raw_products.map((product) => ({
+                ...product,
+                image: product_image_folder + product.image,
+            }));
+            console.log(products);
             res.render("admin/manageProduct", { products });
         } catch (err) {
             next(err);
@@ -96,14 +113,89 @@ module.exports = {
     },
 
     async addProduct(req, res, next) {
-        const productName = req.body.name;
-        const productCategory = req.body.category;
+        const p_name = req.body.name;
+        const category = req.body.category;
+        const price = req.body.price;
+        const stockQuantity = req.body.quantity;
+        const description = req.body.desc;
         // Access file data
         const imageData = req.file;
-        console.log(productName, productCategory, imageData);
+        const fileName = imageData?.filename;
+        if (
+            !p_name ||
+            !category ||
+            !price ||
+            !stockQuantity ||
+            !description ||
+            !fileName
+        ) {
+            res.status(400).send("Missing some arguments");
+        }
         try {
+            await adminModel.add("Products", {
+                p_name,
+                category,
+                price,
+                stockQuantity,
+                description,
+                image: fileName,
+            });
+            res.status(200).send("Add new product successful");
         } catch (err) {
             next(err);
+        }
+    },
+
+    async updateProduct(req, res, next) {
+        const id = req.body.id
+        const p_name = req.body.name;
+        const category = req.body.category;
+        const price = req.body.price;
+        const stockQuantity = req.body.quantity;
+        const description = req.body.description;
+        console.log(id, p_name, category, price, stockQuantity, description);
+        if (!id || !p_name || !category || !price || !stockQuantity || !description)
+                res.status(400).send("Missing some arguments");
+        let fileName 
+        const imageData = req?.file;
+        try{ 
+            if(!imageData){ 
+                // skip 
+                await adminModel.update('Products', ` id = '${id}'`, ` p_name='${p_name}', category='${category}', price='${price}', 
+                 "stockQuantity"='${stockQuantity}', description='${description}'`)
+                res.status(200).send("Update Successful")
+            }
+            else{ 
+                fileName = imageData.filename;
+                await adminModel.update('Products', ` id = '${id}'`, ` p_name='${p_name}', category='${category}', price='${price}', 
+                 "stockQuantity"='${stockQuantity}', description='${description}', image = '${fileName}`)
+                res.status(200).send("Update Successful")
+            }
+        }
+        catch(err){ 
+            next(err)
+        }
+       
+    }, 
+    async deleteProduct(req, res, next) {
+        const { productId } = req.body;
+        console.log(productId);
+        if (!productId) {
+            res.status(400).send("Missing product Id");
+        } else {
+            try {
+                await adminModel.deleteProduct(productId);
+                res.status(200).send("Delete Successful");
+            } catch (err) {
+                next(err);
+            }
+        }
+    },
+    async getLastIdProduct() {
+        try {
+            return await adminModel.getLastIdProduct();
+        } catch (err) {
+            throw err;
         }
     },
 
