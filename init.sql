@@ -71,8 +71,9 @@ create table "Transaction"(
     primary key(initiator, receiver, ts)
 );
 
--- table created for testing display data
 
+-- need to merge Product and Category
+-- table created for testing display data
 CREATE TABLE "Products" (
     id SERIAL PRIMARY KEY,
     p_name VARCHAR(255) NOT NULL,
@@ -90,10 +91,10 @@ VALUES ('Product 1', 'Health and Wellness', 69.99, 35, 'Curabitur sit amet justo
 create table "Category"(
 	id SERIAL primary key, 
 	name varchar(255), 
-	child_cate int references "Category"(id) 
+	parent_id int references "Category"(id) 
 ) 
 -- mock data 
-insert into "Category" (name) values ('Iphone'); 
-insert into "Category" (name) values ('Android')
-insert into "Category" (name, child_cate) values ('Phone', '1')
-insert into "Category" (name, child_cate) values ('Phone', '2')
+insert into "Category" (name ) values ('Iphone');  
+insert into "Category" (name ) values ('Android'); 
+insert into "Category" (name) values ('Phone'); 
+
