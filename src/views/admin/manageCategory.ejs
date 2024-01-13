@@ -1,0 +1,29 @@
+<%- include("../partials/header") %>
+<%- include("partials/navbarAdmin") %>
+
+<style>
+     .even-row {
+            background-color: #f2f2f2;
+        }
+</style>
+<div class="container mt-5">
+    <h1 class="mb-4">Manage Category</h1>
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Sub Category</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% cates.forEach((cate, index) => { %>
+                <tr class="<%= index % 2 === 0 ? 'even-row' : '' %>">
+                    <td><%= cate.id %></td>
+                    <td><%= cate.name %></td>
+                    <td><%= cate.child_cate %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</div>

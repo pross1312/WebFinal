@@ -2,32 +2,34 @@
 <%- include("partials/navbarAdmin") %>
 
 <div class="container mt-5">
-    <h1 class="mb-4">Account Management</h1>
+    <h1 class="mb-4">Manage Account</h1>
     <table class="table">
         <thead class="thead-dark">
             <tr>
-                <th>ID</th>
                 <th>Email</th>
+                <th>Type</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            <% users.forEach(user => { %>
+            <% accounts.forEach(account => { %>
                 <tr>
-                    <td><%= user.id %></td>
                     <td>
-                        <span class="editable" contenteditable="false"><%= user.email %></span>
-                        <button class="btn btn-link" onclick="enableEditing(this)"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-link" onclick="updateUser(this, <%= user.id %>)" style="display: none;"><i class="fas fa-check"></i></button>
+                        <span class="editable" contenteditable="false"><%= account.email %></span>
+                     
                     </td>
                     <td>
-                        <button class="btn btn-link text-danger" onclick="confirmDelete(<%= user.id %>)"><i class="fas fa-trash-alt"></i></button>
+                        <span class="editable" contenteditable="false"><%= account.type %></span>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger" onclick="confirmDelete('<%= account.email %>')">Delete</button>
+                        <button class="btn btn-primary" onclick="showUpdateForm('<%= account.email %>')">Edit</button>
                     </td>
                 </tr>
             <% }); %>
         </tbody>
         <td>
-            <button class="btn btn-link" onclick="showCreateForm()"><i class="fas fa-user-plus"></i></button>
+                <button type="button" class="btn btn-success p-3 mt-4" onclick="showCreateForm()()">Add New Account</button>
         </td>
     </table>
     <div class="modal" id="createAccountModal">
@@ -54,7 +56,13 @@
                             <label for="newPassword">Password:</label>
                             <input type="password" class="form-control" id="newPassword" required>
                         </div>
-                
+                        <div class="form-group mb-4">
+                            <label for="newPassword">Type:</label>
+                            <select class="form-select" aria-label="Default select example" id="newType">
+                                <option value="admin">admin</option>
+                                <option value="customer">customer</option>
+                            </select>
+                        </div>
                         <button type="button" class="btn btn-primary" onclick="submitCreateForm()">Create Account</button>
                     </form>
                 </div>
@@ -67,6 +75,48 @@
         </div>
     </div>
 
+    <div class="modal" id="updateAccountModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Update Account</h4>
+                    <button type="button" class="btn btn-danger rounded-circle close" 
+                    onclick="$('.modal').modal('hide')"
+                    data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+    
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="createAccountForm">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" class="form-control" id="updateEmail" disabled>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="updatePassword">Password:</label>
+                            <input type="password" class="form-control" id="updatePassword" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="updateType">Type:</label>
+                            <select class="form-select" aria-label="Default select example" id="updateType">
+                                <option value="admin">admin</option>
+                                <option value="customer">customer</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="submitUpdateForm()">Update Account</button>
+                    </form>
+                </div>
+    
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                  @CineClick
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         function enableEditing(button) {
             const emailSpan = button.parentElement.querySelector('.editable');
@@ -75,45 +125,84 @@
             button.nextElementSibling.style.display = 'inline-block';
         }
 
-        function updateUser(button, userId) {
+        function updateUser(button, email) {
             const emailSpan = button.parentElement.querySelector('.editable');
             const newEmail = emailSpan.innerText.trim();
-            console.log(`Updating email for user with ID ${userId} to: ${newEmail}`);
-            // TODO  /manage/account/udpate           
+            if(email === newEmail)
+                toastr.warning("Canceled edit")
+            console.log(`Updating email for user with ID ${email} to: ${newEmail}`);
+            // TODO /manage/account/udpate           
             emailSpan.setAttribute('contenteditable', 'false');
             button.style.display = 'inline-block';
             button.previousElementSibling.style.display = 'inline-block';
             button.style.display = 'none';
         }
-         function confirmDelete(userId) {
+         function confirmDelete(email) {
             if (confirm('Are you sure you want to delete this user?')) {
-                deleteUser(userId);
+                deleteUser(email);
             }
         }
-        function deleteUser(userId) {
+        function deleteUser(email_delete) {
             //TODO POST data admin/manage/account/delete?id={}
-            alert('Deleting user with ID:', userId);
+            $.post("/admin/account/delete", {email_delete}) 
+                .done(function(data){ 
+                    location.reload()
+                })
+                .fail(function(xhr, status, error){ 
+                    toastr.error(xhr.responseText)
+                })
         }
 
         function showCreateForm() {
-        $('#createAccountModal').modal('show');
-    }
-
+            $('#createAccountModal').modal('show');
+        }
         
-        function submitCreateForm() {
-            const newEmail = $('#newEmail').val().trim();
-            const newPassword = $('#newPassword').val().trim();
+        function showUpdateForm(email){ 
+            $('#updateAccountModal').modal('show');
+            $('#updateEmail').val(email) 
+            
+        }
 
-            // Validate the form data (add additional validation as needed)
-            if (!newEmail || !newPassword) {
+        // reuse function 
+        function submitUpdateForm(){ 
+            const email = $('#updateEmail').val().trim();
+            const password= $('#updatePassword').val().trim();
+            const type = $('#updateType').val(); 
+
+            console.log(password, type);
+            if (!password || !type) {
+                toastr.error('Please fill in all fields');
+                return;
+            }
+            $.post("/admin/account/update", {email, updatePassword: password, updateType: type}) 
+            .done(function(data){ 
+                location.reload()
+            })
+            .fail(function(xhr, status, error){ 
+                toastr.error(xhr.responseText)
+            })
+            $('#updateAccountModal').modal('hide');
+        }
+
+        function submitCreateForm() {
+            const email = $('#newEmail').val().trim();
+            const password= $('#newPassword').val().trim();
+            const type = $('#newType').val(); 
+
+            if (!email || !password || !type) {
                 toastr.error('Please fill in all fields');
                 return;
             }
 
-            // TODO: Send a request to create a new account (POST /manage/account/create)
+            $.post("/admin/account/add", {email, password, type}) 
+            .done(function(data){ 
+                location.reload()
+            })
+            .fail(function(xhr, status, error){ 
+                toastr.error(xhr.responseText)
+            })
 
             $('#createAccountModal').modal('hide');
-            toastr.success('Account created successfully!');
         }
     </script>
 </div>

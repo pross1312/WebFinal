@@ -1,14 +1,15 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const session = require('express-session');
-const path = require('path');
-const PORT = process.env.PORT || 1234
+const session = require("express-session");
+const path = require("path");
+const PORT = process.env.PORT || 1234;
 const payment_req = require("./module/payment_req");
+const CustomError = require("./module/CustomErr");
 // config
 app.use("/resources", express.static(path.join(__dirname, "resources")));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
@@ -28,7 +29,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/auth', require('./route/auth.route'));
+app.use("/auth", require("./route/auth.route"));
 
 app.use((req, res, next) => {
     // authentication guard
@@ -44,9 +45,10 @@ app.use((req, res, next) => { // NOTE: payment_access_token should not be allowe
     if (req.session.payment_access_token) delete req.session.payment_access_token;
     next();
 });
+
 app.get('/', (req, res) => {
     if (req.user?.type === "customer") {
-        res.render('user/homepage'); 
+        res.render("user/homepage");
     } else if (req.user?.type === "admin") {
         res.redirect("/admin");
     } else {
@@ -54,31 +56,42 @@ app.get('/', (req, res) => {
     }
 });
 
-app.use((err, req, res, next) => {
-    // guard exception
-    console.log(err);
-    res.status(500).send("Internal server error");
-});
-
 const ensureAuthorization = (req, res, next) => {
     // TODO Check Account type
     if (req.user?.type === "admin") {
         next();
-    } else{
+    } else {
         res.redirect("/");
     }
 };
-app.use("/admin", ensureAuthorization, require("./route/admin.route"));
+
+app.use("/admin", ensureAuthorization, require("./route/admin.R"));
 
 app.use((req, res, next) => {
-    res.status(404).send("Not found");
+    next(
+        new CustomError(
+            "Page not found",
+            404,
+            "The page you're looking for does not exist"
+        )
+    );
 });
 
 app.use((err, req, res, next) => {
     // guard exception
     console.log(err);
-    res.status(500).send('Internal server error');
+    const statusCode = err instanceof CustomError ? err.statusCode : 500;
+    const msg =
+        err instanceof CustomError ? err.message : "Internal server error";
+    const desc =
+        err instanceof CustomError ? err.desc : err;
+    res.status(statusCode).render("error", {
+        statusCode,
+        msg,
+        desc,
+    });
 });
+
 
 // have fun when use PORT -_-
 const reset = "\x1b[0m";

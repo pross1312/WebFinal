@@ -18,9 +18,22 @@
     tbody tr:nth-child(even) {
         --bs-table-bg: #272f3c ;
     }
+    .holder{ 
+        height: 300px;
+        width: 450px;
+        border: 2px solid black;
+        display: none;
+        margin-top: 20px;
+    }
+    #imgPreview, #updateimgPreview {
+        max-width: 450px;
+        max-height: 300px;
+        min-width: 450px;
+        min-height: 300px;
+    }
 </style>
 <div class="container mt-5">
-    <h1 class="mb-4">Product Information</h1>
+    <h1 class="mb-4">Manage Product</h1>
     <table class="table table-bordered table-hover">
         <thead class="thead-dark">
             <tr>
@@ -30,9 +43,6 @@
                 <th class="sortable" data-column="price" >Price</th>
                 <th class="sortable" data-column="stockQuantity" >Stock Quantity</th>
                 <th class="sortable" data-column="description">Description</th>
-                <th class="sortable" data-column="manufacturer" >Manufacturer</th>
-                <th class="sortable" data-column="releaseDate">Release Date</th>
-                <th class="sortable" data-column="rating">Rating</th>
                 <th>Image</th>
                 <th>Action</th>
             </tr>
@@ -41,27 +51,175 @@
             <% products.forEach((product, index) => { %>
                 <tr>
                     <td><%= product.id %></td>
-                    <td><%= product.name %></td>
+                    <td><%= product.p_name %></td>
                     <td><%= product.category %></td>
                     <td><%= product.price %></td>
                     <td><%= product.stockQuantity %></td>
                     <td><%= product.description %></td>
-                    <td><%= product.manufacturer %></td>
-                    <td><%= product.releaseDate %></td>
-                    <td><%= product.rating %></td>
                     <td>
                         <img src="<%= product.image %>" alt="<%= product.name %>" style="max-width: 100px; max-height: 100px;">
                     </td>
                     <td>
-                        <button class="btn btn-primary btn-sm" onclick="editProduct(<%= product.id %>)">Edit</button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteProduct(<%= product.id %>)">Delete</button>
+                        <button class="btn btn-primary btn-sm" onclick="showUpdateModal('<%= product.id %>','<%= product.p_name %>', '<%= product.category %>','<%= product.price %>', '<%= product.stockQuantity %>', '<%= product.description %>', '<%= product.image %>')">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteProduct('<%= product.id %>')">Delete</button>   
                     </td>
                 </tr>
             <% }); %>
         </tbody>
     </table>
+    <div class="modal" id="createProductModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Create Product</h4>
+                    <button type="button" class="btn btn-danger rounded-circle close" 
+                    onclick="closeModal()"
+                    data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+    
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="createProductForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="p_name">Product Name:</label>
+                            <input type="text" class="form-control" id="p_name" name="name" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="p_cate">Category:</label>
+                            <input type="text" class="form-control" id="p_cate" name="category" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="p_price">Price:</label>
+                            <input type="text" class="form-control" id="p_price" name="price" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="p_quantity">Stock Quantity:</label>
+                            <input type="text" class="form-control" id="p_quantity" name="quantity" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="p_desc">Description:</label>
+                            <input type="text" class="form-control" id="p_desc" name="desc"required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="p_image">Image:</label>
+                            <input type="file" class="form-control" id="p_image" name='image' accept="image/png, image/gif, image/jpeg" required>
+                            <div class="holder">
+                                <img src="" alt="pic" id="imgPreview">
+                            </div>
+                        </div>
+                    
+                        <button type="button" class="btn btn-primary" onclick="addProduct()">Create Product</button>
+                    </form>
+                </div>
+    
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                  @CineClick
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="updateProductModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Update Product</h4>
+                    <button type="button" class="btn btn-danger rounded-circle close" 
+                    onclick="closeModal()"
+                    data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+    
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="updateProductForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label>Product Id:</label>
+                            <input type="text" class="form-control" id="update_p_id" name="id" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="update_p_name">Product Name:</label>
+                            <input type="text" class="form-control" id="update_p_name" name="name" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="update_p_cate">Category:</label>
+                            <input type="text" class="form-control" id="update_p_category" name="category" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="update_p_price">Price:</label>
+                            <input type="text" class="form-control" id="update_p_price" name="price" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="update_p_quantity">Stock Quantity:</label>
+                            <input type="text" class="form-control" id="update_p_quantity" name="quantity" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="update_p_description">Description:</label>
+                            <input type="text" class="form-control" id="update_p_description" name="description" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="update_p_image">Image:</label>
+                            <input type="file" class="form-control" id="update_p_image" name='image' accept="image/png, image/gif, image/jpeg" required>
+                            <div class="holder">
+                                <img src="" alt="pic" id="updateimgPreview">
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="editProduct()">Update Product</button>
+                    </form>
+                </div>
+    
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                  @CineClick
+                </div>
+            </div>
+        </div>
+    </div>
+   <div class="mt-5">
+    <button type="button" class="btn btn-success p-3 me-2" onclick="showModal()">Add New Product</button>
+   </div>
+    
 </div>
 <script>
+    $(document).ready(() => { 
+        const photoPreview = $('#p_image')
+        const updatePhotoPreview = $('#update_p_image')
+
+        const boxPreview = $('.holder')
+        photoPreview.change(e => { 
+            boxPreview.css('display', 'block')
+            const files = photoPreview.prop('files');
+            if (files.length > 0) { 
+                const file = files[0];
+                let reader = new FileReader(); 
+
+                reader.onload = function (event){ 
+                    console.log('FileReader onload event triggered');
+                    $("#imgPreview").attr("src", event.target.result);
+                };
+                reader.readAsDataURL(file);
+        }
+    })
+        updatePhotoPreview.change(e => { 
+            const files = updatePhotoPreview.prop('files');
+            if (files.length > 0) { 
+                const file = files[0];
+                let reader = new FileReader(); 
+                reader.onload = function (event){ 
+                    console.log('FileReader onload event triggered');
+                    $("#updateimgPreview").attr("src", event.target.result);
+                };
+
+                reader.readAsDataURL(file);
+        }
+        })
+    })
      function sortTable(columnName) {
             const table = document.querySelector('table');
             const tbody = table.querySelector('tbody');
@@ -109,6 +267,11 @@
             currentHeader.classList.toggle(order === 'asc' ? 'sorted-asc' : 'sorted-desc');
         }
 
+        function closeModal(){ 
+            $("#createProductForm input").val("");
+            $(".holder").css("display", 'none');
+            $('.modal').modal('hide')
+        }
         function getColumnIndex(columnName) {
             const headers = document.querySelectorAll('th');
             for (let i = 0; i < headers.length; i++) {
@@ -119,5 +282,79 @@
             return -1; // Column not found
         }
 
-        // Other functions (editProduct, deleteProduct) remain unchanged
+        function showModal(){ 
+            $('#createProductModal').modal('show')
+        }
+        function addProduct(){ 
+            const form = $('#createProductForm')[0]
+            const formData = new FormData(form)
+            flag = true
+            formData.forEach((value, key) => { 
+                if(!value)
+                { 
+                    toastr.error(`You must fill in "${key}"`)
+                    flag = false
+                }
+            })
+            if(!flag) return
+            $.ajax({
+                url: "/admin/product/add",
+                type: "POST",
+                data: formData,
+                processData: false,  
+                contentType: false,  
+                success: function (data) {
+                    toastr.success(data);
+                },
+                error: function (err) {
+                    toastr.error(err.responseText);
+                }
+            });
+            closeModal()
+        }
+        function showUpdateModal(id,name, category, price, quantity, desc, image){ 
+            $('#updateProductModal').modal('show')
+            $('#update_p_id').val(id)
+            $('#update_p_sended').val(id)
+            $('#update_p_name').val(name)
+            $('#update_p_category').val(category)
+            $('#update_p_price').val(price)
+            $('#update_p_quantity').val(quantity)
+            $('#update_p_description').val(desc)
+            $("#updateimgPreview").attr("src", image);
+            $('.holder').css('display', 'block')
+        }
+        function editProduct(){ 
+            const form = $('#updateProductForm')[0]
+            const formData = new FormData(form)
+           
+            formData.append('id', $('#update_p_id').val().trim())
+            $.ajax({ 
+                url: '/admin/product/update', 
+                type: 'POST', 
+                data: formData, 
+                processData: false,  
+                contentType: false,  
+                success: function (data) {
+                    toastr.success(data);
+                },
+                error: function (err) {
+                    toastr.error(err.responseText);
+                }
+            })
+        }
+        function deleteProduct(productId){ 
+            $.ajax( { 
+                url: '/admin/product/delete', 
+                type: 'POST', 
+                data: {productId},
+                success: function (data){ 
+                    location.reload()
+                },
+                error: function(err){ 
+                    toastr.error(err.responseText);
+                }
+            })
+        }
     </script>
+    <%- include("../partials/footer") %>   

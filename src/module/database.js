@@ -63,10 +63,9 @@ module.exports = {
             return await conn[func](sql, args);
         } catch (err) {
             if (err instanceof QRE && err.code === qrec.noData) {
-               return null 
-            }
-            else {
-                throw err
+                return null;
+            } else {
+                throw err;
             }
         } finally {
             if (conn) conn.done();
@@ -76,4 +75,45 @@ module.exports = {
         const sql = pgp.helpers.insert(obj, keys, table);
         await this.exec("none", sql);
     },
+
+    async all(tb_name) {
+        try {
+            return await this.exec('any', `SELECT * FROM "${tb_name}"`, []);
+        } catch (err) {
+            throw err;
+        }
+    }, 
+    async delete(tb_name,condition){ 
+        try{ 
+            return await this.exec('none', `DELETE FROM "${tb_name}" WHERE ${condition}`)
+        }
+        catch(err){ 
+            throw(err)
+        }
+    }, 
+
+    async find(tb_name, condition){ 
+        try{ 
+            return await this.exec('any', `SELECT * FROM "${tb_name}" WHERE ${condition}`)
+        }
+        catch(err){ 
+            throw(err)
+        }
+    }, 
+    async update(tb_name, update, condition){ 
+        try{ 
+            return await this.exec('any', `UPDATE "${tb_name}" SET ${update}  WHERE ${condition}`)
+        }  
+        catch(err){ 
+            throw(err)
+        }
+    }, 
+    async getMax(tb_name, key){ 
+        try{ 
+            return await this.exec('one', `SELECT * from "${tb_name}" ORDER BY ${key} desc limit 1`)
+        }
+        catch(err){ 
+            throw(err)
+        }
+    } 
 };
