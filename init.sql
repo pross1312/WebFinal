@@ -30,3 +30,15 @@ CREATE TABLE "Products" (
 
 INSERT INTO "Products" (p_name, category, price, "stockQuantity", description, image)
 VALUES ('Product 1', 'Health and Wellness', 69.99, 35, 'Curabitur sit amet justo id sapien interdum congue. Integer eget justo vel orci auctor finibus.', 'https://placekitten.com/109/109');
+
+-- create Category table 
+create table "Category"(
+	id SERIAL primary key, 
+	name varchar(255), 
+	child_cate int references "Category"(id) 
+) 
+-- mock data 
+insert into "Category" (name) values ('Iphone'); 
+insert into "Category" (name) values ('Android')
+insert into "Category" (name, child_cate) values ('Phone', '1')
+insert into "Category" (name, child_cate) values ('Phone', '2')

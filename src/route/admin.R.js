@@ -43,9 +43,7 @@ router.post('/product/add', upload.single('image'), adminController.addProduct)
 router.post('/product/delete', adminController.deleteProduct)
 router.post('/product/update', upload.single('image'), adminController.updateProduct)
 
-//TODO: finish when have dbo order
-router.get('/list/order', (req, res) => { 
-    res.render('admin/manageOrder', {orders: require('../module/mockdatabase').mockOrders})
-})
+// get all category 
+router.get('/category/list', adminController.getAllCategory)
 
 module.exports = router;

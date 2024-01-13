@@ -101,12 +101,15 @@ module.exports = {
     async getAllProduct(req, res, next) {
         try {
             let raw_products = await adminModel.getAll("Products");
-            products = raw_products.map((product) => ({
+            let products = raw_products.map((product) => ({
                 ...product,
                 image: product_image_folder + product.image,
             }));
-            console.log(products);
-            res.render("admin/manageProduct", { products });
+            if (!products) {
+                next(new Error("Error occurred, Please try again"));
+            } else {
+                res.render("admin/manageProduct", { products });
+            }
         } catch (err) {
             next(err);
         }
@@ -130,53 +133,66 @@ module.exports = {
             !fileName
         ) {
             res.status(400).send("Missing some arguments");
-        }
-        try {
-            await adminModel.add("Products", {
-                p_name,
-                category,
-                price,
-                stockQuantity,
-                description,
-                image: fileName,
-            });
-            res.status(200).send("Add new product successful");
-        } catch (err) {
-            next(err);
+        } else {
+            try {
+                await adminModel.add("Products", {
+                    p_name,
+                    category,
+                    price,
+                    stockQuantity,
+                    description,
+                    image: fileName,
+                });
+                res.status(200).send("Add new product successful");
+            } catch (err) {
+                next(err);
+            }
         }
     },
 
     async updateProduct(req, res, next) {
-        const id = req.body.id
+        const id = req.body.id;
         const p_name = req.body.name;
         const category = req.body.category;
         const price = req.body.price;
         const stockQuantity = req.body.quantity;
         const description = req.body.description;
         console.log(id, p_name, category, price, stockQuantity, description);
-        if (!id || !p_name || !category || !price || !stockQuantity || !description)
-                res.status(400).send("Missing some arguments");
-        let fileName 
+        if (
+            !id ||
+            !p_name ||
+            !category ||
+            !price ||
+            !stockQuantity ||
+            !description
+        )
+            res.status(400).send("Missing some arguments");
+        let fileName;
         const imageData = req?.file;
-        try{ 
-            if(!imageData){ 
-                // skip 
-                await adminModel.update('Products', ` id = '${id}'`, ` p_name='${p_name}', category='${category}', price='${price}', 
-                 "stockQuantity"='${stockQuantity}', description='${description}'`)
-                res.status(200).send("Update Successful")
-            }
-            else{ 
+        try {
+            if (!imageData) {
+                // skip
+                await adminModel.update(
+                    "Products",
+                    ` id = '${id}'`,
+                    ` p_name='${p_name}', category='${category}', price='${price}', 
+                 "stockQuantity"='${stockQuantity}', description='${description}'`
+                );
+                res.status(200).send("Update Successful");
+            } else {
                 fileName = imageData.filename;
-                await adminModel.update('Products', ` id = '${id}'`, ` p_name='${p_name}', category='${category}', price='${price}', 
-                 "stockQuantity"='${stockQuantity}', description='${description}', image = '${fileName}`)
-                res.status(200).send("Update Successful")
+                await adminModel.update(
+                    "Products",
+                    ` id = '${id}'`,
+                    ` p_name='${p_name}', category='${category}', price='${price}', 
+                 "stockQuantity"='${stockQuantity}', description='${description}', image = '${fileName}'`
+                );
+                res.status(200).send("Update Successful");
             }
+        } catch (err) {
+            next(err);
         }
-        catch(err){ 
-            next(err)
-        }
-       
-    }, 
+    },
     async deleteProduct(req, res, next) {
         const { productId } = req.body;
         console.log(productId);
@@ -199,6 +215,29 @@ module.exports = {
         }
     },
 
-    // ======  Order ======
-    async getAllOrder(req, res, next) {},
+    // ======  Category ======
+    async getAllCategory(req, res, next) {
+        try {
+            let cates = await adminModel.getAll("Category");
+            // handle cates -> display sub cate as name
+            if (!cates) next(new Error("Error occurred, Please try again"));
+            else {
+                cates = cates.map(cate => { 
+                    return ({...cate, child_cate: findNameCate(cates, cate.child_cate)})
+                })
+                res.status(200).render("admin/manageCategory", { cates });
+            }
+        } catch (err) {
+            throw err;
+        }
+    },
 };
+
+function findNameCate(cates, cateId){ 
+    return cates.filter(cate => cate.id === cateId)[0]?.name
+}
+
+function mergeSameFields(cates, cate_id){ 
+    process_cates = cates.filter(cate => cate.id === cate_id)
+    
+}

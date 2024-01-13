@@ -33,7 +33,7 @@
     }
 </style>
 <div class="container mt-5">
-    <h1 class="mb-4">Product Information</h1>
+    <h1 class="mb-4">Manage Product</h1>
     <table class="table table-bordered table-hover">
         <thead class="thead-dark">
             <tr>
@@ -288,6 +288,15 @@
         function addProduct(){ 
             const form = $('#createProductForm')[0]
             const formData = new FormData(form)
+            flag = true
+            formData.forEach((value, key) => { 
+                if(!value)
+                { 
+                    toastr.error(`You must fill in "${key}"`)
+                    flag = false
+                }
+            })
+            if(!flag) return
             $.ajax({
                 url: "/admin/product/add",
                 type: "POST",
@@ -318,6 +327,7 @@
         function editProduct(){ 
             const form = $('#updateProductForm')[0]
             const formData = new FormData(form)
+           
             formData.append('id', $('#update_p_id').val().trim())
             $.ajax({ 
                 url: '/admin/product/update', 
