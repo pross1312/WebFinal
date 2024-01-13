@@ -1,35 +1,205 @@
 <%- include("partials/header") %>
+<style>
+body {
+  background: linear-gradient(135deg, #12385e, #003d66);
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
 
-<div class="container-lg mt-5 pt-5 mx-auto" style="max-width: 678px;">
-    <h2 class="text-center">Log in</h2>
-    <form action="/auth/login" method="POST" class="my-auto pt-5">
-        <div class="form-floating my-1">
-            <input type="text" class="form-control" id="floatingInput" name="email" placeholder="Email" required>
-            <label for="floatingInput">Email</label>
+.container {
+  width: 400px;
+  background-color: #292f3e;
+  border-radius: 5px;
+  padding: 40px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.login-form {
+  text-align: center;
+}
+
+h1 {
+  font-size: 24px;
+  color: #fff;
+  margin-bottom: 30px;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+}
+
+label {
+  color: #ddd;
+  font-size: 16px;
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+.label-input-group-has-value {
+  top: -12px;
+  font-size: 12px;
+  color: #4b9ce2;
+}
+.input-group input:focus + label,
+.input-group input:valid + label {
+  top: -12px;
+  font-size: 12px;
+  color: #4b9ce2;
+}
+
+.options {
+  display: flex;
+  justify-content: left;
+  margin-bottom: 20px;
+  color: #ddd;
+}
+
+.remember-me {
+    width: auto;
+}
+
+a {
+  color: #4b9ce2;
+  text-decoration: none;
+}
+
+button[type="submit"],
+button[type="button"].google-login {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+button[type="submit"] {
+  background-color: #4b9ce2;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+button[type="button"].google-login {
+  background-color: #dd4b39;
+  color: #fff;
+}
+
+.or {
+  color: #ddd;
+  margin-bottom: 20px;
+}
+
+button:hover,
+a:hover {
+  opacity: 0.8;
+}
+</style>
+<div class="container">
+    <form action="/auth/login" method="POST" class="login-form">
+        <h1>Login</h1>
+        <div class="input-group">
+            <input type="text" name="email" class="w-100" id="email" placeholder="" required>
+            <label id="email-label" for="email">Email</label>
         </div>
-        <div class="form-floating my-1">
-            <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password" required>
-            <label for="floatingPassword">Password</label>
+        <div class="input-group">
+            <input type="password" name="password" class="w-100" id="password" placeholder="" required>
+            <label id="password-label" for="password">Password</label>
         </div>
-        <% if (error) {%>
-            <script>
-                toastr.error('<%= error %>');
-            </script>
-        <% } %>
-        <div class="container-fluid px-0 mx-0">
-            <button class="btn btn-primary w-100 mx-0" type="submit">Submit</button>
+        <div class="options">
+            <span style="height: 100%; width: fit-content;" class="me-3" >
+            <input id="remember" type="checkbox" name="remember" value="true">
+            </span>
+            <span style="height: 100%; width: fit-content;" class="" >
+                <label for="remember" style="height: fit-content; position: unset" class="my-auto remember-me">
+                    Remember me
+                </label>
+            </span>
         </div>
-        <div class="form-check mt-1 mb-4">
-            <input class="form-check-input" name="remember" type="checkbox" value="true" id="flexCheckDefault">
-            <label class="form-check-label" for="flexCheckDefault">
-                Remember me
-            </label>
-        </div>
+        <button type="submit">Login</button>
+        <p class="or">Or</p>
+        <button type="button" class="google-login">
+            <img style="width: 10%; height: auto;" src="/resources/google.png"/>
+            Login with Google</button>
     </form>
-    <div class="d-flex">
-        <a style="width: 30%;" class="flex-grow-0 d-inline-block" href="/auth/register">Register account</a>
-        <a style="width: fit-content;" href="/auth/google" class="d-inline-block"><img style="width: 10%; height: auto;" src="/resources/google.png"/></a>
+    <div class="d-flex justify-content-between mt-3">
+        <a class="flex-grow-0 d-inline-block" href="/auth/register">Register account</a>
+        <a href="#">Forgot password?</a>
     </div>
 </div>
+<script>
+    const email = document.getElementById("email");
+    const email_lb = document.getElementById("email-label");
+    email.onchange = () => {
+        if (email.value.trim() !== "") {
+            email_lb.classList.add("label-input-group-has-value");
+        } else {
+            email_lb.classList.remove("label-input-group-has-value");
+        }
+    };
+    const password = document.getElementById("password");
+    const password_lb = document.getElementById("password-label");
+    password.onchange = () => {
+        if (password.value.trim() !== "") {
+            password_lb.classList.add("label-input-group-has-value");
+        } else {
+            password_lb.classList.remove("label-input-group-has-value");
+        }
+    };
+</script>
+<% if (error) {%>
+<script>
+    toastr.error('<%= error %>');
+</script>
+<% } %>
+<!-- <div class="container-lg mt-5 pt-5 mx-auto" style="max-width: 678px;"> -->
+<!--     <h2 class="text-center">Log in</h2> -->
+<!--     <form action="/auth/login" method="POST" class="my-auto pt-5"> -->
+<!--         <div class="form-floating my-1"> -->
+<!--             <input type="text" class="form-control" id="floatingInput" name="email" placeholder="Email" required> -->
+<!--             <label for="floatingInput">Email</label> -->
+<!--         </div> -->
+<!--         <div class="form-floating my-1"> -->
+<!--             <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password" required> -->
+<!--             <label for="floatingPassword">Password</label> -->
+<!--         </div> -->
+<!--         <% if (error) {%> -->
+<!--             <script> -->
+<!--                 toastr.error('<%= error %>'); -->
+<!--             </script> -->
+<!--         <% } %> -->
+<!--         <div class="container-fluid px-0 mx-0"> -->
+<!--             <button class="btn btn-primary w-100 mx-0" type="submit">Submit</button> -->
+<!--         </div> -->
+<!--         <div class="form-check mt-1 mb-4"> -->
+<!--             <input class="form-check-input" name="remember" type="checkbox" value="true" id="flexCheckDefault"> -->
+<!--             <label class="form-check-label" for="flexCheckDefault"> -->
+<!--                 Remember me -->
+<!--             </label> -->
+<!--         </div> -->
+<!--     </form> -->
+<!--     <div class="d-flex"> -->
+<!--         <a style="width: 30%;" class="flex-grow-0 d-inline-block" href="/auth/register">Register account</a> -->
+<!--         <a style="width: fit-content;" href="/auth/google" class="d-inline-block"><img style="width: 10%; height: auto;" src="/resources/google.png"/></a> -->
+<!--     </div> -->
+<!-- </div> -->
 
 <%- include("partials/footer") %>
