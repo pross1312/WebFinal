@@ -2,9 +2,12 @@
 <%- include("partials/navbarAdmin") %>
 
 <style>
-     .even-row {
-            background-color: #f2f2f2;
-        }
+    .category-name::first-letter{ 
+        text-transform: capitalize;
+    }
+    tbody tr:nth-child(even) {
+        --bs-table-bg: #272f3c ;
+    }
 </style>
 <div class="container mt-5">
     <h1 class="mb-4">Manage Category</h1>
@@ -13,17 +16,169 @@
             <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>Sub Category</th>
+                <th>Parent Category</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
             <% cates.forEach((cate, index) => { %>
-                <tr class="<%= index % 2 === 0 ? 'even-row' : '' %>">
+                <tr class="<%= index % 2 === 0 ? 'even-row' : '' %> ">
                     <td><%= cate.id %></td>
-                    <td><%= cate.name %></td>
-                    <td><%= cate.child_cate %></td>
+                    <td class="category-name"><%= cate.name %></td>
+                    <td class="category-name"><%= cate.parent_id %></td>
+                    <td>
+                        <button class="btn btn-primary" onclick="showUpdateForm('<%= cate.id %>', '<%= cate.name %>', '<%= cate.parent_id %>')">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteCategory('<%=cate.id%>')">Delete</button>
+                    </td>
                 </tr>
             <% }); %>
         </tbody>
     </table>
+    <div class="modal" id="createCateModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Create Category</h4>
+                    <button type="button" class="btn btn-danger rounded-circle close" 
+                    onclick="$('.modal').modal('hide')"
+                    data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+    
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="createAccountForm">
+                        <div class="form-group mb-4">
+                            <label for="newName">Name:</label>
+                            <input type="text" class="form-control" id="newName" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="newParentCate">Parent Category:</label>
+                            <select class="form-select" aria-label="Default select example" id="newParentCate">
+                                <% cates.forEach((cate, index) => { %>
+                                        <option value="<%= cate.id %>"><%= cate.name %></option>
+                                <% }); %>
+                                        <option value= "-1">Doesn't have Parent Category</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="submitCreateForm()">Create Category</button>
+                    </form>
+                </div>
+    
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                  @CineClick
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal" id="updateCateModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Update Category</h4>
+                    <button type="button" class="btn btn-danger rounded-circle close" 
+                    onclick="$('.modal').modal('hide')"
+                    data-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+    
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="updateCategoryForm">
+                        <div class="form-group mb-4">
+                            <label for="updateId">Id</label>
+                            <input type="text" class="form-control" id="updateId" disabled>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="updateName">Name:</label>
+                            <input type="text" class="form-control" id="updateName" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="updateParentId">Parent Category:</label>
+                            <select class="form-select" aria-label="Default select example" id="updateParentId">
+                                <!-- if else for selected cate  -->
+                                <% cates.forEach((cate, index) => { %>
+                                        <option value="<%= cate.id %>"><%= cate.name %></option>
+                                <% }); %>
+                                        <option value= "-1">Doesn't have Parent Category</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="submitUpdateForm()">Update Category</button>
+                    </form>
+                </div>
+    
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                  @CineClick
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn btn-success p-3 mt-4" onclick="showCreateForm()">Add New Category</button>
+    
+    <script>
+
+        function showUpdateForm(id, name, parent_id){ 
+            $('#updateCateModal').modal('show')
+            $('#updateId').val(id)
+            $('#updateName').val(name)
+            $('#updateParentId option').filter(function() {
+                return $(this).text().toLowerCase() === parent_id.toLowerCase();
+            }).prop('selected', true);
+        }
+        function showCreateForm(){ 
+            $('#createCateModal').modal('show')
+        }
+        function deleteCategory(id){ 
+            $.post("/admin/category/delete", {id})
+            .done((data) => { 
+                location.reload()
+            })       
+            .fail(function(xhr, status, error){ 
+                    toastr.error(xhr.responseText)
+            })  
+        }
+
+        function submitCreateForm(){ 
+            const name = $('#newName').val().trim().toLowerCase()
+            const parent_id = $('#newParentCate').val().trim()
+            $.post('/admin/category/add', {name, parent_id})
+            .done((data) => { 
+                location.reload()
+                $('#createCateModal').modal('hide')
+            })       
+            .fail(function(xhr, status, error){ 
+                toastr.error(xhr.responseText)
+            }) 
+        }
+
+        function submitUpdateForm(){ 
+            const id = $('#updateId').val().trim()
+            const name = $('#updateName').val().trim().toLowerCase()
+            const parent_id = $('#updateParentId').val().trim()
+            console.log(id, name, parent_id);
+            if(!id || !name || !parent_id){ 
+                toastr.error("Missing some arguments")
+                return 
+            }
+            $.post(
+                '/admin/category/update', {id, name, parent_id}
+            )
+            .done((data) =>  { 
+                location.reload()
+            })
+            .fail((xhr, status, error) => { 
+                toastr.error(xhr.responseText)
+            })
+        }
+    </script>
 </div>
+
+<%- include("../partials/footer") %>

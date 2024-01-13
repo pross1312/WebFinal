@@ -1,9 +1,14 @@
 <%- include("../partials/header") %>
 <%- include("partials/navbarAdmin") %>
 
+<style>
+    tbody tr:nth-child(even) {
+        --bs-table-bg: #272f3c ;
+    }
+</style>
 <div class="container mt-5">
     <h1 class="mb-4">Manage Account</h1>
-    <table class="table">
+    <table class="table table-bordered table-hover">
         <thead class="thead-dark">
             <tr>
                 <th>Email</th>
@@ -28,10 +33,8 @@
                 </tr>
             <% }); %>
         </tbody>
-        <td>
-                <button type="button" class="btn btn-success p-3 mt-4" onclick="showCreateForm()()">Add New Account</button>
-        </td>
     </table>
+    <button type="button" class="btn btn-success p-3 mt-4" onclick="showCreateForm()">Add New Account</button>
     <div class="modal" id="createAccountModal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -181,7 +184,7 @@
             .fail(function(xhr, status, error){ 
                 toastr.error(xhr.responseText)
             })
-            $('#updateAccountModal').modal('hide');
+            // $('#updateAccountModal').modal('hide');
         }
 
         function submitCreateForm() {
@@ -202,7 +205,7 @@
                 toastr.error(xhr.responseText)
             })
 
-            $('#createAccountModal').modal('hide');
+            // $('#createAccountModal').modal('hide');
         }
     </script>
 </div>
