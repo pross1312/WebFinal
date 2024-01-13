@@ -11,18 +11,6 @@ create table "UserInfo"(
     avatar varchar(512)
 );
 
-create table "Category"(
-    id serial,
-    category varchar(64),
-    primary key(id)
-);
-
-insert into "Category" values(DEFAULT, 'Shirt');
-insert into "Category" values(DEFAULT, 'Shoe');
-insert into "Category" values(DEFAULT, 'Hat');
-insert into "Category" values(DEFAULT, 'Pant');
-insert into "Category" values(DEFAULT, 'T-Shirt');
-
 create table "Product"(
     id serial,
     name varchar(128),
@@ -91,9 +79,15 @@ create table "Category"(
 	id SERIAL primary key, 
 	name varchar(255), 
 	child_cate int references "Category"(id) 
-) 
+);
+insert into "Category"(id, name) values(DEFAULT, 'Shirt');
+insert into "Category"(id, name) values(DEFAULT, 'Shoe');
+insert into "Category"(id, name) values(DEFAULT, 'Hat');
+insert into "Category"(id, name) values(DEFAULT, 'Pant');
+insert into "Category"(id, name) values(DEFAULT, 'T-Shirt');
+
 -- mock data 
 insert into "Category" (name) values ('Iphone'); 
-insert into "Category" (name) values ('Android')
-insert into "Category" (name, child_cate) values ('Phone', '1')
-insert into "Category" (name, child_cate) values ('Phone', '2')
+insert into "Category" (name) values ('Android');
+insert into "Category" (name, child_cate) values ('Phone', '1');
+insert into "Category" (name, child_cate) values ('Phone', '2');

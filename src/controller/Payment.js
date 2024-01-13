@@ -3,6 +3,7 @@ const { Order } = require("../model/Order.model");
 const payment_req = require("../module/payment_req");
 const ProductModel = require("../model/Product.model");
 const {TimeoutMap, TimeoutError} = require("../module/TimeoutMap");
+const CustomError = require("../module/CustomErr");
 const unconfirmed_transaction = new TimeoutMap();
 const unconfirmed_order = new TimeoutMap();
 module.exports = {
@@ -75,11 +76,16 @@ module.exports = {
             });
         } catch(err) {
             if (err instanceof TimeoutError) {
-                res.status(400).send("Time out, please try again");
+                next(new CustomError("Time out, please try again", 400));
             } else {
                 next(err);
             }
         }
+    },
+    async cancel_order(req, res, next) {
+        if (req.session.payment_access_token) delete req.session.payment_access_token;
+        unconfirmed_order.pop(req.user?.email);
+        res.redirect("/");
     },
     async confirm_transaction(req, res, next) {
         try {
@@ -113,10 +119,16 @@ module.exports = {
             }
         } catch(err) {
             if (err instanceof TimeoutError) {
-                res.status(400).send("Time out, please try again");
+                next(new CustomError("Time out, please try again", 400));
             } else {
                 next(err);
             }
         }
-    }
+    },
+    async cancel_transaction(req, res, next) {
+        if (req.session.payment_access_token) delete req.session.payment_access_token;
+        unconfirmed_order.pop(req.user?.email);
+        unconfirmed_transaction.pop(req.user?.email);
+        res.redirect("/");
+    },
 };

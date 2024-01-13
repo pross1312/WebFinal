@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const PaymentController = require("../controller/Payment");
+const CustomError = require("../module/CustomErr");
 
 router.get("/create-order", (req, res, next) => {
     res.render("payment/create-order", {
@@ -26,13 +27,15 @@ router.get("/google", (req, res, next) => { // TODO:
 });
 router.use((req, res, next) => { // NOTE: after login, access token must exist in session
     if (req.session.payment_access_token === undefined) {
-        res.status(400).send("Missing access token");
+        next(new CustomError("Missing access token", 400));
     } else {
         next();
     }
 });
 router.post("/create-order", PaymentController.create_order);
 router.get("/confirm-order", PaymentController.confirm_order);
+router.get("/cancel-order", PaymentController.cancel_order);
 router.get("/confirm-transaction", PaymentController.confirm_transaction);
+router.get("/cancel-transaction", PaymentController.cancel_transaction);
 
 module.exports = router;

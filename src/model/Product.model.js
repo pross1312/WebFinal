@@ -27,7 +27,7 @@ module.exports = {
             if (id) {
                 const result = await db.exec(
                     "one",
-                    `SELECT pd.*, ct.category as category FROM "Product" pd LEFT JOIN "Category" ct ON ct.id = pd.category WHERE pd.id = ${id}`
+                    `SELECT pd.*, ct.name as category FROM "Product" pd LEFT JOIN "Category" ct ON ct.id = pd.category WHERE pd.id = ${id}`
                 );
                 return result ? new this.Product(result) : null;
             } else throw new Error("Missing arguments");
