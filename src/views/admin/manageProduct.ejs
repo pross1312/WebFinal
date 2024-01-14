@@ -60,7 +60,8 @@
                         <img src="<%= product.image %>" alt="<%= product.name %>" style="max-width: 100px; max-height: 100px;">
                     </td>
                     <td>
-                        <button class="btn btn-primary btn-sm" onclick="showUpdateModal('<%= product.id %>','<%= product.p_name %>', '<%= product.category %>','<%= product.price %>', '<%= product.stockQuantity %>', '<%= product.description %>', '<%= product.image %>')">Edit</button>
+                        <button class="btn btn-primary btn-sm"
+                            onclick="showUpdateModal('<%= product.id %>','<%= product.p_name %>', '<%= product.category %>','<%= product.price %>', '<%= product.stockQuantity %>', `<%= product.description %>`, '<%= product.image %>')">Edit</button>
                         <button class="btn btn-danger btn-sm" onclick="deleteProduct('<%= product.id %>')">Delete</button>   
                     </td>
                 </tr>
@@ -68,19 +69,8 @@
         </tbody>
     </table>
     <!-- ======= Pagination =======-->
-    <div class="d-flex justify-content-center align-items-center mt-5">
-            <nav aria-label="...">
-                <ul class="pagination">
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item active" aria-current="page">
-                        <a class="page-link" onclick="getPageItems('2')">2</a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    
-                </ul>
-            </nav>
-    </div>
-    <!-- ======= END Pagination =======-->
+    <%- include("../partials/pagination") %>
+    <!-- ======= Pagination =======-->
 
     <div class="modal" id="createProductModal">
         <div class="modal-dialog">
@@ -219,8 +209,8 @@
                     $("#imgPreview").attr("src", event.target.result);
                 };
                 reader.readAsDataURL(file);
-        }
-    })
+            }
+        });
         updatePhotoPreview.change(e => { 
             const files = updatePhotoPreview.prop('files');
             if (files.length > 0) { 
@@ -232,8 +222,8 @@
                 };
 
                 reader.readAsDataURL(file);
-        }
-        })
+            }
+        });
     })
      function sortTable(columnName) {
             const table = document.querySelector('table');

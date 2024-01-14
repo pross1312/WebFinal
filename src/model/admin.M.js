@@ -84,10 +84,12 @@ module.exports = {
     async addCategory(categoryObj){ 
         try{ 
             if(categoryObj.parent_id === "-1"){ 
-                await db.add("Category", ['name'],  {name: categoryObj.name})
+                return await db.exec("one", `INSERT INTO "Category"(name) VALUES($1) RETURNING id`,
+                    categoryObj.name, c => +c.id);
             }
             else if(categoryObj.parent_id !== "-1"){  
-                await db.add("Category", ['name', 'parent_id'], categoryObj )
+                return await db.exec("one", `INSERT INTO "Category"(name, parent_id) VALUES($1, $2) RETURNING id`,
+                    [categoryObj.name, categoryObj.parent_id], c => +c.id);
             }
         }
         catch(err){ 

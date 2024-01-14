@@ -109,13 +109,20 @@ h1 {
     background-color: #f5f5f5;
 }
 
+.image {
+    max-height: 50px;
+}
+
 </style>
 <div class="container">
     <h1>Confirm Order</h1>
     <div class="order-details">
         <% for (var product of order.products) {  %>
         <div class="item">
-            <span class="product-name fs-4"><%=product.name %></span>
+            <span>
+                <span><img class="image" src="<%-product.image%>"/></span>
+                <span class="p-1 text-start product-name fs-4"><%=product.p_name %></span>
+            </span>
             <span class="count text-primary">x <%= product.count %></span>
         </div>
         <% } %>

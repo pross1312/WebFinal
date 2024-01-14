@@ -112,6 +112,7 @@ a:hover {
         <button type="submit">Register</button>
     </form>
 </div>
+<script src="/public/autofill.js"></script>
 <script>
     function on_submit_register(event) {
         const data = Object.fromEntries(new FormData(event.currentTarget).entries());
@@ -121,33 +122,30 @@ a:hover {
             event.preventDefault();
         }
     }
-    const email = document.getElementById("email");
-    const email_lb = document.getElementById("email-label");
-    email.onchange = () => {
-        if (email.value.trim() !== "") {
-            email_lb.classList.add("label-input-group-has-value");
+    function update_label(name, label) {
+        const input = document.getElementById(name);
+        const input_label = document.getElementById(label);
+        if (input.value.trim() !== "") {
+            input_label.classList.add("label-input-group-has-value");
         } else {
-            email_lb.classList.remove("label-input-group-has-value");
+            input_label.classList.remove("label-input-group-has-value");
         }
-    };
-    const password = document.getElementById("password");
-    const password_lb = document.getElementById("password-label");
-    password.onchange = () => {
-        if (password.value.trim() !== "") {
-            password_lb.classList.add("label-input-group-has-value");
-        } else {
-            password_lb.classList.remove("label-input-group-has-value");
-        }
-    };
-    const confirm_password = document.getElementById("confirm-password");
-    const confirm_password_lb = document.getElementById("confirm-password-label");
-    confirm_password.onchange = () => {
-        if (confirm_password.value.trim() !== "") {
-            confirm_password_lb.classList.add("label-input-group-has-value");
-        } else {
-            confirm_password_lb.classList.remove("label-input-group-has-value");
-        }
-    };
+    }
+    email.onchange = (event) => { update_label("email", "email-label"); };
+    password.onchange = () => { update_label("password", "password-label"); };
+    password.onchange = () => { update_label("confirm-password", "confirm-password-label"); };
+    check_auto_fill("email", () => {
+        const input_label = document.getElementById("email-label");
+        input_label.classList.add("label-input-group-has-value");
+    });
+    check_auto_fill("password", () => {
+        const input_label = document.getElementById("password-label");
+        input_label.classList.add("label-input-group-has-value");
+    });
+    check_auto_fill("confirm-password", () => {
+        const input_label = document.getElementById("confirm-password-label");
+        input_label.classList.add("label-input-group-has-value");
+    });
 </script>
 <% if (error) {%>
 <script>
