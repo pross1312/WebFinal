@@ -4,6 +4,7 @@ const userModel = require("../model/User.model");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 const path = require("path");
+var _ = require("lodash");
 const saltRounds = process.env.SALT || 10;
 const product_image_folder = process.env.PRODUCT_IMAGE_FOLDER;
 module.exports = {
@@ -146,7 +147,6 @@ module.exports = {
         const price = req.body.price;
         const stockQuantity = req.body.quantity;
         const description = req.body.description;
-        console.log(id, p_name, category, price, stockQuantity, description);
         if (
             !id ||
             !p_name ||
@@ -188,7 +188,6 @@ module.exports = {
     },
     async deleteProduct(req, res, next) {
         const { productId } = req.body;
-        console.log(productId);
         if (!productId) return res.status(400).send("Missing product Id");
         try {
             await adminModel.deleteProduct(productId);
@@ -209,6 +208,8 @@ module.exports = {
     async getAllCategory(req, res, next) {
         try {
             let cates = await adminModel.getAll("Category");
+            tempcates = _.cloneDeep(cates);
+            cates = divideCategories(cates);
             // handle cates -> display sub cate as name
             if (!cates) next(new Error("Error occurred, Please try again"));
             else {
@@ -242,15 +243,25 @@ module.exports = {
         if (!name || !parent_id) res.status(400).send("Missing some arguments");
         else {
             try {
-                const checkValid = await checkValidCategory(name, parent_id);
-                if (checkValid.statusCode === true) {
+                let condition;
+                if (parent_id === -1 || parent_id === "-1")
+                    condition = ` name = '${name.toLowerCase()}' and parent_id IS NULL`;
+                else
+                    condition = ` name = '${name.toLowerCase()}' and parent_id = '${parent_id}'`;
+                const categories = await adminModel.getCategory(condition);
+                const checkValid = await checkValidCategory(
+                    name,
+                    parent_id,
+                    categories
+                );
+                if (checkValid.statusCode === 200) {
                     await adminModel.addCategory({
                         name: name.toLowerCase(),
                         parent_id,
                     });
                     return res.status(200).send("Add Category Successful");
                 }
-                return res.status(checkValid.statusCode).send(checkValid.msg)
+                return res.status(checkValid.statusCode).send(checkValid.msg);
             } catch (err) {
                 next(err);
             }
@@ -260,17 +271,29 @@ module.exports = {
         const { id, name, parent_id } = req.body;
         if (!id || !name || !parent_id)
             return res.status(400).send("Missing some arguments");
+
         try {
-            const checkValid = await checkValidCategory(name, parent_id)
-            if(checkValid.statusCode === true){ 
-                await adminModel.update(
-                    "Category",
-                    ` id = '${id}'`,
-                    ` name = '${name}', parent_id = '${parent_id}'`
-                );
-                res.status(200).send("Update Category Successful");
+            let condition;
+            if (parent_id === -1 || parent_id === "-1") {
+                condition = ` name = '${name.toLowerCase()}' and parent_id IS NULL`;
+            } else
+                condition = ` name = '${name.toLowerCase()}' and parent_id = '${parent_id}'`;
+            const categories = await adminModel.getCategory(condition);
+            const checkValidUpdate = await checkValidCategory(
+                name,
+                parent_id,
+                categories,
+                2,
+                id
+            );
+
+            if (checkValidUpdate?.statusCode === 200) {
+                await adminModel.updateCategory({ id, name, parent_id });
+                return res.status(200).send("Update Category Successful");
             }
-            return res.status(checkValid?.statusCode).send(checkValid?.msg)
+            return res
+                .status(checkValidUpdate?.statusCode)
+                .send(checkValidUpdate?.msg);
         } catch (err) {
             next(err);
         }
@@ -281,23 +304,86 @@ function findNameCate(cates, cateId) {
     return cates.filter((cate) => cate.id === cateId)[0]?.name;
 }
 
-async function checkValidCategory(name, parent_id) {
-    const categories = await adminModel.getCategory(
-        ` name = '${name.toLowerCase()}' and parent_id = '${parent_id}'`
-    );
-    // iphone not can be child iphone
-    const category = await adminModel.getCategory(` id = ${parent_id}`);
-    if (category && category.length > 0) {
-        if (category[0].name.toLowerCase() === name.toLowerCase()) {
+// mode 1 - create
+// mode 2 - update
+async function checkValidCategory(
+    name,
+    parent_id,
+    categories,
+    mode = 1,
+    id = null
+) {
+    try {
+        const category = await adminModel.getCategory(` id = ${parent_id}`);
+        if (category && category.length > 0) {
+            category.forEach((cate) => {
+                if (cate.name.toLowerCase() === name.toLowerCase()) {
+                    return {
+                        statusCode: 409,
+                        msg: "The parent category and the category cannot have the same name",
+                    };
+                }
+            });
+        }
+        if (category.length === 0 && Number(parent_id) != -1) {
             return {
                 statusCode: 409,
-                msg: "The parent category and the category cannot have the same name",
+                msg: "The parent category does not exist",
             };
         }
+        if (categories && categories.length > 0) {
+            return { statusCode: 409, msg: "Category existed in database" };
+        }
+        if (mode === 2) {
+            if(isAncestor)
+                return {statusCode: 406, msg: "You create infinity loop"}
+        }
+        return { statusCode: 200, msg: "true" };
+    } catch (err) {
+        throw err;
     }
-    if (categories && categories.length > 0) {
-        return { statusCode: 409, msg: "Category existed in database" };
-    } else {
-        return { statusCode: true, msg: "true" };
-    }
+}
+
+function divideCategories(categories) {
+    level1 = categories.filter((category) => !category.parent_id);
+    let dividedCategories = level1.map((item) => {
+        return {
+            name: item.name,
+            id: item.id,
+            children: findChildCategories(categories, item.id),
+        };
+    });
+    return dividedCategories;
+}
+
+// -> :parent of
+// Electronic -> Laptop -> Lenovo
+// function check if Lenovo -> Electronic return false
+function isAncestor(categories, id, parent_id) {
+    const findCateById = (arr, id) =>
+        arr.find((obj) => obj.id === id) ||
+        arr.reduce(
+            (result, obj) =>
+                result || (obj.children && findCateById(obj.children, id)),
+            null
+        );
+    const category = findObjectById(categories, id);
+
+    const containsIdInChildren = (category, parent_id) =>
+        category.id === parent_id ||
+        (category.children &&
+            category.children.some((child) =>
+                containsIdInChildren(child, parent_id)
+            ));
+    const result = containsIdInChildren(category, parent_id)
+    return result
+}
+
+function findChildCategories(categories, id) {
+    return categories
+        .filter((category) => category.parent_id === id)
+        .map((category) => {
+            category.children = findChildCategories(categories, category.id);
+            return category;
+        });
 }

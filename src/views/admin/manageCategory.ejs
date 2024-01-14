@@ -6,12 +6,25 @@
         text-transform: capitalize;
     }
     tbody tr:nth-child(even) {
-        --bs-table-bg: #272f3c ;
+        /* --bs-table-bg: #272f3c ; */
+    }
+    .child-row { 
+        display: none;
+    }
+    .arrow-icon {
+        margin-left: -24px;
+        cursor: pointer;
+        transition: transform 0.3s ease-in-out;
+        font-size: calc(14px + 0.4vw);
+    }
+    .rotate180 {
+        display: inline-block;
+        transform: rotate(90deg);
     }
 </style>
 <div class="container mt-5">
     <h1 class="mb-4">Manage Category</h1>
-    <table class="table table-bordered table-hover">
+    <table class="table table-hover">
         <thead class="thead-dark">
             <tr>
                 <th>ID</th>
@@ -21,16 +34,45 @@
             </tr>
         </thead>
         <tbody>
+            <% const renderChildren = (categories, depth, parentIndex) => { %>
+                <% categories.forEach((Subcate, index) => { %>
+                    <tr class="<%= index % 2 === 0 ? 'even-row' : '' %> child-row parent-<%= parentIndex %>" >
+                        <td><%= Subcate.id %></td>
+                        <td class="category-name" style="padding-left: <%= depth * 20 %>px;">
+                        <% if (Subcate.children && Subcate.children.length > 0) { %>
+                            <span id="arrow-icon-<%=Subcate.id%>" class="arrow-icon" onclick="toggleChild('<%= Subcate.id %>')">&blacktriangleright;</span>
+                        <% } %>
+                            
+                            <%= Subcate.name %>
+                        </td>
+                        <td class="category-name"><%= Subcate.parent_id %></td>
+                        <td>
+                            <button class="btn btn-primary" onclick="showUpdateForm('<%= Subcate.id %>', '<%= Subcate.name %>', '<%= Subcate.parent_id %>', <%= JSON.stringify(cates) %>)">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteCategory('<%=Subcate.id%>')">Delete</button>
+                        </td>
+                    </tr>
+                    <% if (Subcate.children && Subcate.children.length > 0) { %>
+                        <%= renderChildren(Subcate.children, depth + 1, Subcate.id) %>
+                    <% } %>
+                <% }); %>
+            <% }; %>
+        
             <% cates.forEach((cate, index) => { %>
-                <tr class="<%= index % 2 === 0 ? 'even-row' : '' %> ">
+                <tr class="<%= index % 2 === 0 ? 'even-row' : '' %> parent-row">
                     <td><%= cate.id %></td>
-                    <td class="category-name"><%= cate.name %></td>
+                    <td class="category-name">
+                        <% if (cate.children && cate.children.length > 0) { %>
+                            <span id="arrow-icon-<%= cate.id %>" class="arrow-icon" onclick="toggleChild('<%= cate.id %>')">&blacktriangleright;</span>
+                        <% } %>
+                        <%= cate.name %>
+                    </td>
                     <td class="category-name"><%= cate.parent_id %></td>
                     <td>
                         <button class="btn btn-primary" onclick="showUpdateForm('<%= cate.id %>', '<%= cate.name %>', '<%= cate.parent_id %>')">Edit</button>
                         <button class="btn btn-danger" onclick="deleteCategory('<%=cate.id%>')">Delete</button>
                     </td>
                 </tr>
+                <%= renderChildren(cate.children, 1, cate.id) %>
             <% }); %>
         </tbody>
     </table>
@@ -55,13 +97,9 @@
                             <input type="text" class="form-control" id="newName" required>
                         </div>
                         <div class="form-group mb-4">
-                            <label for="newParentCate">Parent Category:</label>
-                            <select class="form-select" aria-label="Default select example" id="newParentCate">
-                                <% cates.forEach((cate, index) => { %>
-                                        <option value="<%= cate.id %>"><%= cate.name %></option>
-                                <% }); %>
-                                        <option value= "-1">Doesn't have Parent Category</option>
-                            </select>
+                            <label for="newParentCate">Parent Category (-1 for null)</label>
+                            <input type="number" 
+                            class="form-control" id="newParentCate">
                         </div>
                         <button type="button" class="btn btn-primary" onclick="submitCreateForm()">Create Category</button>
                     </form>
@@ -101,14 +139,8 @@
                             <input type="text" class="form-control" id="updateName" required>
                         </div>
                         <div class="form-group mb-4">
-                            <label for="updateParentId">Parent Category:</label>
-                            <select class="form-select" aria-label="Default select example" id="updateParentId">
-                                <!-- if else for selected cate  -->
-                                <% cates.forEach((cate, index) => { %>
-                                        <option value="<%= cate.id %>"><%= cate.name %></option>
-                                <% }); %>
-                                        <option value= "-1">Doesn't have Parent Category</option>
-                            </select>
+                            <label for="updateParentId">Parent Category (-1 for null)</label>
+                            <input type="number" id="updateParentId" class="form-control">
                         </div>
                         <button type="button" class="btn btn-primary" onclick="submitUpdateForm()">Update Category</button>
                     </form>
@@ -124,14 +156,11 @@
     <button type="button" class="btn btn-success p-3 mt-4" onclick="showCreateForm()">Add New Category</button>
     
     <script>
-
         function showUpdateForm(id, name, parent_id){ 
             $('#updateCateModal').modal('show')
             $('#updateId').val(id)
             $('#updateName').val(name)
-            $('#updateParentId option').filter(function() {
-                return $(this).text().toLowerCase() === parent_id.toLowerCase();
-            }).prop('selected', true);
+            $('#updateParentId').val(parent_id || '-1')
         }
         function showCreateForm(){ 
             $('#createCateModal').modal('show')
@@ -148,7 +177,8 @@
 
         function submitCreateForm(){ 
             const name = $('#newName').val().trim().toLowerCase()
-            const parent_id = $('#newParentCate').val().trim()
+            const parent_id = $('#newParentCate').val()
+            console.log(name, parent_id);
             $.post('/admin/category/add', {name, parent_id})
             .done((data) => { 
                 location.reload()
@@ -159,10 +189,11 @@
             }) 
         }
 
+        
         function submitUpdateForm(){ 
             const id = $('#updateId').val().trim()
             const name = $('#updateName').val().trim().toLowerCase()
-            const parent_id = $('#updateParentId').val().trim()
+            const parent_id = $('#updateParentId').val()
             console.log(id, name, parent_id);
             if(!id || !name || !parent_id){ 
                 toastr.error("Missing some arguments")
@@ -177,6 +208,26 @@
             .fail((xhr, status, error) => { 
                 toastr.error(xhr.responseText)
             })
+        }
+
+        // 1- open 2/ close
+        function toggleChild(parentIndex, mode = 1){ 
+            const childrenRows = document.querySelectorAll('.parent-' + parentIndex);
+            const arrowIcon = $(`#arrow-icon-${parentIndex}`);
+            childrenRows.forEach(row => {
+                const loop_id = row.firstElementChild.textContent;
+                if(row.classList.contains('child-row') && mode === 1)
+                { 
+                    row.classList.remove('child-row');
+                    arrowIcon.addClass('rotate180');
+                }
+                else 
+                { 
+                    toggleChild(loop_id, 2)
+                    row.classList.add('child-row');
+                    arrowIcon.removeClass('rotate180');
+                }
+            });
         }
     </script>
 </div>

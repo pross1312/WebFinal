@@ -94,4 +94,18 @@ module.exports = {
             throw(err)
         }
     }, 
+
+    async updateCategory(categoryObj){ 
+        try{ 
+            if(categoryObj.parent_id === "-1"){ 
+                await db.update("Category", ` name = '${categoryObj.name}'` , ` id = '${categoryObj.id}'`)
+            }
+            else if(categoryObj.parent_id !== "-1"){  
+                await db.update("Category", ` name = '${categoryObj.name}', parent_id = '${categoryObj.parent_id}'` , ` id = '${categoryObj.id}'`)
+            }
+        }
+        catch(err){ 
+            throw(err)
+        }
+    }
 };
