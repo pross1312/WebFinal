@@ -25,6 +25,8 @@ router.post("/login", PaymentController.login);
 router.get("/google", (req, res, next) => { // TODO:
     res.render("payment/login", {error: null});
 });
+router.get("/confirm-transaction", PaymentController.confirm_transaction);
+router.get("/cancel-transaction", PaymentController.cancel_transaction);
 router.use((req, res, next) => { // NOTE: after login, access token must exist in session
     if (req.session.payment_access_token === undefined) {
         next(new CustomError("Missing access token", 400));
@@ -35,7 +37,5 @@ router.use((req, res, next) => { // NOTE: after login, access token must exist i
 router.post("/create-order", PaymentController.create_order);
 router.get("/confirm-order", PaymentController.confirm_order);
 router.get("/cancel-order", PaymentController.cancel_order);
-router.get("/confirm-transaction", PaymentController.confirm_transaction);
-router.get("/cancel-transaction", PaymentController.cancel_transaction);
 
 module.exports = router;

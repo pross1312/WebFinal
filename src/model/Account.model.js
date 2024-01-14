@@ -16,11 +16,7 @@ module.exports = {
         ) {
             throw new Error("Invalid arguments type");
         }
-        try {
-            await db.add("Account", ["email", "password", "type"], account);
-        } catch (err) {
-            next(err);
-        }
+        await db.add("Account", ["email", "password", "type"], account);
     },
     async get(email) {
         try {
