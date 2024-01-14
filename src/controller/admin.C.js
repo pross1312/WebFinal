@@ -298,6 +298,15 @@ module.exports = {
             next(err);
         }
     },
+
+    // ======= Pagination 
+    async getPageItems(req, res, next){ 
+        const page = req.query.page
+        const per_page = req.query.per_page
+        console.log("======================");
+        console.log(page, per_page);
+        return res.status(200).send("Successful")
+    }
 };
 
 function findNameCate(cates, cateId) {

@@ -74,6 +74,7 @@ CREATE TABLE "Products" (
 INSERT INTO "Products" (p_name, category, price, "stockQuantity", description, image)
 VALUES ('Product 1', 'Health and Wellness', 69.99, 35, 'Curabitur sit amet justo id sapien interdum congue. Integer eget justo vel orci auctor finibus.', 'https://placekitten.com/109/109');
 
+
 -- create Category table 
 create table "Category"(
     id serial primary key,
@@ -82,8 +83,20 @@ create table "Category"(
     unique (name, parent_id),
     foreign key (parent_id) references "Category"(id)
 );
+
 -- mock data 
 insert into "Category" (name) values ('iphone');  
 insert into "Category" (name) values ('android'); 
 insert into "Category" (name) values ('phone'); 
 
+
+INSERT INTO "Products" (p_name, category, price, "stockQuantity", description, image)
+VALUES 
+  ('iPhone', 'phone', 849.99, 45, 'Apple iPhone 13 - 256GB, Product Red. Beautiful 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '5.png'),
+  ('iPhone', 'phone', 899.99, 40, 'Apple iPhone 13 - 512GB, White. Sleek 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '6.png'),
+  ('iPhone', 'phone', 769.99, 55, 'Apple iPhone 13 - 64GB, Black. Elegant 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '7.png'),
+  ('iPhone', 'phone', 829.99, 48, 'Apple iPhone 13 Promax - 128GB, Gold. Dazzling 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '8.png'),
+  ('iPhone', 'phone', 779.99, 52, 'Apple iPhone 13 - 256GB, Blue. Vibrant 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '9.png'),
+  ('iPhone', 'phone', 789.99, 53, 'Apple iPhone 13 - 128GB, Green. Modern 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '10.png'),
+  ('iPhone', 'phone', 809.99, 47, 'Samsung Galaxy S23 Ultra (8GB|256GB)', '11.png'),
+  ('iPhone', 'phone', 859.99, 42, 'Apple iPhone 13 - 512GB, Pink. Stylish 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '12.png');

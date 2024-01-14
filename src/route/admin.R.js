@@ -15,9 +15,11 @@ const storage = multer.diskStorage({
     filename: async (req, file, cb) => { 
         const lastProduct = await adminController.getLastIdProduct()
         if(!lastProduct){ 
-            cb(console.error("Missing lastProduct"))
+            cb(null, 1 + path.extname(file.originalname));
         }
-        cb(null, lastProduct.id + 1 + path.extname(file.originalname));
+        else{ 
+            cb(null, lastProduct.id + 1 + path.extname(file.originalname));
+        }
     }
 })
 
@@ -27,6 +29,10 @@ router.get('/', (req, res) => {
     // Mock data 
     const orderData = [
         { date: '2023-01-01', count: 10, cash: 1000 },
+        { date: '2023-01-02', count: 15, cash: 1500 },
+        { date: '2023-01-02', count: 15, cash: 1500 },
+        { date: '2023-01-02', count: 15, cash: 1500 },
+        { date: '2023-01-02', count: 15, cash: 1500 },
         { date: '2023-01-02', count: 15, cash: 1500 },
     ];
 
@@ -42,8 +48,9 @@ router.get('/product/list', adminController.getAllProduct)
 router.post('/product/add', upload.single('image'), adminController.addProduct)
 router.post('/product/delete', adminController.deleteProduct)
 router.post('/product/update', upload.single('image'), adminController.updateProduct)
+
 // pagination
-// router.get('/product/list/', adminController.getPageItems)
+router.get('/product/list/pagination', adminController.getPageItems)
 // router.get('/product/total', adminController.getAll)
 
 // get all category 

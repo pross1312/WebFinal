@@ -73,14 +73,14 @@
                 <ul class="pagination">
                     <li class="page-item"><a class="page-link" href="#">1</a></li>
                     <li class="page-item active" aria-current="page">
-                        <a class="page-link" href="#">2</a>
+                        <a class="page-link" onclick="getPageItems('2')">2</a>
                     </li>
                     <li class="page-item"><a class="page-link" href="#">3</a></li>
                     
                 </ul>
             </nav>
     </div>
-    <!-- ======= Pagination =======-->
+    <!-- ======= END Pagination =======-->
 
     <div class="modal" id="createProductModal">
         <div class="modal-dialog">
@@ -370,6 +370,20 @@
                     toastr.error(err.responseText);
                 }
             })
+        }
+        function getPageItems(page){ 
+            const per_page = 3 
+            $.ajax({ 
+            url: '/admin/product/list/pagination', 
+            type: 'GET', 
+            data: {page, per_page}, 
+            success: function (data) {
+                toastr.success(data);
+            },
+            error: function (err) {
+                toastr.error(err.responseText);
+            }
+        })
         }
     </script>
     <%- include("../partials/footer") %>   
