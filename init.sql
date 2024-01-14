@@ -35,6 +35,19 @@ CREATE TABLE "Products" (
     image VARCHAR(255)
 );
 
+
+INSERT INTO "Products" (p_name, category, price, "stockQuantity", description, image)
+VALUES 
+  ('Apple iPhone 13 - 256GB', 'phone', 849.99, 45, 'Product Red. Beautiful 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '5.png'),
+  ('Apple iPhone 13 - 512GB', 'phone', 899.99, 40, 'White. Sleek 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '6.png'),
+  ('Apple iPhone 13 - 64GB,', 'phone', 769.99, 55, 'lack. Elegant 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '7.png'),
+  ('Apple iPhone 13 Promax 128GB','phone', 829.99, 48, ', Gold. Dazzling 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '8.png'),
+  ('Apple iPhone 13 - 256GB', 'phone', 779.99, 52, 'Blue. Vibrant 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '9.png'),
+  ('Apple iPhone 13 - 128GB', 'phone', 789.99, 53, 'Green. Modern 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '10.png'),
+  ('Samsung Galaxy S23 Ultra', 'phone', 809.99, 47, 'Samsung Galaxy S23 Ultra (8GB|256GB)', '11.png'),
+  ('iPhone', 'phone', 859.99, 42, 'Apple iPhone 13 - 512GB, Pink. Stylish 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '12.png');
+
+  
 create table "Order"(
     id serial,
     ts timestamp,
@@ -72,43 +85,4 @@ create table "Transaction"(
 );
 
 
--- table created for testing display data
-CREATE TABLE "Products" (
-    id SERIAL PRIMARY KEY,
-    p_name VARCHAR(255) NOT NULL,
-    category VARCHAR(255),
-    price NUMERIC(10, 2),
-    "stockQuantity" INTEGER,
-    description TEXT,
-    image VARCHAR(255)
-);
 
-INSERT INTO "Products" (p_name, category, price, "stockQuantity", description, image)
-VALUES ('Product 1', 'Health and Wellness', 69.99, 35, 'Curabitur sit amet justo id sapien interdum congue. Integer eget justo vel orci auctor finibus.', 'https://placekitten.com/109/109');
-
-
--- create Category table 
-create table "Category"(
-    id serial primary key,
-    name varchar(255),
-    parent_id int,
-    unique (name, parent_id),
-    foreign key (parent_id) references "Category"(id)
-);
-
--- mock data 
-insert into "Category" (name) values ('iphone');  
-insert into "Category" (name) values ('android'); 
-insert into "Category" (name) values ('phone'); 
-
-
-INSERT INTO "Products" (p_name, category, price, "stockQuantity", description, image)
-VALUES 
-  ('iPhone', 'phone', 849.99, 45, 'Apple iPhone 13 - 256GB, Product Red. Beautiful 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '5.png'),
-  ('iPhone', 'phone', 899.99, 40, 'Apple iPhone 13 - 512GB, White. Sleek 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '6.png'),
-  ('iPhone', 'phone', 769.99, 55, 'Apple iPhone 13 - 64GB, Black. Elegant 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '7.png'),
-  ('iPhone', 'phone', 829.99, 48, 'Apple iPhone 13 Promax - 128GB, Gold. Dazzling 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '8.png'),
-  ('iPhone', 'phone', 779.99, 52, 'Apple iPhone 13 - 256GB, Blue. Vibrant 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '9.png'),
-  ('iPhone', 'phone', 789.99, 53, 'Apple iPhone 13 - 128GB, Green. Modern 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '10.png'),
-  ('iPhone', 'phone', 809.99, 47, 'Samsung Galaxy S23 Ultra (8GB|256GB)', '11.png'),
-  ('iPhone', 'phone', 859.99, 42, 'Apple iPhone 13 - 512GB, Pink. Stylish 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '12.png');
