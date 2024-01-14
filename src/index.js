@@ -8,6 +8,7 @@ const payment_req = require("./module/payment_req");
 const CustomError = require("./module/CustomErr");
 // config
 app.use("/resources", express.static(path.join(__dirname, "resources")));
+app.use("/public", express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(
@@ -72,7 +73,7 @@ app.use((req, res, next) => {
         new CustomError(
             "Page not found",
             404,
-            "The page you're looking for does not exist"
+            `The page ${req.path} you're looking for does not exist`
         )
     );
 });
