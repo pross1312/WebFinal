@@ -1,10 +1,12 @@
 const adminModel = require("../model/admin.M");
 const accountModel = require("../model/Account.model");
+const productModel = require("../model/Product.model");
 const userModel = require("../model/User.model");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 const path = require("path");
 var _ = require("lodash");
+const { dynamic_scroll_pagination, calc_total_page } = require("../module/utils");
 const saltRounds = process.env.SALT || 10;
 const product_image_folder = process.env.PRODUCT_IMAGE_FOLDER;
 module.exports = {
@@ -87,16 +89,21 @@ module.exports = {
     },
     // ======  Product ======
     async getAllProduct(req, res, next) {
+        const page = isNaN(req.query.page) ? 1 : Number(req.query.page);
+        const per_page = isNaN(req.query.per_page) ? 10 : Number(req.query.per_page);
+        const max_display_pages = 4;
         try {
-            let raw_products = await adminModel.getAll("Products");
-            let products = raw_products.map((product) => ({
-                ...product,
-                image: product_image_folder + product.image,
-            }));
+            let products = await productModel.get_all();
             if (!products) {
                 next(new Error("Error occurred, Please try again"));
             } else {
-                res.render("admin/manageProduct", { products });
+                const {pages, items, total_pages} = dynamic_scroll_pagination(
+                                                max_display_pages, per_page, page, products);
+                res.render("admin/manageProduct", {
+                    products: items,
+                    pages, total_pages, current_page: page,
+                    base_url: "/admin/product/list?"
+                });
             }
         } catch (err) {
             next(err);
@@ -126,13 +133,23 @@ module.exports = {
         if (isNaN(parseInt(stockQuantity)))
             return res.status(500).send("stockQuantity must be Integer");
         try {
+            const category_obj = await adminModel.getCategory(`LOWER(name) = '${category.toLowerCase()}'`);
+            console.log(category_obj);
+            let category_id = category_obj?.at(0)?.id;
+            if (category_obj.length === 0) {
+                category_id = await adminModel.addCategory({
+                    name: category,
+                    parent_id: -1
+                });
+            }
+            console.log(category_id);
             await adminModel.add("Products", {
                 p_name,
-                category,
+                category: category_id,
                 price,
                 stockQuantity,
                 description,
-                image: fileName,
+                image: path.join(product_image_folder, fileName),
             });
             res.status(200).send("Add new product successful");
         } catch (err) {
@@ -335,7 +352,7 @@ async function checkValidCategory(
             return { statusCode: 409, msg: "Category existed in database" };
         }
         if (mode === 2) {
-            if(isAncestor)
+            if(isAncestor(categories, id, parent_id))
                 return {statusCode: 406, msg: "You create infinity loop"}
         }
         return { statusCode: 200, msg: "true" };
@@ -367,7 +384,7 @@ function isAncestor(categories, id, parent_id) {
                 result || (obj.children && findCateById(obj.children, id)),
             null
         );
-    const category = findObjectById(categories, id);
+    const category = adminModel.getCategory(`id = ${id}`);
 
     const containsIdInChildren = (category, parent_id) =>
         category.id === parent_id ||

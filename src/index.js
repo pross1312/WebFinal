@@ -104,12 +104,12 @@ app.listen(13123, async () => {
     if (init) { // NOTE: init random data here
         for (var i = 0; i < 50; i++) {
             const data = new (require("./model/Product.model").Product)({
-                name: "Random",
-                price: Math.random()*1000000,
-                stock_quantity: (Math.random()*100) >> 0,
+                p_name: "Random",
+                price: Math.random()*10000,
+                stockQuantity: (Math.random()*100) >> 0,
                 description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-                rating: Math.random()*10,
-                category: Math.max(1, (Math.random()*5) >> 0),
+                category: Math.max(1, (Math.random()*3) >> 0),
+                image: "https://picsum.photos/200"
             });
             require("./model/Product.model").add(data);
         }

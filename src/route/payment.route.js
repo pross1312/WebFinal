@@ -10,12 +10,6 @@ router.get("/create-order", (req, res, next) => {
             {id: 1, count: 5},
             {id: 2, count: 6},
             {id: 3, count: 8},
-            {id: 7, count: 5},
-            {id: 9, count: 5},
-            {id: 11, count: 5},
-            {id: 12, count: 5},
-            {id: 13, count: 5},
-            {id: 15, count: 50},
             {id: 18, count: 5},
             {id: 19, count: 5},
         ])

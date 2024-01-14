@@ -1,0 +1,29 @@
+<% if (total_pages != 0) {%>
+<nav class="d-flex justify-content-center mt-5">
+    <ul class="pagination" id="page-list">
+        <li class="page-item">
+            <a id="link-prev" class="page-link" href="<%-base_url%>page=1">&laquo</a>
+        </li>
+        <% if (pages[0] != 1) { %>
+        <li class="page-item">
+            <a class="page-link">...</a>
+        </li>
+        <% } %>
+        <% for (page of pages) { %>
+        <li class="page-item <%- (page == current_page ? ' active' : '')%>">
+            <a href="<%-base_url%>page=<%-page%>"
+                class="page-link"><%-page%></a>
+        </li>
+        <% } %>
+        <% if (pages[pages.length-1] != total_pages) { %>
+        <li class="page-item">
+            <a class="page-link">...</a>
+        </li>
+        <% } %>
+        <li class="page-item">
+            <a id="link-next" class="page-link"
+                href="<%-base_url%>page=<%-total_pages%>">&raquo</a>
+        </li>
+    </ul>
+</nav>
+<% } %>
