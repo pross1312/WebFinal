@@ -42,6 +42,9 @@ router.get('/product/list', adminController.getAllProduct)
 router.post('/product/add', upload.single('image'), adminController.addProduct)
 router.post('/product/delete', adminController.deleteProduct)
 router.post('/product/update', upload.single('image'), adminController.updateProduct)
+// pagination
+// router.get('/product/list/', adminController.getPageItems)
+// router.get('/product/total', adminController.getAll)
 
 // get all category 
 router.get('/category/list', adminController.getAllCategory)
