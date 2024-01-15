@@ -64,11 +64,14 @@ module.exports = {
                 res.render('register', {error: "Email existed"});
                 return;
             }
-            let code = (Math.random() * 1000000) >> 0;
+            let code = ((Math.random() * 10000000) >> 0) + 1000000;
             while (unconfirmed_account.get(code) !== null) {
-                code = (Math.random() * 1000000) >> 0;
+                code = ((Math.random() * 10000000) >> 0) + 1000000;
             }
-            req.app.render( "verify_email", {code}, async (err, html) => {
+            req.app.render( "verify_email", {
+                recipientName: email,
+                verificationCode: code
+            }, async (err, html) => {
                 if (err) throw new Error(err);
                 try {
                     await sendEmail(

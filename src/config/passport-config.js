@@ -30,8 +30,9 @@ module.exports = async (app) => {
                 callbackURL: '/auth/google/callback',
                 clientSecret: process.env.GOOGLE_CLIENT_SECRET,
                 clientID: process.env.GOOGLE_CLIENT_ID,
+                passReqToCallback: true,
             },
-            async (accessToken, refreshToken, profile, done) => {
+            async (req, accessToken, refreshToken, profile, done) => {
                 profile = profile._json;
                 try {
                     let acc = await AccountModel.get(profile.email);
@@ -49,8 +50,10 @@ module.exports = async (app) => {
                             email: profile.email,
                         });
                         await UserModel.add(user_profile);
-                    }
-                    done(null, acc);
+                    } else if (acc.password !== null) {
+                        // TODO: find a better way ?
+                        req._response.render("login", {error: "Email had been registered, please login using password"});
+                    } else done(null, acc);
                 } catch (err) {
                     done(err, null);
                 }
