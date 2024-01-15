@@ -57,7 +57,8 @@ module.exports = {
     },
 
     async isAncestor(categories, id, parent_id) {
-        const category = await adminModel.getCategory(`id = ${id}`);
+        const category = await adminModel.get('Category', `id = '${id}'`);
+        console.log(category);
         const containsIdInChildren = (category, parent_id) =>
             category.id === parent_id ||
             (category.children &&
@@ -65,6 +66,7 @@ module.exports = {
                     containsIdInChildren(child, parent_id)
                 ));
         const result = containsIdInChildren(category, parent_id);
+        console.log(result);
         return result;
     },
 
@@ -75,7 +77,7 @@ module.exports = {
     // mode 1 - create  _ 2 - update
     async checkValidCategory(name, parent_id, categories, mode = 1, id = null) {
         try {
-            const category = await adminModel.getCategory(` id = ${parent_id}`);
+            const category = await adminModel.get('Category', ` id = ${parent_id}`);
             if (category && category.length > 0) {
                 category.forEach((cate) => {
                     if (cate.name.toLowerCase() === name.toLowerCase()) {
@@ -96,7 +98,7 @@ module.exports = {
                 return { statusCode: 409, msg: "Category existed in database" };
             }
             if (mode === 2) {
-                if (this.isAncestor(categories, id, parent_id))
+                if (await this.isAncestor(categories, id, parent_id))
                     return { statusCode: 406, msg: "Child category can't be assigned to parent_id" };
             }
             return { statusCode: 200, msg: "true" };

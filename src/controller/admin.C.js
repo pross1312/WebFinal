@@ -150,8 +150,8 @@ module.exports = {
         if (!Number.isInteger(parseInt(stockQuantity)))
             return res.status(500).send("stockQuantity must be Integer");
         try {
-            const category_obj = await adminModel.getCategory(
-                ` id = '${category}'`
+            const category_obj = await adminModel.get(
+                'Category', ` id = '${category}'`
             );
             let category_id = category_obj?.at(0)?.id;
             if (category_obj.length === 0) {
@@ -306,7 +306,7 @@ module.exports = {
                     condition = ` name = '${name.toLowerCase()}' and parent_id IS NULL`;
                 else
                     condition = ` name = '${name.toLowerCase()}' and parent_id = '${parent_id}'`;
-                const categories = await adminModel.getCategory(condition);
+                const categories = await adminModel.get('Category', condition);
                 const checkValid = await utils.checkValidCategory(
                     name,
                     parent_id,
@@ -336,7 +336,7 @@ module.exports = {
                 condition = ` name = '${name.toLowerCase()}' and parent_id IS NULL`;
             } else
                 condition = ` name = '${name.toLowerCase()}' and parent_id = '${parent_id}'`;
-            const categories = await adminModel.getCategory(condition);
+            const categories = await adminModel.get('Category', condition);
             const checkValidUpdate = await utils.checkValidCategory(
                 name,
                 parent_id,
