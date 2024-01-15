@@ -65,8 +65,7 @@ module.exports = {
                 category.children.some((child) =>
                     containsIdInChildren(child, parent_id)
                 ));
-        const result = containsIdInChildren(category, parent_id);
-        console.log(result);
+        const result = await containsIdInChildren(category, parent_id);
         return result;
     },
 

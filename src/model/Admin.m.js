@@ -74,14 +74,6 @@ module.exports = {
         }
     },
 
-    async getCategory(condition){ 
-        try{ 
-            return await db.find('Category', condition)
-        }
-        catch(err){ 
-            throw(err)    
-        }
-    }, 
     async deleteCategory(id){ 
         try{ 
             const ref_category = await db.find("Category", ` parent_id = '${id}'`)
