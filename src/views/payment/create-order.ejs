@@ -1,6 +1,6 @@
 <%- include("../partials/header") %>
 
-<div id="container" data-bs-theme="light">
+<div>
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -13,102 +13,128 @@ body {
     height: 100vh;
 }
 
-#container {
-    min-width: 400px;
-    min-height: 400px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    margin: 100px auto;
-    padding: 20px;
+.container {
+    width: 500px;
+    margin: 50px auto;
     background-color: white;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    font-size: 22px;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,.1);
+    position: relative;
+    overflow: hidden;
 }
 
 h1 {
+    font-weight: bolder;
+    font-size: 40px;
     text-align: center;
-    margin-bottom: 0px;
-    color: #003087;
+    margin-top: 0;
+    color: #009CDE;
 }
 
-form {
+.order-details {
+    max-height: 500px;
+    overflow-y: auto;
     margin-top: 20px;
+    padding-right: 15px; /* Add right padding to accommodate scroll bar */
 }
 
-input[type="email"],
-input[type="password"] {
-    width: 100%;
-    padding: 10px;
+.item {
+    display: flex;
+    justify-content: space-between;
     margin-bottom: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    background-color: white;
+    border-top: 1px solid #d0d0d0;
+    border-bottom: 1px solid #d0d0d0;
 }
 
-input[type="submit"] {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
+.product-name {
+    color: #555;
+    font-weight: bold;
+}
+.total-amount .label {
+    font-size: 1.3em;
+    color: #009CDE;
+    font-weight: bold;
+}
+.total-amount {
+    margin-top: 15px;
+    color: #555;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.button {
+    padding: 10px 20px;
+    font-size: 16px;
     border: none;
-    background-color: #003087;
-    color: white;
+    border-radius: 4px;
     cursor: pointer;
-}
-.label {
-    color: #aaa;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
 }
 
-input[type="submit"]:hover {
-    background-color: #001e55;
+.cancel-btn {
+    background-color: #e0e0e0;
+    color: #333;
+    margin-right: 10px;
 }
+.cancel-btn:hover {
+    background-color: #f0f0f0;
+}
+.confirm-btn {
+    background-color: #0070ba;
+    color: white;
+}
+.confirm-btn:hover {
+    background-color: #009CDE;
+}
+
+/* Custom Scroll Bar Styling */
+.order-details::-webkit-scrollbar {
+    width: 8px;
+}
+
+.order-details::-webkit-scrollbar-thumb {
+    background-color: #0070ba;
+    border-radius: 4px;
+}
+
+.order-details::-webkit-scrollbar-thumb:hover {
+    background-color: #005d9e;
+}
+
+.order-details::-webkit-scrollbar-track {
+    background-color: #f5f5f5;
+}
+
+.image {
+    max-height: 50px;
+}
+
 </style>
-    <h1>Login</h1>
-    <form action="/auth" method="POST" onsubmit="submit_login(event)">
-        <div class="form-floating my-1">
-            <input type="text" class="form-control" id="floatingInput" name="email" placeholder="Email" required>
-            <label class="label" for="floatingInput">Email</label>
+<div class="container">
+    <h1>Confirm Order</h1>
+    <div class="order-details">
+        <% for (var product of order.products) {  %>
+        <div class="item">
+            <span>
+                <span><img class="image" src="<%-product.image%>"/></span>
+                <span class="p-1 text-start product-name fs-4"><%=product.p_name %></span>
+            </span>
+            <span class="count text-primary">x <%= product.count %></span>
         </div>
-        <div class="form-floating my-1">
-            <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password" required>
-            <label class="label" for="floatingPassword">Password</label>
-        </div>
-        <input type="submit" value="Login">
-    </form>
-    <% if (error) {%>
-    <script>
-        toastr.error('<%= error %>');
-    </script>
-    <% } %>
+        <% } %>
+    </div>
+    <div class="total-amount"><span class="label">Total:</span>&nbsp;<%-amount%></div>
+    <div class="buttons">
+        <a href="/payment/cancel-order" class="button cancel-btn">Cancel</a>
+        <a href="/payment/confirm-order" class="button confirm-btn">Confirm Order</a>
+    </div>
 </div>
-<script>
-    function submit_login(event) {
-        event.preventDefault();
-        const div = document.getElementById("container");
-        const auth = Object.fromEntries(new FormData(event.currentTarget).entries());
-        fetch("/payment/login", {
-            method: "POST",
-            credentials: "include",
-            body: JSON.stringify(auth),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }).then(async res => {
-            const data = JSON.stringify(<%-cart%>);
-            const order_page = await fetch("/payment/create-order", {
-                method: "POST",
-                credentials: "include",
-                body: data,
-                headers: {
-                    "Content-Type": "application/json",
-                    "Content-Length": data.length,
-                }
-            });
-            const html = await order_page.text();
-            div.innerHTML = html;
-        }).catch(err => toastr.error(err));
-    }
-</script>
+</div>
 
 <%- include("../partials/footer") %>

@@ -64,21 +64,22 @@ input[type="submit"]:hover {
     background-color: #001e55;
 }
 </style>
-    <h1>Login</h1>
-    <form action="/payment/login" method="POST" onsubmit="submit_login(event)">
+    <h1>Register</h1>
+    <form action="/payment/register" method="POST" onsubmit="submit_register(event)">
         <div class="form-floating my-1">
-            <input type="text" class="form-control" id="floatingInput" name="email" placeholder="Email" required disabled value="<%-email%>">
+            <input type="text" class="form-control" id="floatingInput" name="email" placeholder="Email" disabled value="<%-email%>" required>
             <label class="label" for="floatingInput">Email</label>
         </div>
         <div class="form-floating my-1">
             <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password" required>
             <label class="label" for="floatingPassword">Password</label>
         </div>
-        <input type="submit" value="Login">
+        <div class="form-floating my-1">
+            <input type="password" name="password_confirm" class="form-control" id="confirm-floatingPassword" placeholder="Confirm password" required>
+            <label class="label" for="confirm-floatingPassword">Confirm password</label>
+        </div>
+        <input type="submit" value="Register">
     </form>
-    <div class="d-flex justify-content-between mt-3">
-        <a class="flex-grow-0 d-inline-block" href="/payment/register">Register account</a>
-    </div>
     <% if (error) {%>
     <script>
         toastr.error('<%= error %>');
@@ -86,17 +87,12 @@ input[type="submit"]:hover {
     <% } %>
 </div>
 <script>
-    function submit_login(event) {
-        const div = document.getElementById("container");
-        const auth = Object.fromEntries(new FormData(event.currentTarget).entries());
-        // fetch("/payment/login", {
-        //     method: "POST",
-        //     credentials: "include",
-        //     body: JSON.stringify(auth),
-        //     headers: {
-        //         "Content-Type": "application/json"
-        //     }
-        // }).catch(err => toastr.error(err));
+    function submit_register(event) {
+        const data = Object.fromEntries(new FormData(event.currentTarget).entries());
+        if (data.password !== data.password_confirm) {
+            toastr.error('Confirm password must match');
+            event.preventDefault();
+        }
     }
 </script>
 

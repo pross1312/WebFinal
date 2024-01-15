@@ -115,5 +115,8 @@ module.exports = {
         catch(err){ 
             throw(err)
         }
-    } 
+    },
+    async tx(func) {
+        await this.exec("tx", func);
+    }
 };

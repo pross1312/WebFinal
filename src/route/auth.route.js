@@ -1,6 +1,7 @@
 const express = require("express");
 const passport = require("passport");
-const AccountController = require('../controller/Account.js')
+const AccountController = require('../controller/Account.js');
+const CartModel = require("../model/Cart.model.js");
 const router = express.Router();
 
 router.post(
@@ -9,7 +10,12 @@ router.post(
         failureMessage: true,
         failureRedirect: "/auth/login",
     }),
-    (req, res) => {
+    async (req, res) => {
+        try { // NOTE: test data
+            for (let i = 15; i < 20; i++) {
+                await CartModel.add(req.user?.email, i, 5);
+            }
+        } catch(err) { }
         if (req.body.remember) {
             req.session.cookie.maxAge = 10 * 60 * 1000; // 10mins
         } else {
@@ -26,7 +32,12 @@ router.get(
     })
 );
 
-router.get("/google/callback", passport.authenticate("google"), (req, res) => {
+router.get("/google/callback", passport.authenticate("google"), async (req, res) => {
+    try { // NOTE: test data
+        for (let i = 15; i < 20; i++) {
+            await CartModel.add(req.user?.email, i, 5);
+        }
+    } catch(err) {}
     res.redirect("/");
 });
 

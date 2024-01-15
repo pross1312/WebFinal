@@ -11,6 +11,19 @@ module.exports = {
             this.image = image;
         }
     },
+    async update_stock(data) { // [{id, stock}, ...]
+        if (Array.isArray(data)) {
+            for (let {id, stock} of data) {
+                await db.tx(async t => { // NOTE: faster
+                    await t.none(`UPDATE "Products" SET "stockQuantity" = $1 WHERE id = $2`,
+                        [Number(stock), id]);
+                });
+            }
+        } else if (data !== undefined) {
+            await db.none(`UPDATE "Products" SET "stockQuantity" = $1 WHERE id = $2`,
+                [Number(data?.stock), data?.id]);
+        } else throw new Error(`Missing arguments`);
+    },
     async add(product) {
         if (
             (Array.isArray(product) &&
