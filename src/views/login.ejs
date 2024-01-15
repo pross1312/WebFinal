@@ -174,8 +174,8 @@ a:hover {
         const input_label = document.getElementById("password-label");
         input_label.classList.add("label-input-group-has-value");
     });
-    email.onchange = (event) => { update_label("email", "email-label"); };
-    password.onchange = () => { update_label("password", "password-label"); };
+    $("#email").on("change", (event) => { update_label("email", "email-label"); });
+    $("#password").on("change", () => { update_label("password", "password-label"); });
 </script>
 <% if (error) {%>
 <script>

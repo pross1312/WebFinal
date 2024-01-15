@@ -96,33 +96,16 @@ a:hover {
 </style>
 
 <div class="container">
-    <form action="/auth/register" method="POST" class="register-form" onsubmit="on_submit_register(event)">
+    <form action="/auth/verify-register" method="POST" class="register-form" onsubmit="on_submit_register(event)">
         <h1>Register</h1>
         <div class="input-group">
-            <input type="text" name="email" class="w-100" id="email" placeholder="" required>
-            <label id="email-label" for="email">Email</label>
+            <input type="text" name="code" class="w-100" id="code" placeholder="" required>
+            <label id="code-label" for="code">Code</label>
         </div>
-        <div class="input-group">
-            <input type="password" name="password" class="w-100" id="password" placeholder="" required>
-            <label id="password-label" for="password">Password</label>
-        </div>
-        <div class="input-group">
-            <input type="password" class="w-100" name="password_confirm" id="confirm-password" placeholder="" required>
-            <label id="confirm-password-label" for="password-confirm">Confirm password</label>
-        </div>
-        <button type="submit">Register</button>
+        <button type="submit">Confirm</button>
     </form>
 </div>
-<script src="/public/autofill.js"></script>
 <script>
-    function on_submit_register(event) {
-        const data = Object.fromEntries(new FormData(event.currentTarget).entries());
-        console.log(data);
-        if (data.password !== data.password_confirm) {
-            toastr.error('Confirm password must match');
-            event.preventDefault();
-        }
-    }
     function update_label(name, label) {
         const input = document.getElementById(name);
         const input_label = document.getElementById(label);
@@ -132,21 +115,7 @@ a:hover {
             input_label.classList.remove("label-input-group-has-value");
         }
     }
-    $("#email").on("change", (event) => { update_label("email", "email-label"); });
-    $("#password").on("change", () => { update_label("password", "password-label"); });
-    $("#confirm-password").on("change", () => { update_label("confirm-password", "confirm-password-label"); });
-    check_auto_fill("email", () => {
-        const input_label = document.getElementById("email-label");
-        input_label.classList.add("label-input-group-has-value");
-    });
-    check_auto_fill("password", () => {
-        const input_label = document.getElementById("password-label");
-        input_label.classList.add("label-input-group-has-value");
-    });
-    check_auto_fill("confirm-password", () => {
-        const input_label = document.getElementById("confirm-password-label");
-        input_label.classList.add("label-input-group-has-value");
-    });
+    $("code").on("change", (event) => { update_label("code", "code-label"); });
 </script>
 <% if (error) {%>
 <script>
@@ -155,3 +124,4 @@ a:hover {
 <% } %>
 
 <%- include("partials/footer") %>
+

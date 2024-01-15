@@ -52,5 +52,6 @@ router.get("/register", (req, res) => {
 });
 
 router.post("/register", AccountController.register);
+router.post("/verify-register", AccountController.verify);
 
 module.exports = router;
