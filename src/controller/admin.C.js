@@ -1,4 +1,4 @@
-const adminModel = require("../model/admin.M");
+const adminModel = require("../model/Admin.M");
 const accountModel = require("../model/Account.model");
 const productModel = require("../model/Product.model");
 const userModel = require("../model/User.model");
@@ -6,9 +6,14 @@ const bcrypt = require("bcrypt");
 require("dotenv").config();
 const path = require("path");
 var _ = require("lodash");
-const { dynamic_scroll_pagination, calc_total_page } = require("../module/utils");
+const {
+    dynamic_scroll_pagination,
+    calc_total_page,
+} = require("../module/utils");
 const saltRounds = process.env.SALT || 10;
 const product_image_folder = process.env.PRODUCT_IMAGE_FOLDER;
+const utils = require("../module/utils");
+const index_out_of_range_Int = "22003";
 module.exports = {
     // ======  Account ======
     async getAllAccount(req, res, next) {
@@ -73,16 +78,20 @@ module.exports = {
     // update email, type, password
     async updateAccount(req, res, next) {
         const { email, updatePassword, updateType } = req.body;
-        if (!email || !updatePassword || !updateType)
+        if (!email || !updateType)
             return res.status(400).send("Missing some data");
         try {
             const account = await accountModel.get(email);
             if (!account)
                 return res.status(400).send("Not found Email in Database");
-            const salt = bcrypt.genSaltSync(Number(saltRounds));
-            const hashed_password = bcrypt.hashSync(updatePassword, salt);
-            await accountModel.update(email, hashed_password, updateType);
-            res.status(200).send("Update Account Successful");
+            if (!updatePassword) {
+                await accountModel.update(email, updateType);
+            } else {
+                const salt = bcrypt.genSaltSync(Number(saltRounds));
+                const hashed_password = bcrypt.hashSync(updatePassword, salt);
+                await accountModel.update(email, updateType, hashed_password);
+            }
+            return res.status(200).send("Update Account Successful");
         } catch (err) {
             next(err);
         }
@@ -90,19 +99,27 @@ module.exports = {
     // ======  Product ======
     async getAllProduct(req, res, next) {
         const page = isNaN(req.query.page) ? 1 : Number(req.query.page);
-        const per_page = isNaN(req.query.per_page) ? 10 : Number(req.query.per_page);
+        const per_page = isNaN(req.query.per_page)
+            ? 10
+            : Number(req.query.per_page);
         const max_display_pages = 4;
         try {
             let products = await productModel.get_all();
             if (!products) {
                 next(new Error("Error occurred, Please try again"));
             } else {
-                const {pages, items, total_pages} = dynamic_scroll_pagination(
-                                                max_display_pages, per_page, page, products);
+                const { pages, items, total_pages } = dynamic_scroll_pagination(
+                    max_display_pages,
+                    per_page,
+                    page,
+                    products
+                );
                 res.render("admin/manageProduct", {
                     products: items,
-                    pages, total_pages, current_page: page,
-                    base_url: "/admin/product/list?"
+                    pages,
+                    total_pages,
+                    current_page: page,
+                    base_url: "/admin/product/list?",
                 });
             }
         } catch (err) {
@@ -130,19 +147,19 @@ module.exports = {
             return res.status(400).send("Missing some arguments");
         if (!(!isNaN(parseFloat(price)) && isFinite(price)))
             return res.status(500).send("Price must be Numeric");
-        if (isNaN(parseInt(stockQuantity)))
+        if (!Number.isInteger(parseInt(stockQuantity)))
             return res.status(500).send("stockQuantity must be Integer");
         try {
-            const category_obj = await adminModel.getCategory(`LOWER(name) = '${category.toLowerCase()}'`);
-            console.log(category_obj);
+            const category_obj = await adminModel.getCategory(
+                ` id = '${category}'`
+            );
             let category_id = category_obj?.at(0)?.id;
             if (category_obj.length === 0) {
                 category_id = await adminModel.addCategory({
                     name: category,
-                    parent_id: -1
+                    parent_id: -1,
                 });
             }
-            console.log(category_id);
             await adminModel.add("Products", {
                 p_name,
                 category: category_id,
@@ -163,7 +180,7 @@ module.exports = {
         const category = req.body.category;
         const price = req.body.price;
         const stockQuantity = req.body.quantity;
-        const description = req.body.description;
+        let description = req.body.description;
         if (
             !id ||
             !p_name ||
@@ -175,10 +192,13 @@ module.exports = {
             return res.status(400).send("Missing some arguments");
         if (!(!isNaN(parseFloat(price)) && isFinite(price)))
             return res.status(500).send("Price must be Numeric");
-        if (isNaN(parseInt(stockQuantity)))
+        if (!Number.isInteger(parseInt(stockQuantity)))
             return res.status(500).send("stockQuantity must be Integer");
         let fileName;
         const imageData = req?.file;
+        if (description?.includes("'")) {
+            description = description?.replace("'", "''");
+        }
         try {
             if (!imageData) {
                 // skip
@@ -186,7 +206,7 @@ module.exports = {
                     "Products",
                     ` id = '${id}'`,
                     ` p_name='${p_name}', category='${category}', price='${price}', 
-                 "stockQuantity"='${stockQuantity}', description='${description}'`
+                    "stockQuantity"='${stockQuantity}', description='${description}'`
                 );
                 res.status(200).send("Update Successful");
             } else {
@@ -205,11 +225,19 @@ module.exports = {
     },
     async deleteProduct(req, res, next) {
         const { productId } = req.body;
-        if (!productId) return res.status(400).send("Missing product Id");
         try {
-            await adminModel.deleteProduct(productId);
-            res.status(200).send("Delete Successful");
+            if (!Number.isInteger(parseInt(productId))) {
+                return res.status(400).send("Invalid Product id");
+            }
+            const result = await adminModel.deleteProduct(productId);
+            if (!result) {
+                error = new Error("Invalid Product id");
+                error.code = index_out_of_range_Int;
+            }
+            return res.status(200).send("Delete Successful");
         } catch (err) {
+            if (err.code === index_out_of_range_Int)
+                return res.status(400).send("Invalid Product id");
             next(err);
         }
     },
@@ -226,14 +254,14 @@ module.exports = {
         try {
             let cates = await adminModel.getAll("Category");
             tempcates = _.cloneDeep(cates);
-            cates = divideCategories(cates);
+            cates = utils.divideCategories(cates);
             // handle cates -> display sub cate as name
             if (!cates) next(new Error("Error occurred, Please try again"));
             else {
                 cates = cates.map((cate) => {
                     return {
                         ...cate,
-                        parent_id: findNameCate(cates, cate.parent_id),
+                        parent_id: utils.findNameCate(cates, cate.parent_id),
                     };
                 });
                 res.status(200).render("admin/manageCategory", { cates });
@@ -245,10 +273,23 @@ module.exports = {
 
     async deleteCategory(req, res, next) {
         const { id } = req.body;
-        if (!id) res.status(400).send("Missing some arguments");
+        if (!id) return res.status(400).send("Missing some arguments");
+        if (!Number.isInteger(parseInt(id)))
+            return res.status(400).send("Invalid Category id");
         else {
             try {
-                await adminModel.deleteCategory(id);
+                const product_in_category = await adminModel.get(
+                    "Products",
+                    ` category = '${id}'`
+                );
+                if (product_in_category && product_in_category.length > 0) {
+                    return res
+                        .status(406)
+                        .send("Having Products in Category, Can't not delete");
+                }
+                const result = await adminModel.deleteCategory(id);
+                if(!result)
+                    return res.status(400).send("Category have children. Please delete children first")
                 res.status(200).send("Delete Category Successful");
             } catch (err) {
                 next(err);
@@ -266,7 +307,7 @@ module.exports = {
                 else
                     condition = ` name = '${name.toLowerCase()}' and parent_id = '${parent_id}'`;
                 const categories = await adminModel.getCategory(condition);
-                const checkValid = await checkValidCategory(
+                const checkValid = await utils.checkValidCategory(
                     name,
                     parent_id,
                     categories
@@ -296,7 +337,7 @@ module.exports = {
             } else
                 condition = ` name = '${name.toLowerCase()}' and parent_id = '${parent_id}'`;
             const categories = await adminModel.getCategory(condition);
-            const checkValidUpdate = await checkValidCategory(
+            const checkValidUpdate = await utils.checkValidCategory(
                 name,
                 parent_id,
                 categories,
@@ -315,101 +356,4 @@ module.exports = {
             next(err);
         }
     },
-
-    // ======= Pagination 
-    async getPageItems(req, res, next){ 
-        const page = req.query.page
-        const per_page = req.query.per_page
-        console.log("======================");
-        console.log(page, per_page);
-        return res.status(200).send("Successful")
-    }
 };
-
-function findNameCate(cates, cateId) {
-    return cates.filter((cate) => cate.id === cateId)[0]?.name;
-}
-
-// mode 1 - create
-// mode 2 - update
-async function checkValidCategory(
-    name,
-    parent_id,
-    categories,
-    mode = 1,
-    id = null
-) {
-    try {
-        const category = await adminModel.getCategory(` id = ${parent_id}`);
-        if (category && category.length > 0) {
-            category.forEach((cate) => {
-                if (cate.name.toLowerCase() === name.toLowerCase()) {
-                    return {
-                        statusCode: 409,
-                        msg: "The parent category and the category cannot have the same name",
-                    };
-                }
-            });
-        }
-        if (category.length === 0 && Number(parent_id) != -1) {
-            return {
-                statusCode: 409,
-                msg: "The parent category does not exist",
-            };
-        }
-        if (categories && categories.length > 0) {
-            return { statusCode: 409, msg: "Category existed in database" };
-        }
-        if (mode === 2) {
-            if(isAncestor(categories, id, parent_id))
-                return {statusCode: 406, msg: "You create infinity loop"}
-        }
-        return { statusCode: 200, msg: "true" };
-    } catch (err) {
-        throw err;
-    }
-}
-
-function divideCategories(categories) {
-    level1 = categories.filter((category) => !category.parent_id);
-    let dividedCategories = level1.map((item) => {
-        return {
-            name: item.name,
-            id: item.id,
-            children: findChildCategories(categories, item.id),
-        };
-    });
-    return dividedCategories;
-}
-
-// -> :parent of
-// Electronic -> Laptop -> Lenovo
-// function check if Lenovo -> Electronic return false
-function isAncestor(categories, id, parent_id) {
-    const findCateById = (arr, id) =>
-        arr.find((obj) => obj.id === id) ||
-        arr.reduce(
-            (result, obj) =>
-                result || (obj.children && findCateById(obj.children, id)),
-            null
-        );
-    const category = adminModel.getCategory(`id = ${id}`);
-
-    const containsIdInChildren = (category, parent_id) =>
-        category.id === parent_id ||
-        (category.children &&
-            category.children.some((child) =>
-                containsIdInChildren(child, parent_id)
-            ));
-    const result = containsIdInChildren(category, parent_id)
-    return result
-}
-
-function findChildCategories(categories, id) {
-    return categories
-        .filter((category) => category.parent_id === id)
-        .map((category) => {
-            category.children = findChildCategories(categories, category.id);
-            return category;
-        });
-}

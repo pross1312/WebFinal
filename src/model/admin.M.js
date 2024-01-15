@@ -1,5 +1,9 @@
 const db = require("../module/database");
 const CustomError = require("../module/CustomErr");
+require('dotenv').config()
+const path = require('path')
+const product_image_folder = process.env.PRODUCT_IMAGE_FOLDER
+const fs = require('fs')
 module.exports = {
     async getAll(tb_name) {
         try {
@@ -16,6 +20,14 @@ module.exports = {
         }
     },
 
+    async get(tb_name, condition){ 
+        try{ 
+            return await db.find(tb_name, condition)
+        }
+        catch(err){ 
+            throw err;
+        }
+    },
     async update(tb_name, condition, update) {
         try{ 
             await db.update(tb_name, update, condition)
@@ -47,7 +59,7 @@ module.exports = {
 
     async deleteProduct(productId){ 
         try{ 
-            db.delete('Products', `id = '${productId}'`)
+            return db.delete('Products', `id = '${productId}'`)
         }
         catch(err){
             throw(err)
@@ -72,9 +84,12 @@ module.exports = {
     }, 
     async deleteCategory(id){ 
         try{ 
-            // first delete reference to this category 
-            await db.update("Category",` parent_id = NULL `, ` parent_id = '${id}'`) 
-            await db.delete("Category", ` id = '${id}'`)
+            const ref_category = await db.find("Category", ` parent_id = '${id}'`)
+            if(ref_category && ref_category.length > 0){ 
+                console.log(ref_category);
+                return null 
+            }
+            return await db.delete("Category", ` id = '${id}' RETURNING *`)
         }
         catch(err){ 
             throw(err)  

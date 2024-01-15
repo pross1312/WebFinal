@@ -40,9 +40,11 @@ module.exports = {
             throw err;
         }
     },
-    async update(email, updatePassword, updateType) {
+    async update(email, updateType, updatePassword) {
         try {
-            await db.update("Account",` password = '${updatePassword}', type = '${updateType}'`, ` email = '${email}'`)
+            if(updatePassword)
+                await db.update("Account",` password = '${updatePassword}', type = '${updateType}'`, ` email = '${email}'`)
+            else await db.update("Account",` type = '${updateType}'`, ` email = '${email}'`)
         } catch (err) {
             throw err;
         }

@@ -21,7 +21,6 @@
                 <tr>
                     <td>
                         <span class="editable" contenteditable="false"><%= account.email %></span>
-                     
                     </td>
                     <td>
                         <span class="editable" contenteditable="false"><%= account.type %></span>
@@ -35,91 +34,61 @@
         </tbody>
     </table>
     <button type="button" class="btn btn-success p-3 mt-4" onclick="showCreateForm()">Add New Account</button>
-    <div class="modal" id="createAccountModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <!-- Modal Header -->
-                <div class="modal-header">
-                    <h4 class="modal-title">Create Account</h4>
-                    <button type="button" class="btn btn-danger rounded-circle close" 
-                    onclick="$('.modal').modal('hide')"
-                    data-dismiss="modal" aria-label="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
+    <!-- Create Account Modal -->
+    <%- include("partials/modal", { 
+        modalId: 'createAccountModal',
+        modalTitle: 'Create Account',
+        body: `
+            <form id="createAccountForm">
+                <div class="form-group">
+                    <label for="newEmail">Email:</label>
+                    <input type="email" class="form-control" id="newEmail" required>
                 </div>
-    
-                <!-- Modal Body -->
-                <div class="modal-body">
-                    <form id="createAccountForm">
-                        <div class="form-group">
-                            <label for="newEmail">Email:</label>
-                            <input type="email" class="form-control" id="newEmail" required>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="newPassword">Password:</label>
-                            <input type="password" class="form-control" id="newPassword" required>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="newPassword">Type:</label>
-                            <select class="form-select" aria-label="Default select example" id="newType">
-                                <option value="admin">admin</option>
-                                <option value="customer">customer</option>
-                            </select>
-                        </div>
-                        <button type="button" class="btn btn-primary" onclick="submitCreateForm()">Create Account</button>
-                    </form>
+                <div class="form-group mb-4">
+                    <label for="newPassword">Password:</label>
+                    <input type="password" class="form-control" id="newPassword" required>
                 </div>
-    
-                <!-- Modal Footer -->
-                <div class="modal-footer">
-                  @CineClick
+                <div class="form-group mb-4">
+                    <label for="newPassword">Type:</label>
+                    <select class="form-select" aria-label="Default select example" id="newType">
+                        <option value="admin">admin</option>
+                        <option value="customer">customer</option>
+                    </select>
                 </div>
+                <button type="button" class="btn btn-primary" onclick="submitCreateForm()">Create Account</button>
+            </form>
+        `,
+        footer: '@CineClick'    
+    }
+    );%>
+    <!-- Update Account Modal -->
+    <%- include("partials/modal", { 
+        modalId: 'updateAccountModal',
+        modalTitle: 'Update Account',
+        body: `
+        <form id="createAccountForm">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" class="form-control" id="updateEmail" disabled>
             </div>
-        </div>
-    </div>
+            <div class="form-group mb-4">
+                <label for="updatePassword">Password:</label>
+                <input type="password" class="form-control" id="updatePassword" required>
+            </div>
+            <div class="form-group mb-4">
+                <label for="updateType">Type:</label>
+                <select class="form-select" aria-label="Default select example" id="updateType">
+                    <option value="admin">admin</option>
+                    <option value="customer">customer</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="submitUpdateForm()">Update Account</button>
+        </form>
+        `,
+        footer: '@CineClick'    
+    }
+    );%>
 
-    <div class="modal" id="updateAccountModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <!-- Modal Header -->
-                <div class="modal-header">
-                    <h4 class="modal-title">Update Account</h4>
-                    <button type="button" class="btn btn-danger rounded-circle close" 
-                    onclick="$('.modal').modal('hide')"
-                    data-dismiss="modal" aria-label="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-    
-                <!-- Modal Body -->
-                <div class="modal-body">
-                    <form id="createAccountForm">
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" class="form-control" id="updateEmail" disabled>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="updatePassword">Password:</label>
-                            <input type="password" class="form-control" id="updatePassword" required>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="updateType">Type:</label>
-                            <select class="form-select" aria-label="Default select example" id="updateType">
-                                <option value="admin">admin</option>
-                                <option value="customer">customer</option>
-                            </select>
-                        </div>
-                        <button type="button" class="btn btn-primary" onclick="submitUpdateForm()">Update Account</button>
-                    </form>
-                </div>
-    
-                <!-- Modal Footer -->
-                <div class="modal-footer">
-                  @CineClick
-                </div>
-            </div>
-        </div>
-    </div>
     <script>
         function enableEditing(button) {
             const emailSpan = button.parentElement.querySelector('.editable');
@@ -165,16 +134,13 @@
             $('#updateEmail').val(email) 
             
         }
-
-        // reuse function 
         function submitUpdateForm(){ 
             const email = $('#updateEmail').val().trim();
             const password= $('#updatePassword').val().trim();
             const type = $('#updateType').val(); 
 
-            console.log(password, type);
-            if (!password || !type) {
-                toastr.error('Please fill in all fields');
+            if (!type) {
+                toastr.error('Please choose type');
                 return;
             }
             $.post("/admin/account/update", {email, updatePassword: password, updateType: type}) 

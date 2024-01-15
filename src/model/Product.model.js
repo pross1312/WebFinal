@@ -38,7 +38,7 @@ module.exports = {
     async get_all() {
         const result = await db.exec(
             "manyOrNone",
-            `SELECT pd.*, ct.name as category FROM "Products" pd LEFT JOIN "Category" ct ON ct.id = pd.category`
+            `SELECT pd.*, ct.name as category, ct.id as category_id FROM "Products" pd LEFT JOIN "Category" ct ON ct.id = pd.category`
         );
         if (!result) throw new CustomError( `Cant select data from "Products"`, 400, "");
         return result;

@@ -9,8 +9,8 @@
     .sorted-asc::after {
         content: ' ▲';
         color:deepskyblue; 
-
     }
+
     .sorted-desc::after {
         content: ' ▼';
         color:deepskyblue; 
@@ -19,6 +19,7 @@
         --bs-table-bg: #272f3c ;
     }
     .holder{ 
+        position: relative;
         height: 300px;
         width: 450px;
         border: 2px solid black;
@@ -52,16 +53,17 @@
                 <tr>
                     <td><%= product.id %></td>
                     <td><%= product.p_name %></td>
-                    <td><%= product.category %></td>
+                    <td><%= product.category %> (<%= product.category_id %>)</td>
                     <td><%= product.price %></td>
                     <td><%= product.stockQuantity %></td>
                     <td><%= product.description %></td>
                     <td>
+                        <!-- <img src="/resources/productImages/<%= product.image %>" alt="<%= product.name %>" style="max-width: 100px; max-height: 100px;"> -->
                         <img src="<%= product.image %>" alt="<%= product.name %>" style="max-width: 100px; max-height: 100px;">
                     </td>
                     <td>
                         <button class="btn btn-primary btn-sm"
-                            onclick="showUpdateModal('<%= product.id %>','<%= product.p_name %>', '<%= product.category %>','<%= product.price %>', '<%= product.stockQuantity %>', `<%= product.description %>`, '<%= product.image %>')">Edit</button>
+                            onclick="showUpdateModal('<%= product.id %>','<%= product.p_name %>', '<%= product.category_id %>','<%= product.price %>', '<%= product.stockQuantity %>', `<%= product.description %>`, '<%= product.image %>')">Edit</button>
                         <button class="btn btn-danger btn-sm" onclick="deleteProduct('<%= product.id %>')">Delete</button>   
                     </td>
                 </tr>
@@ -70,122 +72,93 @@
     </table>
     <!-- ======= Pagination =======-->
     <%- include("../partials/pagination") %>
-    <!-- ======= Pagination =======-->
+    <!-- ======= END Pagination =======-->
 
-    <div class="modal" id="createProductModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <!-- Modal Header -->
-                <div class="modal-header">
-                    <h4 class="modal-title">Create Product</h4>
-                    <button type="button" class="btn btn-danger rounded-circle close" 
-                    onclick="closeModal()"
-                    data-dismiss="modal" aria-label="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
+    <!-- Create Product Modal -->
+    <%- include("partials/modal", { 
+        modalId: 'createProductModal',
+        modalTitle: 'Create Product',
+        body: `
+            <form id="createProductForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="p_name">Product Name:</label>
+                    <input type="text" class="form-control" id="p_name" name="name" required>
                 </div>
-    
-                <!-- Modal Body -->
-                <div class="modal-body">
-                    <form id="createProductForm" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <label for="p_name">Product Name:</label>
-                            <input type="text" class="form-control" id="p_name" name="name" required>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="p_cate">Category:</label>
-                            <input type="text" class="form-control" id="p_cate" name="category" required>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="p_price">Price:</label>
-                            <input type="text" class="form-control" id="p_price" name="price" required>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="p_quantity">Stock Quantity:</label>
-                            <input type="number" class="form-control" id="p_quantity" name="quantity" required>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="p_desc">Description:</label>
-                            <input type="text" class="form-control" id="p_desc" name="desc"required>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="p_image">Image:</label>
-                            <input type="file" class="form-control" id="p_image" name='image' accept="image/png, image/gif, image/jpeg" required>
-                            <div class="holder">
-                                <img src="" alt="pic" id="imgPreview">
-                            </div>
-                        </div>
-                    
-                        <button type="button" class="btn btn-primary" onclick="addProduct()">Create Product</button>
-                    </form>
+                <div class="form-group mb-4">
+                    <label for="p_cate">Category:</label>
+                    <input type="number" class="form-control" id="p_cate" name="category" required>
                 </div>
-    
-                <!-- Modal Footer -->
-                <div class="modal-footer">
-                  @CineClick
+                <div class="form-group mb-4">
+                    <label for="p_price">Price:</label>
+                    <input type="number" class="form-control" id="p_price" name="price" required>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="updateProductModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <!-- Modal Header -->
-                <div class="modal-header">
-                    <h4 class="modal-title">Update Product</h4>
-                    <button type="button" class="btn btn-danger rounded-circle close" 
-                    onclick="closeModal()"
-                    data-dismiss="modal" aria-label="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
+                <div class="form-group mb-4">
+                    <label for="p_quantity">Stock Quantity:</label>
+                    <input type="number" class="form-control" id="p_quantity" name="quantity" required>
                 </div>
-    
-                <!-- Modal Body -->
-                <div class="modal-body">
-                    <form id="updateProductForm" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <label>Product Id:</label>
-                            <input type="text" class="form-control" id="update_p_id" name="id" disabled>
-                        </div>
-                        <div class="form-group">
-                            <label for="update_p_name">Product Name:</label>
-                            <input type="text" class="form-control" id="update_p_name" name="name" required>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="update_p_cate">Category:</label>
-                            <input type="text" class="form-control" id="update_p_category" name="category" required>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="update_p_price">Price:</label>
-                            <input type="text" class="form-control" id="update_p_price" name="price" required>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="update_p_quantity">Stock Quantity:</label>
-                            <input type="number" class="form-control" id="update_p_quantity" name="quantity" required>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="update_p_description">Description:</label>
-                            <input type="text" class="form-control" id="update_p_description" name="description" required>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="update_p_image">Image:</label>
-                            <input type="file" class="form-control" id="update_p_image" name='image' accept="image/png, image/gif, image/jpeg" required>
-                            <div class="holder">
-                                <img src="" alt="pic" id="updateimgPreview">
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-primary" onclick="editProduct()">Update Product</button>
-                    </form>
+                <div class="form-group mb-4">
+                    <label for="p_desc">Description:</label>
+                    <textarea id="p_desc" class="form-control" cols="60" rows ="10" name="desc"></textarea>
+                    <!-- <input type="text" class="form-control" id="p_desc" name="desc"required> -->
                 </div>
-    
-                <!-- Modal Footer -->
-                <div class="modal-footer">
-                  @CineClick
+                <div class="form-group mb-4">
+                    <label for="p_image">Image:</label>
+                    <input type="file" class="form-control" id="p_image" name='image' accept="image/png, image/gif, image/jpeg" required>
+                    <div class="holder">
+                        <img src="" alt="pic" id="imgPreview">
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
+                <button type="button" class="btn btn-primary" onclick="addProduct()">Create Product</button>
+            </form>
+        `,
+        footer: '@CineClick'    
+    }
+    );%>
+   
+     <!-- Update Product Modal -->
+     <%- include("partials/modal", { 
+        modalId: 'updateProductModal',
+        modalTitle: 'Update Product',
+        body: `
+            <form id="updateProductForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Product Id:</label>
+                    <input type="text" class="form-control" id="update_p_id" name="id" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="update_p_name">Product Name:</label>
+                    <input type="text" class="form-control" id="update_p_name" name="name" required>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="update_p_cate">Category:</label>
+                    <input type="number" class="form-control" id="update_p_category" name="category" required>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="update_p_price">Price:</label>
+                    <input type="number" class="form-control" id="update_p_price" name="price" required>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="update_p_quantity">Stock Quantity:</label>
+                    <input type="number" class="form-control" id="update_p_quantity" name="quantity" required>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="update_p_description">Description:</label>
+                    <textarea id="update_p_description" class="form-control" cols="60" rows ="10" name="description"></textarea>
+                    <!-- <input type="text" class="form-control" id="update_p_description" name="description" required> -->
+                </div>
+                <div class="form-group mb-4">
+                    <label for="update_p_image">Image:</label>
+                    <input type="file" class="form-control" id="update_p_image" name='image' accept="image/png, image/gif, image/jpeg" required>
+                    <div class="holder">
+                        <img src="" alt="pic" id="updateimgPreview" >
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="editProduct()">Update Product</button>
+            </form>
+        `,
+        footer: '@CineClick'    
+    }
+    );%>
    <div class="mt-5">
     <button type="button" class="btn btn-success p-3 me-2" onclick="showModal()">Add New Product</button>
    </div>
@@ -361,19 +334,6 @@
                 }
             })
         }
-        function getPageItems(page){ 
-            const per_page = 3 
-            $.ajax({ 
-            url: '/admin/product/list/pagination', 
-            type: 'GET', 
-            data: {page, per_page}, 
-            success: function (data) {
-                toastr.success(data);
-            },
-            error: function (err) {
-                toastr.error(err.responseText);
-            }
-        })
-        }
+
     </script>
     <%- include("../partials/footer") %>   

@@ -1,0 +1,25 @@
+<div class="modal" id="<%= modalId %>">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"><%= modalTitle %></h4>
+                <button type="button" class="btn btn-danger rounded-circle close" 
+                onclick="$('.modal').modal('hide')"
+                data-dismiss="modal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <%- body %>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <%= footer %>
+            </div>
+        </div>
+    </div>
+</div>

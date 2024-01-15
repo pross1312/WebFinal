@@ -85,7 +85,7 @@ module.exports = {
     }, 
     async delete(tb_name,condition){ 
         try{ 
-            return await this.exec('none', `DELETE FROM "${tb_name}" WHERE ${condition}`)
+            return await this.exec('one', `DELETE FROM "${tb_name}" WHERE ${condition}`)
         }
         catch(err){ 
             throw(err)
