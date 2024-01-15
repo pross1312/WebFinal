@@ -31,9 +31,9 @@ module.exports = {
         const { email, password, type } = req.body;
         try {
             const account = await accountModel.get(email);
-            console.log("account", account);
             if (account) {
                 res.status(406).send("Email existed in System");
+                // NOTE: only buyer has userinfo
             } else {
                 const salt = bcrypt.genSaltSync(Number(saltRounds));
                 const hashed_password = bcrypt.hashSync(password, salt);
@@ -44,9 +44,9 @@ module.exports = {
                         type,
                     })
                 );
-                await userModel.add(
-                    new userModel.UserInfo({ email, name: "", avatar: "" })
-                );
+                if (type.toLowerCase() === "user") {
+                    await userModel.add( new userModel.UserInfo({ email, name: "", avatar: "" }));
+                }
                 res.status(200).send();
             }
         } catch (err) {

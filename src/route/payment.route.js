@@ -1,24 +1,21 @@
 const express = require("express");
 const router = express.Router();
 const PaymentController = require("../controller/Payment");
+const CartModel = require("../model/Cart.model");
 const CustomError = require("../module/CustomErr");
 
 router.get("/create-order", (req, res, next) => {
-    res.render("payment/create-order", {
-        error: null,
-        cart: JSON.stringify([
-            {id: 1, count: 5},
-            {id: 2, count: 6},
-            {id: 3, count: 8},
-            {id: 18, count: 5},
-            {id: 19, count: 5},
-        ])
-    });
+    if (req.session.payment_access_token === undefined) {
+        res.render("payment/login", {error: null, email: req.user?.email});
+    } else {
+        PaymentController.create_order(req, res, next);
+    }
 });
+router.get("/register", (req, res, next) => {
+    res.render("payment/register", {error: null, email: req.user?.email});
+});
+router.post("/register", PaymentController.register);
 router.post("/login", PaymentController.login);
-router.get("/google", (req, res, next) => { // TODO:
-    res.render("payment/login", {error: null});
-});
 router.get("/confirm-transaction", PaymentController.confirm_transaction);
 router.get("/cancel-transaction", PaymentController.cancel_transaction);
 router.use((req, res, next) => { // NOTE: after login, access token must exist in session

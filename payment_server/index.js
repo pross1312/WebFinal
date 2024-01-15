@@ -41,7 +41,7 @@ app.post("/login", async (req, res, next) => {
     } else try {
         const acc = await db.exec("one", `SELECT * FROM "PaymentAccount" WHERE email = $1`, email);
         if (acc === null) {
-            res.status(400).send("Email not found");
+            res.status(400).send("Payment account not found, please register");
         } else if (acc.password === null) { // NOTE: google account, use google-login api
             res.status(400).send("Incorrect email or password");
         } else if (bcrypt.compareSync(password, acc.password)) {
@@ -91,12 +91,21 @@ app.post("/transaction/create", async (req, res, next) => {
                     error: "You don't have enough balance in your account to make this transaction!",
                     data: null,
                 }));
+            } else if (Number(transaction.amount) < 1) {
+                res.status(200).setHeader("Content-Type", "application/json").send(JSON.stringify({
+                    error: "Can't make transaction with such small amount",
+                    data: null
+                }));
             } else {
                 transaction.initiator = author;
                 transaction.ts = new Date();
                 await db.add("Transaction", Object.keys(transaction), transaction);
                 await db.exec("none",
-                    `UPDATE "PaymentAccount" SET balance = balance - ${Number(transaction.amount)} WHERE email = '${author}'`);
+                    `UPDATE "PaymentAccount" SET balance = balance - $1 WHERE email = $2`,
+                    [Number(transaction.amount), author]);
+                await db.exec("none",
+                    `UPDATE "PaymentAccount" SET balance = balance + $1 WHERE email = $2`,
+                    [Number(transaction.amount), transaction.receiver]);
                 res.status(200).setHeader("Content-Type", "application/json").send(JSON.stringify({
                     error: null,
                     data: transaction

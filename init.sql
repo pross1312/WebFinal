@@ -57,9 +57,8 @@ create table "Order"(
 );
 
 create table "Cart"(
-    id serial unique,
     email varchar(512),
-    product serial references "Products"(id) unique,
+    product serial references "Products"(id),
     count int not null check (count > 0),
     primary key(email, product)
 );
