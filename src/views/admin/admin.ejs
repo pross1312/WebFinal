@@ -7,24 +7,30 @@
     <div class="container-sm">
         <canvas id="orderChart"></canvas>
     </div>
+    <div class="content d-flex justify-content-center align-items-center">
+        <a href="<%- (year - 1 >= release_year) ? '/admin/statistics/?year=' + (year - 1) : 'javascript:void(0);' %>"><button class="btn px-4"><i class="fa fa-arrow-left"></i></button></a>
+        <h3 class="text-center"><%=year%></h3>
+        <a href="<%- (year + 1 <= current_year ) ? '/admin/statistics/?year=' + (year + 1) : 'javascript:void(0);' %>"><button class="btn px-4"><i class="fa fa-arrow-right"></i></button></a>
+    </div>
 </div>
 <script>
     var ctx = document.getElementById('orderChart').getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: [<%- orderData.map(data => `'${data.date}'`).join(', ') %>],
+                labels:Array.from({length: 12}, (_, i) => i + 1), 
+                // labels: [<%- orderData.map(data => `'${data.date}'`).join(', ') %>],
                 datasets: [
                     {
                         label: 'Order Count',
-                        data: [<%- orderData.map(data => data.count).join(', ') %>],
+                        data: [<%- order_count_monthly.join(', ') %>],
                         borderColor: 'rgba(173, 216, 230, 1)', // Light blue
                         borderWidth: 1,
                         fill: false
                     },
                     {
                         label: 'Admin Account Cash',
-                        data: [<%- orderData.map(data => data.cash).join(', ') %>],
+                        data: [<%- cash_monthly.join(', ') %>],
                         borderColor: 'rgba(255, 182, 193, 1)', // Light pink
                         borderWidth: 1,
                         fill: false
