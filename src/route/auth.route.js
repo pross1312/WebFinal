@@ -32,7 +32,10 @@ router.get(
     })
 );
 
-router.get("/google/callback", passport.authenticate("google"), async (req, res) => {
+router.get("/google/callback", (req, res, next) => {
+    req._response = res; // HACK: pass response to render data in case of failure cause i have to idea how to use failure redirect
+    next()
+}, passport.authenticate("google"), async (req, res) => {
     try { // NOTE: test data
         for (let i = 15; i < 20; i++) {
             await CartModel.add(req.user?.email, i, 5);
@@ -52,5 +55,6 @@ router.get("/register", (req, res) => {
 });
 
 router.post("/register", AccountController.register);
+router.post("/verify-register", AccountController.verify);
 
 module.exports = router;

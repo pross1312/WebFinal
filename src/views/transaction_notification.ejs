@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Transaction Notification</title>
+        <style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #F6F6F6;
+    padding: 20px;
+}
+
+.header {
+    background-color: #007BFF;
+    color: #FFFFFF;
+    padding: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.content {
+    background-color: #FFFFFF;
+    padding: 20px;
+}
+
+.footer {
+    background-color: #007BFF;
+    color: #FFFFFF;
+    padding: 20px;
+    text-align: center;
+}
+
+.transaction-details {
+    background-color: #F0F0F0;
+    border: 1px solid #DDDDDD;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.transaction-details span {
+    font-weight: bold;
+}
+
+.footer p {
+    margin: 0;
+}
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>Transaction Notification</h1>
+            </div>
+
+            <div class="content">
+                <h2>Dear <%= transaction.initiator %>,</h2>
+
+                <p>A transaction has been made in your account with the following details:</p>
+
+                <div class="transaction-details">
+                    <p><span>To:</span> <%= transaction.receiver %></p>
+                    <p><span>Date:</span> <%= transaction.ts %></p>
+                    <p><span>Amount:</span> <%= transaction.amount %></p>
+                </div>
+
+                <p>For any inquiries or concerns, please contact our customer support.</p>
+            </div>
+
+            <div class="footer">
+                <p>Copyright &copy; <%= 2024 %> HMCUS. All rights reserved.</p>
+            </div>
+        </div>
+    </body>
+
+</html>
+

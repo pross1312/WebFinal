@@ -1,4 +1,5 @@
 const adminModel = require("../model/Admin.M");
+const nodemailer = require("nodemailer");
 module.exports = {
     // 1 .. 2 3 4 current 5 6 .. total -> max_display_pages = 6
     dynamic_scroll_pagination(
@@ -31,7 +32,7 @@ module.exports = {
     },
 
     
-    divideCategories(categories) {
+    divideCategories(categories) { 
         const findChildCategories = (categories, id) => {
             return categories
                 .filter((category) => category.parent_id === id)
@@ -103,4 +104,27 @@ module.exports = {
             throw err;
         }
     },
-};
+    async sendEmail(username, password, to, subject, content) {
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: username,
+                pass: password,
+            },
+        });
+
+        const mailOptions = {
+            from: username,
+            to: to,
+            subject: subject,
+            html: content,
+        };
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                throw error;
+            } else {
+                return info.response;
+            }
+        });
+    }
+}

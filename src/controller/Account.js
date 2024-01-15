@@ -1,16 +1,62 @@
 const AccountModel = require("../model/Account.model");
 const UserModel = require("../model/User.model");
 const bcrypt = require("bcrypt");
+const fs = require("fs/promises");
 const payment_req = require("../module/payment_req");
+const { sendEmail } = require("../module/utils");
+const path = require("path");
+const { TimeoutMap } = require("../module/TimeoutMap");
 require("dotenv").config;
 const saltRounds = Number(process.env.SALT)
+const unconfirmed_account = new TimeoutMap();
 module.exports = {
+    async verify(req, res, next) {
+        const {code} = req.body;
+        if (!code) {
+            res.render('verify', {error: "Missing verification code"});
+        } else try {
+            const auth = unconfirmed_account.pop(code);
+            if (auth == null) {
+                res.render('verify', {error: "Incorrect code"});
+            } else {
+                // salt 10
+                const hashedPassword = await bcrypt.hash(
+                    auth.password,
+                    saltRounds || 10
+                );
+
+                acc = new AccountModel.Account({
+                    email: auth.email,
+                    password: hashedPassword,
+                    type: "customer"
+                });
+                const result = await AccountModel.add(acc);
+                user_profile = new UserModel.UserInfo({
+                    name: "",
+                    avatar: "",
+                    email: auth.email,
+                });
+                await UserModel.add(user_profile);
+                const response = await payment_req.post("/register", JSON.stringify({
+                    email: auth.email,
+                    password: auth.password,
+                }));
+                if (response.code === 200) {
+                    res.render('login', {error: null});
+                } else {
+                    res.render("register", {error: response.data});
+                }
+            }
+        } catch(err) {
+            next(err);
+        }
+    },
     async register(req, res, next) {
         // update with jquery
-        email = req.body.email;
-        password = req.body.password;
+        const {email, password} = req.body;
         if (!email || !password) {
             res.render('register', {error: "Can't load your data"});
+            return;
         }
         try {
             let acc = await AccountModel.get(email);
@@ -18,29 +64,27 @@ module.exports = {
                 res.render('register', {error: "Email existed"});
                 return;
             }
-            // salt 10
-            const hashedPassword = await bcrypt.hash(
-                password,
-                saltRounds || 10
-            );
-
-            acc = new AccountModel.Account({
-                email: email,
-                password: hashedPassword,
-                type: "customer"
+            let code = ((Math.random() * 10000000) >> 0) + 1000000;
+            while (unconfirmed_account.get(code) !== null) {
+                code = ((Math.random() * 10000000) >> 0) + 1000000;
+            }
+            req.app.render( "verify_email", {
+                recipientName: email,
+                verificationCode: code
+            }, async (err, html) => {
+                if (err) throw new Error(err);
+                try {
+                    await sendEmail(
+                        process.env.EMAIL_USERNAME,
+                        process.env.EMAIL_PASSWORD, email, "Verfiy password",
+                        html,
+                    );
+                    unconfirmed_account.put(code, {email, password}, 10*60*1000);
+                    res.render("verify", {error: null});
+                } catch(err) {
+                    res.render("register", {error: "Invalid email"});
+                }
             });
-            const result = await AccountModel.add(acc);
-            user_profile = new UserModel.UserInfo({
-                name: "",
-                avatar: "",
-                email: email,
-            });
-            await UserModel.add(user_profile);
-            const response = await payment_req.post("/register", JSON.stringify({
-                email,
-                password
-            }));
-            res.render('login', {error: ""})
         } catch (err) {
             next(err);
         }

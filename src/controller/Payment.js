@@ -7,6 +7,7 @@ const ProductModel = require("../model/Product.model");
 const {TimeoutMap, TimeoutError} = require("../module/TimeoutMap");
 const CustomError = require("../module/CustomErr");
 const CartModel = require("../model/Cart.model");
+const { sendEmail } = require("../module/utils");
 const unconfirmed_transaction = new TimeoutMap();
 const unconfirmed_order = new TimeoutMap();
 module.exports = {
@@ -157,6 +158,18 @@ module.exports = {
                     }});
                     await ProductModel.update_stock(data);
                     res.render("payment/payment-successful");
+                    req.app.render("transaction_notification", {transaction: obj.data}, async (err, html) => {
+                        if (err) console.log(err);
+                        else try {
+                            await sendEmail(
+                                process.env.EMAIL_USERNAME,
+                                process.env.EMAIL_PASSWORD, req.user?.email, "Transaction",
+                                html,
+                            );
+                        } catch(err) {
+                            console.log(err);
+                        }
+                    });
                 }
             }
         } catch(err) {
