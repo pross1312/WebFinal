@@ -1,4 +1,4 @@
-const adminModel = require("../model/Admin.M");
+const adminModel = require("../model/admin.M");
 const nodemailer = require("nodemailer");
 module.exports = {
     // 1 .. 2 3 4 current 5 6 .. total -> max_display_pages = 6

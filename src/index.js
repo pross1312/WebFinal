@@ -8,6 +8,7 @@ const payment_req = require("./module/payment_req");
 const CustomError = require("./module/CustomErr");
 // config
 app.use("/resources", express.static(path.join(__dirname, "resources")));
+app.use("/image", express.static(path.join(__dirname, "resources", "productImages")));
 app.use("/public", express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
