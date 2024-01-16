@@ -53,7 +53,7 @@ module.exports = {
             "manyOrNone",
             `SELECT pd.*, ct.name as category, ct.id as category_id FROM "Products" pd LEFT JOIN "Category" ct ON ct.id = pd.category`
         );
-        console.log(result)
+        // console.log(result)
         if (!result) throw new CustomError( `Cant select data from "Products"`, 400, "");
         return result;
     },
