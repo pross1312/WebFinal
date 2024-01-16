@@ -21,7 +21,7 @@ module.exports = {
     async list(email) {
         if (email) {
             const result = await db.exec(
-                "many",
+                "manyOrNone",
                 `SELECT * FROM "ChatMessage" WHERE email = $1`,
                 email
             );

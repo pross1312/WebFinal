@@ -50,7 +50,7 @@ module.exports = {
                         type,
                     })
                 );
-                if (type.toLowerCase() === "user") {
+                if (type.toLowerCase() === "customer") {
                     await userModel.add( new userModel.UserInfo({ email, name: "", avatar: "" }));
                     await ChatModel.add(new ChatModel.ChatMessage({
                         role: "admin",
