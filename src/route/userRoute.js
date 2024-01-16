@@ -4,7 +4,6 @@ const homepage = require('../controller/homepageController');
 const pagination_util = require('../module/utils')
 const database = require('../model/Product.model');
 const homepageController = require('../controller/homepageController');
-let last_page = 0
 
 router.get('/', async (req, res) => {
     try {
@@ -33,4 +32,6 @@ router.get('/detail', async(req, res) => {
 });
 
 router.get('/list', homepageController.getAllProduct)
+router.get('/list_type', homepageController.getByCategory)
+
 module.exports = router;
