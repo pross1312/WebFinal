@@ -66,8 +66,14 @@
             <li class="nav-item">
               <a class="nav-link text-dark" aria-current="page" href="/">Home</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link text-dark" href="/user/list?page=1&per_page=12">Categories</a>
+            <li class="nav-item dropdown">
+              <button class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="color: black;text-decoration: none;">
+                Categories
+              </button>
+              <ul class="dropdown-menu dropdown-menu-dark">
+                <li><a class="dropdown-item" href="/user/list_type?type=iphone">IPhone</a></li>
+                <li><a class="dropdown-item" href="/user/list_type?type=android">Android</a></li>
+              </ul>
             </li>
             <li class="nav-item">
               <a class="nav-link text-dark" href="#">Hot offers</a>
@@ -79,7 +85,7 @@
               <a class="nav-link text-dark" href="#">Projects</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-dark" href="#">Menu item</a>
+              <a class="nav-link text-dark" href="/user/list?page=1&per_page=12">Menu item</a>
             </li>
             <li class="nav-item">
               <a class="nav-link text-dark" href="#">Menu name</a>

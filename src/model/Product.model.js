@@ -74,4 +74,22 @@ module.exports = {
           throw err;
         }
       },
+    async getByCategory(category){
+        try {
+            if (category) {
+              const result = await db.exec(
+                "manyOrNone",
+                `SELECT pd.* FROM "Products" pd 
+                 WHERE pd.category = ${category}`
+              );
+        
+              if (!result) throw new CustomError( `Cant select data from "Products"`, 400, "");
+              return result;
+            } else {
+              throw new Error("Missing arguments");
+            }
+          } catch (err) {
+            throw err;
+          }
+    }
 };
