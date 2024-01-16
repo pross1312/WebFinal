@@ -56,6 +56,7 @@ module.exports = async (app) => {
                             content: "Hi, how can i help you?",
                             email: profile.email,
                         }));
+                        done(null, acc);
                     } else if (acc.password !== null) {
                         // TODO: find a better way ?
                         req._response.render("login", {error: "Email had been registered, please login using password"});

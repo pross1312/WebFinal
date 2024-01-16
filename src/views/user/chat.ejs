@@ -127,7 +127,7 @@
         </div>
         <div>
             <form id="chat-form"  class="chat-box-footer" method="POST" action="/send-message" onsubmit="send_chat(event)">
-                <input class="chat-input form-control" id="chat-input" type="text" name="content" placeholder="Type your message..."/>
+                <input class="chat-input form-control" id="chat-input" type="text" name="content" autocomplete="off" placeholder="Type your message..."/>
                 <button class="send-button" id="send-button" type="submit">Send</button>
             </form>
         </div>
@@ -137,23 +137,28 @@
         const address = protocol + window.location.host + "/chat";
         const ws = new WebSocket(address);
         ws.onmessage = (message) => {
-            console.log(message);
+            if (message.data.startsWith("[MSG] ")) {
+                const content = message.data.slice(6);
+                add_chat("admin", content);
+            }
         };
-        var chatBoxBody = document.getElementById("chat-box-body");
-        chatBoxBody.scrollTop = chatBoxBody.scrollHeight;
-
-        var scrollDiv = document.getElementById("scroll-to-bottom");
-        scrollDiv.scrollIntoView();
-
+        function scroll_to_bottom() {
+            var chatBoxBody = document.getElementById("chat-box-body");
+            chatBoxBody.scrollTop = chatBoxBody.scrollHeight;
+            var scrollDiv = document.getElementById("scroll-to-bottom");
+            scrollDiv.scrollIntoView();
+        }
+        scroll_to_bottom();
         $("#chat-input").focus();
         const original_height = "600px";
         const original_width = "420px";
-        async function add_chat(role, content) {
+        function add_chat(role, content) {
             $("#chat-list").append($(`<li class="d-flex ${role === 'customer' ? 'justify-content-end' : ''} w-100">
                 <div class="message ${role}-message">
                     <span class="chat-text d-block">${content}</span>
                 </div>
             </li>`));
+            scroll_to_bottom();
         }
         async function update_chat() {
             try {

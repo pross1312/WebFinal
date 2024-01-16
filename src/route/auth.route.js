@@ -34,6 +34,7 @@ router.get(
 
 router.get("/google/callback", (req, res, next) => {
     req._response = res; // HACK: pass response to render data in case of failure cause i have to idea how to use failure redirect
+    console.log("OK");
     next()
 }, passport.authenticate("google"), async (req, res) => {
     try { // NOTE: test data
@@ -46,8 +47,12 @@ router.get("/google/callback", (req, res, next) => {
 
 
 router.get("/login", (req, res) => {
-    const error = req.session?.messages?.pop();
-    res.render("login", { error });
+    if (req.isAuthenticated()) {
+        res.redirect("/");
+    } else {
+        const error = req.session?.messages?.pop();
+        res.render("login", { error });
+    }
 });
 
 router.get("/register", (req, res) => {

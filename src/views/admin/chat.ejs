@@ -1,0 +1,238 @@
+<%- include("../partials/header") %>
+<%- include("partials/navbarAdmin") %>
+<style>
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.chat-container {
+    flex-grow: 1;
+    display: flex;
+    overflow: hidden;
+}
+.side {
+    flex-basis: 25%;
+    padding: 0px;;
+    margin: 0px;;
+    border: 1px solid grey;
+}
+.main {
+    height: 100%;
+    flex: 1 1 auto;
+    border: 1px solid grey;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+.side-list {
+    border-radius: 0px;
+}
+.customer-box {
+    border-radius: 0px;
+    cursor: pointer;
+}
+.customer-box:hover {
+    background-color: #333;
+}
+.customer-box img {
+    width: 40px;
+    margin-right: 10px;
+}
+.customer-box .active {
+    color: lightgreen;
+}
+.chat-box-footer {
+    flex-grow: 0;
+    min-height: 10%;
+    display: flex;
+    padding: 10px;
+    border-bottom-left-radius: 15px;
+    background-color: inherit;
+    border-top: 1px solid #444;
+}
+.chat-input {
+    flex-grow: 1;
+    padding: 10px;
+    color: #333333;
+    border-radius: 15px;
+}
+
+.send-button {
+    background-color: #007BFF;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px;
+    margin-left: 5px;
+    border-radius: 15px;
+}
+
+.send-button:focus {
+    outline: none;
+}
+.chat-box-header {
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    background-color: inherit;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: end;
+    flex-grow: 0;
+    border-bottom: 1px solid #444;
+}
+
+.chat-box-body {
+}
+
+.chat-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-list::-webkit-scrollbar-thumb {
+    background-color: #007BFF;
+    border-radius: 4px;
+}
+.chat-list {
+    flex: 1 1 auto;
+    padding: 10px;
+    background-color: inherit;
+    scrollbar-width: thin;
+    overflow-y: auto;
+    margin: 0px;
+}
+.message {
+    max-width: 70%;
+    border-radius: 10px;
+    padding: 10px 10px;
+    color: white;
+    margin: 3px;
+}
+
+.chat-text {
+    text-wrap: wrap;
+    word-wrap: break-word;
+}
+
+.customer-message {
+    background-color: #303030;
+}
+
+.admin-message {
+    background-color: #0084ff;
+}
+
+</style>
+<div class="chat-container">
+    <div class="side">
+        <ul class="list-group side-list">
+            <% for (let customer of customers) {%>
+                <li class="list-group-item customer-box" onclick="on_click_chat_box('<%-customer.email%>')">
+                    <img src="<%-customer.avatar%>" />
+                    <span class="<%-customer.is_active ? 'active' : ''%>"><%-customer.email%></span>
+                </li>
+            <% } %>
+        </ul>
+    </div>
+    <div class="main">
+        <span class="w-100 chat-box-header" data-bs-theme="light">
+            <strong id="chat-box-name"><span class="invisible">.</span></strong>
+        </span>
+        <ul id="chat-list" class="chat-list">
+        </ul>
+        <div>
+            <form id="chat-form"  class="chat-box-footer" method="POST" action="/send-message" onsubmit="send_chat(event)">
+                <input class="chat-input form-control" id="chat-input" type="text" name="content" autocomplete="off" placeholder="Type your message..."/>
+                <button class="send-button" id="send-button" type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        const protocol = window.location.protocol === "http:" ? "ws://" : "wss://"
+        const address = protocol + window.location.host + "/chat";
+        const ws = new WebSocket(address);
+        let current_customer = null;
+        ws.onmessage = (message) => {
+            if (message.data.startsWith("[MSG] ")) {
+                const data = message.data.slice(6);
+                const index = data.indexOf("]");
+                const email = data.slice(1, index);
+                const content = data.slice(index+1);
+                if (email === current_customer) add_chat("customer", content);
+            } else if (message.data.startsWith("[LOGIN] ")) {
+                const customer = message.data.slice(8);
+                set_active(customer, true);
+            } else if (message.data.startsWith("[LOGOUT] ")) {
+                const customer = message.data.slice(9);
+                set_active(customer, false);
+            }
+        };
+        function set_active(customer, active) {
+            $(".list-group-item > span").get().forEach(x => {
+                if ($(x).text() === customer) {
+                    if (active) $(x).addClass("active");
+                    else $(x).removeClass("active");
+                }
+            });
+        }
+        function add_chat(role, content) {
+            $("#chat-list").append($(`<li class="d-flex ${role === 'admin' ? 'justify-content-end' : ''} w-100">
+                <div class="message ${role}-message">
+                    <span class="chat-text d-block">${content}</span>
+                </div>
+            </li>`));
+            scroll_to_bottom();
+        }
+        function scroll_to_bottom() {
+            var chatList = document.querySelector('#chat-list');
+            chatList.scrollTop = chatList.scrollHeight;
+        }
+        scroll_to_bottom();
+        function on_click_chat_box(customer) {
+            $("#chat-list").empty();
+            $.ajax({
+                url: "/admin/list-chat",
+                type: "GET",
+                data: $.param({ customer }),
+                processData: false,
+                contentType: "application/json",
+                success: function (res) {
+                    $("#chat-box-name").text(customer)
+                    current_customer = customer;
+                    for (let chat of res) {
+                        add_chat(chat.role, chat.content);
+                    }
+                },
+                error: function (err) {
+                    toastr.error(err.responseText);
+                }
+            });
+        }
+        function send_chat(event) {
+            event.preventDefault();
+            if (current_customer == null) {
+                return;
+            }
+            const content = $("#chat-input").val().trim();
+            if (content === "") {
+                return;
+            }
+            $.ajax({
+                url: "/admin/send-chat",
+                type: "POST",
+                data: JSON.stringify({content, customer: current_customer}),
+                processData: false,
+                contentType: "application/json",
+                success: function (res) {
+                    add_chat("admin", content);
+                    $("#chat-input").val("");
+                },
+                error: function (err) {
+                    toastr.error(err.responseText);
+                }
+            });
+        }
+    </script>
+</div>
+<%- include("../partials/footer") %>   

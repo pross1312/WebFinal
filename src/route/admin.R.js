@@ -62,4 +62,9 @@ router.get('/category/list', adminController.getAllCategory)
 router.post('/category/delete', adminController.deleteCategory)
 router.post('/category/add', adminController.addCategory)
 router.post('/category/update',adminController.updateCategory)
+
+// chat with customer
+router.get('/chat', adminController.chat);
+router.get('/list-chat', adminController.list_chat);
+router.post('/send-chat', adminController.send_chat);
 module.exports = router;
