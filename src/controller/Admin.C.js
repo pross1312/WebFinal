@@ -51,6 +51,13 @@ module.exports = {
                     })
                 );
                 if (type.toLowerCase() === "customer") {
+                    const response = await payment_req.post("/register", JSON.stringify({
+                        email: auth.email,
+                        password: auth.password,
+                    }));
+                    if (response.code !== 200) {
+                        return next(response.data);
+                    }
                     await userModel.add( new userModel.UserInfo({ email, name: "", avatar: "" }));
                     await ChatModel.add(new ChatModel.ChatMessage({
                         role: "admin",
