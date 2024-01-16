@@ -6,6 +6,7 @@ const payment_req = require("../module/payment_req");
 const { sendEmail } = require("../module/utils");
 const path = require("path");
 const { TimeoutMap } = require("../module/TimeoutMap");
+const ChatModel = require("../model/Chat.model");
 require("dotenv").config;
 const saltRounds = Number(process.env.SALT)
 const unconfirmed_account = new TimeoutMap();
@@ -19,29 +20,29 @@ module.exports = {
             if (auth == null) {
                 res.render('verify', {error: "Incorrect code"});
             } else {
-                // salt 10
-                const hashedPassword = await bcrypt.hash(
-                    auth.password,
-                    saltRounds || 10
-                );
-
-                acc = new AccountModel.Account({
-                    email: auth.email,
-                    password: hashedPassword,
-                    type: "customer"
-                });
-                const result = await AccountModel.add(acc);
-                user_profile = new UserModel.UserInfo({
-                    name: "",
-                    avatar: "",
-                    email: auth.email,
-                });
-                await UserModel.add(user_profile);
+                // register payment account
                 const response = await payment_req.post("/register", JSON.stringify({
                     email: auth.email,
                     password: auth.password,
                 }));
                 if (response.code === 200) {
+                    // salt 10
+                    const hashedPassword = await bcrypt.hash(
+                        auth.password,
+                        saltRounds || 10
+                    );
+                    acc = new AccountModel.Account({
+                        email: auth.email,
+                        password: hashedPassword,
+                        type: "customer"
+                    });
+                    await AccountModel.add(acc);
+                    await UserModel.add(new UserModel.UserInfo({email: auth.email}));
+                    await ChatModel.add(new ChatModel.ChatMessage({
+                        role: "admin",
+                        content: "Hi, how can i help you?",
+                        email: auth.email
+                    }));
                     res.render('login', {error: null});
                 } else {
                     res.render("register", {error: response.data});

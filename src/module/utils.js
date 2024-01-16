@@ -1,4 +1,4 @@
-const adminModel = require("../model/admin.M");
+const adminModel = require("../model/Admin.m");
 const nodemailer = require("nodemailer");
 const util = require("util");
 module.exports = {

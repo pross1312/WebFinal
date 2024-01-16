@@ -1,4 +1,4 @@
-const adminModel = require("../model/admin.M");
+const adminModel = require("../model/Admin.m");
 const accountModel = require("../model/Account.model");
 const productModel = require("../model/Product.model");
 const userModel = require("../model/User.model");

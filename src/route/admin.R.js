@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const adminController = require('../controller/admin.C')
+const adminController = require('../controller/Admin.C')
 const multer = require('multer');
 const path = require('path')
 require('dotenv').config()

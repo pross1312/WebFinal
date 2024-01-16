@@ -81,5 +81,12 @@ create table "Transaction"(
     primary key(initiator, receiver, ts)
 );
 
-
+-- chat between admin and customer with $email
+create table "ChatMessage"(
+    id serial,
+    role varchar(16) not null check (role = 'customer' OR role = 'admin'),
+    content varchar(1024) not null,
+    email varchar(512) references "UserInfo"(email),
+    primary key(id, email)
+);
 

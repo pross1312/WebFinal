@@ -4,6 +4,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 const AccountModel = require('../model/Account.model');
 const UserModel = require('../model/User.model');
+const ChatModel = require('../model/Chat.model');
 require('dotenv').config
 
 passport.serializeUser((profile, done) => {
@@ -50,6 +51,11 @@ module.exports = async (app) => {
                             email: profile.email,
                         });
                         await UserModel.add(user_profile);
+                        await ChatModel.add(new ChatModel.ChatMessage({
+                            role: "admin",
+                            content: "Hi, how can i help you?",
+                            email: profile.email,
+                        }));
                     } else if (acc.password !== null) {
                         // TODO: find a better way ?
                         req._response.render("login", {error: "Email had been registered, please login using password"});

@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const session = require("express-session");
+const ws = require("ws");
 const path = require("path");
 const PORT = process.env.PORT || 1234;
 const payment_req = require("./module/payment_req");
@@ -9,16 +10,16 @@ const CustomError = require("./module/CustomErr");
 // config
 app.use("/resources", express.static(path.join(__dirname, "resources")));
 app.use("/image", express.static(path.join(__dirname, "resources", "productImages")));
+app.use("/icon", express.static(path.join(__dirname, "resources", "icons")));
 app.use("/public", express.static(path.join(__dirname, "public")));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(
-    session({
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: false,
-    })
-);
+app.use(express.urlencoded({ extended: true }));
+const session_handler = session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+})
+app.use(session_handler);
 
 require("./config/passport-config")(app);
 app.set("views", path.join(__dirname, "views"));
@@ -49,8 +50,12 @@ app.use((req, res, next) => { // NOTE: payment_access_token should not be allowe
 });
 
 app.get('/', (req, res) => {
+    let array = new Array(10);
+    array.fill({role: "admin", text: "hello motherf jeqwoie jioqwje oucker"});
+    array = array.concat(new Array(10).fill({role: "customer", text: "hello motherf jeqwoie jioqwje oucker"}))
+                 .sort(() => (Math.random() > .5) ? 1 : -1);
     if (req.user?.type === "customer") {
-        res.render("user/homepage");
+        res.render("user/homepage", {messages: array});
     } else if (req.user?.type === "admin") {
         res.redirect("/admin");
     } else {
@@ -58,8 +63,15 @@ app.get('/', (req, res) => {
     }
 });
 
+app.use("/customer", (req, res, next) => {
+    if (req.user?.type === "customer") {
+        next();
+    } else {
+        res.redirect("/");
+    }
+}, require("./route/customer.route"));
+
 const ensureAuthorization = (req, res, next) => {
-    // TODO Check Account type
     if (req.user?.type === "admin") {
         next();
     } else {
@@ -99,7 +111,7 @@ app.use((err, req, res, next) => {
 const reset = "\x1b[0m";
 const cyan = "\x1b[96m";
 const underline = "\x1b[4m";
-app.listen(13123, async () => {
+const server = app.listen(13123, async () => {
     console.log(`${cyan}${underline}App running at: http://localhost:${PORT}${reset}`);
     const init = await require('./module/database').init_if_not_exist('./init.sql');
     if (init) { // NOTE: init random data here
@@ -115,4 +127,21 @@ app.listen(13123, async () => {
             require("./model/Product.model").add(data);
         }
     }
+});
+const ws_server = new ws.Server({noServer: true});
+ws_server.on("connection", (socket, req) => {
+    req.user = req?.session?.passport?.user;
+    if (!req.user) {
+        socket.close();
+    } else {
+        require("./route/socket.route")(socket, req);
+    }
+});
+server.on("upgrade", (req, sock, head) => {
+    session_handler(req, {}, () => {
+        ws_server.handleUpgrade(req, sock, head, (socket) => {
+            console.log("Got connection");
+            ws_server.emit("connection", socket, req);
+        });
+    });
 });
