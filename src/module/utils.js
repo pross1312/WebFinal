@@ -1,5 +1,6 @@
 const adminModel = require("../model/admin.M");
 const nodemailer = require("nodemailer");
+const util = require("util");
 module.exports = {
     // 1 .. 2 3 4 current 5 6 .. total -> max_display_pages = 6
     dynamic_scroll_pagination(
@@ -31,8 +32,7 @@ module.exports = {
         };
     },
 
-    
-    divideCategories(categories) { 
+    divideCategories(categories) {
         const findChildCategories = (categories, id) => {
             return categories
                 .filter((category) => category.parent_id === id)
@@ -43,7 +43,7 @@ module.exports = {
                     );
                     return category;
                 });
-        },
+        };
 
         level1 = categories.filter((category) => !category.parent_id);
         let dividedCategories = level1.map((item) => {
@@ -56,17 +56,41 @@ module.exports = {
         return dividedCategories;
     },
 
-    async isAncestor(categories, id, parent_id) {
-        const category = await adminModel.get('Category', `id = '${id}'`);
+    findCateById(categories, id) {
+        return categories.filter(
+            (category) =>
+                category.id == id ||
+                (category.children &&
+                    category.children.length > 0 &&
+                    category.children.some((child) =>
+                        { 
+                            result = this.findCateById(child.children, id)
+                            if(result && result.length > 0)
+                                return true
+                            return false
+                        }
+                    ))
+        );
+    },
+    async isAncestor(id, parent_id) {
+        console.log(id, parent_id);
+        let categories = await adminModel.getAll("Category");
+        categories = this.divideCategories(categories);
+        console.log(
+            util.inspect(categories, {
+                showHidden: false,
+                depth: null,
+                colors: true,
+            })
+        );
+        let category = this.findCateById(categories, id);
+        if (!(category && category.length > 0)) return null;
         console.log(category);
-        const containsIdInChildren = (category, parent_id) =>
-            category.id === parent_id ||
-            (category.children &&
-                category.children.some((child) =>
-                    containsIdInChildren(child, parent_id)
-                ));
-        const result = await containsIdInChildren(category, parent_id);
-        return result;
+        const result = this.findCateById(category, parent_id);
+        console.log(result);
+        if(result && result.length > 0)
+            return true
+        return false;
     },
 
     findNameCate(cates, cateId) {
@@ -74,11 +98,14 @@ module.exports = {
     },
 
     // mode 1 - create  _ 2 - update
-    async checkValidCategory(name, parent_id, categories, mode = 1, id = null) {
+    async checkValidCategory(name, parent_id, category, mode = 1, id = null) {
         try {
-            const category = await adminModel.get('Category', ` id = ${parent_id}`);
-            if (category && category.length > 0) {
-                category.forEach((cate) => {
+            const categories = await adminModel.get(
+                "Category",
+                ` id = ${parent_id}`
+            );
+            if (categories && categories.length > 0) {
+                categories.forEach((cate) => {
                     if (cate.name.toLowerCase() === name.toLowerCase()) {
                         return {
                             statusCode: 409,
@@ -87,18 +114,21 @@ module.exports = {
                     }
                 });
             }
-            if (category.length === 0 && Number(parent_id) != -1) {
+            if (categories.length === 0 && Number(parent_id) != -1) {
                 return {
                     statusCode: 409,
                     msg: "The parent category does not exist",
                 };
             }
-            if (categories && categories.length > 0) {
+            if (category && category.length > 0) {
                 return { statusCode: 409, msg: "Category existed in database" };
             }
             if (mode === 2) {
-                if (await this.isAncestor(categories, id, parent_id))
-                    return { statusCode: 406, msg: "Child category can't be assigned to parent_id" };
+                if (await this.isAncestor(id, parent_id))
+                    return {
+                        statusCode: 406,
+                        msg: "Child category can't be assigned to parent_id",
+                    };
             }
             return { statusCode: 200, msg: "true" };
         } catch (err) {
@@ -127,5 +157,5 @@ module.exports = {
                 return info.response;
             }
         });
-    }
-}
+    },
+};

@@ -253,9 +253,7 @@ module.exports = {
     async getAllCategory(req, res, next) {
         try {
             let cates = await adminModel.getAll("Category");
-            tempcates = _.cloneDeep(cates);
             cates = utils.divideCategories(cates);
-            // handle cates -> display sub cate as name
             if (!cates) next(new Error("Error occurred, Please try again"));
             else {
                 cates = cates.map((cate) => {
@@ -329,18 +327,17 @@ module.exports = {
         const { id, name, parent_id } = req.body;
         if (!id || !name || !parent_id)
             return res.status(400).send("Missing some arguments");
-
         try {
             let condition;
             if (parent_id === -1 || parent_id === "-1") {
                 condition = ` name = '${name.toLowerCase()}' and parent_id IS NULL`;
             } else
                 condition = ` name = '${name.toLowerCase()}' and parent_id = '${parent_id}'`;
-            const categories = await adminModel.get('Category', condition);
+            const category = await adminModel.get('Category', condition);
             const checkValidUpdate = await utils.checkValidCategory(
                 name,
                 parent_id,
-                categories,
+                category,
                 2,
                 id
             );

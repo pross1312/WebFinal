@@ -1,18 +1,28 @@
 <%- include("../partials/header") %>
 
+<style>
+    canvas{ 
+        max-height: calc(450px + 1vh);
+    }
+</style>
 <%- include("partials/navbarAdmin") %>
 <div class="container-sm">
-    <h1>Order Statistics</h1>
+    <h3 class="text-center">Order Statistics</h3>
 
-    <div class="container-sm">
+    <div>
         <canvas id="orderChart"></canvas>
     </div>
     <div class="content d-flex justify-content-center align-items-center">
         <a href="<%- (year - 1 >= release_year) ? '/admin/statistics/?year=' + (year - 1) : 'javascript:void(0);' %>"><button class="btn px-4"><i class="fa fa-arrow-left"></i></button></a>
-        <h3 class="text-center"><%=year%></h3>
+        <h5 class="text-center"><%=year%></h5>
         <a href="<%- (year + 1 <= current_year ) ? '/admin/statistics/?year=' + (year + 1) : 'javascript:void(0);' %>"><button class="btn px-4"><i class="fa fa-arrow-right"></i></button></a>
     </div>
+    <div>
+        <h3 class="text-center my-3">The Best Selling Categories</h3>
+        <canvas id="bestSellingChart"></canvas>
+    </div>
 </div>
+
 <script>
     var ctx = document.getElementById('orderChart').getContext('2d');
         var myChart = new Chart(ctx, {
@@ -57,6 +67,21 @@
                     }
                 }
             }
+        });
+
+    var ctx2 = document.getElementById('bestSellingChart').getContext('2d');
+    var myChart = new Chart(ctx2, {
+            type: 'pie',
+            data: {
+                // array of category 
+                labels:['Phone', 'Laptop','Fashion','Others'], 
+                // order count with each category 
+                datasets: [
+                    {
+                        data: [30, 25,24, 10],
+                    },
+                ]
+            },
         });
 </script>
 
