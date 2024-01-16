@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 1234;
 const payment_req = require("./module/payment_req");
 const CustomError = require("./module/CustomErr");
 const product_data = require("./module/database");
+
 // config
 app.use("/resources", express.static(path.join(__dirname, "resources")));
 app.use("/image", express.static(path.join(__dirname, "resources", "productImages")));

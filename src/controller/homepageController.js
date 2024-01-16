@@ -130,6 +130,7 @@ class HomePageController {
             next(err);
         }
     }
+
 }
 
 module.exports = new HomePageController();
