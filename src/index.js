@@ -7,10 +7,7 @@ const path = require("path");
 const PORT = process.env.PORT || 1234;
 const payment_req = require("./module/payment_req");
 const CustomError = require("./module/CustomErr");
-const product_data = require("./model/MockDataProduct");
-const { products } = require("./module/mockdatabase");
-const productModel = require('./model/Product.model');
-
+const product_data = require("./module/database");
 // config
 app.use("/resources", express.static(path.join(__dirname, "resources")));
 app.use("/image", express.static(path.join(__dirname, "resources", "productImages")));
@@ -61,11 +58,7 @@ app.get('/', (req, res) => {
     array = array.concat(new Array(10).fill({role: "customer", text: "hello motherf jeqwoie jioqwje oucker"}))
                  .sort(() => (Math.random() > .5) ? 1 : -1);
     if (req.user?.type === "customer") {
-        const products = productModel.get_all();
-        res.render("user/homepage", {
-            messages: array, 
-            products,
-        });
+        res.redirect("/user");
     } else if (req.user?.type === "admin") {
         res.redirect("/admin");
     } else {

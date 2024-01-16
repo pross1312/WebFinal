@@ -65,7 +65,7 @@
               <a class="nav-link text-dark" aria-current="page" href="/">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-dark" href="#">Categories</a>
+              <a class="nav-link text-dark" href="/user/list?page=1&per_page=12">Categories</a>
             </li>
             <li class="nav-item">
               <a class="nav-link text-dark" href="#">Hot offers</a>
@@ -109,31 +109,56 @@
     </nav>
     <!-- Navbar -->
   </header>
+  
+<section class="container product my-5 pt-5">
+  <header class="mb-4 text-center">
+    <h1><%= product.p_name %></h1>
+  </header>
+  
+  <div class="row mt-5">
+    <div class = "col-lg-5 col-md-12 col-12">
+      <img src="<%= product.image %>" alt="<%= product.p_name %> Image" class="img-fluid w-100">
+    </div>
 
-<header class="mb-4" style="padding: 5px">
-  <h1><%= product.name %></h1>
-</header>
-
-<main class="row" style="padding: 2px">
-    <section class="col-md-4 mb-4">
-        <img src="<%= product.image %>" alt="<%= product.name %> Image" class="img-fluid w-100">
-    </section>
-
-    <section class="col-md-8">
-        <h2>Product Details</h2>
-        <p><strong>Category:</strong> <%= product.category %></p>
-        <p><strong>Description:</strong> <%= product.description %></p>
-        <p><strong>Manufacturer:</strong> <%= product.manufacturer %></p>
-        <p><strong>Release Date:</strong> <%= product.releaseDate %></p>
-        <p><strong>Rating:</strong> <%= product.rating %> stars</p>
-        <h2>Pricing and Availability</h2>
-        <p><strong>Price:</strong> $<%= product.price.toFixed(2) %></p>
-        <p><strong>Stock Quantity:</strong> <%= product.stockQuantity %> units</p>
-    </section>
-</main>
-
-<section class="mt-4">
-  <h2>You might be interested in: </h2>
+    <div class="col-lg-6 col-md-12 col-12">
+      <h3>Product Details</h3>
+      <p><strong>Category:</strong> <%= product.category %></p>
+      <p><strong>Description:</strong> <%= product.description %></p>
+      <h3>Pricing and Availability</h3>
+      <p><strong>Price:</strong> $<%= product.price %></p>
+      <p><strong>Stock Quantity:</strong> <%= product.stockQuantity %> units</p>
+      <a href="#!" class="btn btn-primary shadow-0 me-1">Add to cart</a>
+      <a href="#!" class="btn btn-light border px-2 pt-2 icon-hover"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
+    </div>
+  </div>
 </section>
 
+
+<% if (relatedProduct.length > 0) {%>
+<section class="my-5 pb-5">
+  <div class="container text-center mt-5 py-5">
+    <h3>You might be interested in</h3>
+    <hr class="mx-auto">
+  </div>
+  <div class="row mx-auto container-fluid">
+    <% relatedProduct.forEach(product => { %>
+      <div class="text-center col-lg-3 col-md-4 col-12">
+        <div class="card w-100 my-2 shadow-2-strong">
+          <a href="/user/detail?product_id=<%= product.id %>">
+            <img src="<%=product.image%>" class="card-img-top" style="aspect-ratio: 1 / 1"/>
+          </a>
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title"><%=product.p_name%></h5>
+            <p class="card-text">$<%=product.price%></p>
+            <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
+              <a href="#!" class="btn btn-primary shadow-0 me-1">Add to cart</a>
+              <a href="#!" class="btn btn-light border px-2 pt-2 icon-hover"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }); %>   
+  </div>
+</section>
+<%}%>
 <%- include("../partials/footer") %>
