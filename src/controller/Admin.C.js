@@ -368,7 +368,6 @@ module.exports = {
     async Statistic(req, res, next){ 
         const release_year = 2019
         const current_year = new Date().getFullYear()
-        console.log(current_year);
         const year = parseInt(req.query.year) || current_year
         if(!Number.isInteger(parseInt(year)))
             return next( new CustomError("Missing arguments, 400, Please try again"))

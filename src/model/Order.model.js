@@ -90,7 +90,7 @@ module.exports = {
             )
             SELECT 
                 ms.month AS month,
-                COUNT(od.*) AS total
+                COUNT(distinct od.id) AS total
             FROM 
                 MonthSeries ms
             LEFT JOIN 
