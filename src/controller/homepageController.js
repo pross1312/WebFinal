@@ -100,6 +100,37 @@ class HomePageController {
         }
     }
 
+    async getSearch(req, res, next) {
+        const page = isNaN(req.query.page) ? 1 : Number(req.query.page);
+        const per_page = isNaN(req.query.per_page)
+            ? 12
+            : Number(req.query.per_page);
+        const max_display_pages = 4;
+        try {
+            let pattern = req.query.pattern
+            let products = await productModel.getByPattern(pattern);
+            if (!products) {
+                next(new Error("Error occurred, Please try again"));
+            } else {
+                const { pages, items, total_pages } = dynamic_scroll_pagination(
+                    max_display_pages,
+                    per_page,
+                    page,
+                    products
+                );
+                res.render("user/product_list", {
+                    products: items,
+                    pages,
+                    total_pages,
+                    current_page: page,
+                    base_url: "/user/list?",
+                });
+            }
+        } catch (err) {
+            next(err);
+        }
+    }
+
 }
 
 module.exports = new HomePageController();

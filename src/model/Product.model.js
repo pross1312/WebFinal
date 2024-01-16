@@ -95,4 +95,23 @@ module.exports = {
           }
     },
 
+    async getByPattern(pattern){
+        try {
+            if (pattern) {
+              const result = await db.exec(
+                "manyOrNone",
+                `SELECT pd.* FROM "Products" pd 
+                 WHERE LOWER(pd.p_name) LIKE '%' || LOWER('${pattern}') || '%';`
+              );
+              console.log(pattern)
+              if (!result) throw new CustomError( `Cant select data from "Products"`, 400, "");
+              return result;
+            } else {
+              throw new Error("Missing arguments");
+            }
+        } catch (err) {
+        throw err;
+        }
+    },
+
 };
