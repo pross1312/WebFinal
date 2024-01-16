@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
+<nav class="navbar navbar-expand-lg bg-body-tertiary flex-grow-0">
     <div class="container-fluid">
       <a class="navbar-brand" href="/admin">Rush Shopping</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -7,13 +7,16 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/admin/category/list">Manage Category</a>
+            <a id="category" class="nav-link" aria-current="page" href="/admin/category/list">Manage Category</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/admin/product/list">Manage Product</a>
+            <a id="product" class="nav-link" href="/admin/product/list">Manage Product</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/admin/account/list">Manage Account</a>
+            <a id="account" class="nav-link" href="/admin/account/list">Manage Account</a>
+          </li>
+          <li class="nav-item">
+            <a id="chat" class="nav-link" href="/admin/chat">Chat</a>
           </li>
         </ul>
         <ul class="navbar-nav">
@@ -25,4 +28,24 @@
       </ul>
       </div>
     </div>
+    <script>
+        switch (window.location.pathname) {
+            case "/admin/category/list": {
+                $("#category").addClass("active");
+                break;
+            }
+            case "/admin/product/list": {
+                $("#product").addClass("active");
+                break;
+            }
+            case "/admin/account/list": {
+                $("#account").addClass("active");
+                break;
+            }
+            case "/admin/chat": {
+                $("#chat").addClass("active");
+                break;
+            }
+        }
+    </script>
   </nav>

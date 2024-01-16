@@ -56,6 +56,7 @@ module.exports = async (app) => {
                             content: "Hi, how can i help you?",
                             email: profile.email,
                         }));
+                        done(null, acc);
                     } else if (acc.password !== null) {
                         // TODO: find a better way ?
                         req._response.render("login", {error: "Email had been registered, please login using password"});
@@ -75,11 +76,15 @@ module.exports = async (app) => {
             async (email, password, done) => {
                 try {
                     const acc = await AccountModel.get(email);
-                    if (acc && bcrypt.compareSync(password, acc.password)) {
+                    if (acc.password === null) {
+                        done(null, false, {
+                            message: "To access this account, please log in using your Google credentials."
+                        });
+                    } else if (acc && bcrypt.compareSync(password, acc.password)) {
                         done(null, acc);
                     } else {
                         done(null, false, {
-                            message: 'Invalid email or password',
+                            message: 'Incorrect email or password',
                         });
                     }
                 } catch (err) {
