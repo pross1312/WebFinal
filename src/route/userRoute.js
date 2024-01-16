@@ -34,4 +34,6 @@ router.get('/detail', async(req, res) => {
 router.get('/list', homepageController.getAllProduct)
 
 router.get('/list_type', homepageController.getByCategory)
+
+router.get('/search', homepageController.getSearch)
 module.exports = router;
