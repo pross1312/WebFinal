@@ -112,7 +112,8 @@ app.listen(13123, async () => {
                 category: Math.max(1, (Math.random()*3) >> 0),
                 image: "https://picsum.photos/200"
             });
-            require("./model/Product.model").add(data);
+            await require("./model/Product.model").add(data);
         }
+        require('./module/faker').generateMockData() 
     }
 });

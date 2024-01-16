@@ -6,6 +6,8 @@ const bcrypt = require("bcrypt");
 require("dotenv").config();
 const path = require("path");
 var _ = require("lodash");
+const faker = require('../module/faker')
+const OrderModel = require('../model/Order.model')
 const {
     dynamic_scroll_pagination,
     calc_total_page,
@@ -13,6 +15,7 @@ const {
 const saltRounds = process.env.SALT || 10;
 const product_image_folder = process.env.PRODUCT_IMAGE_FOLDER;
 const utils = require("../module/utils");
+const CustomError = require("../module/CustomErr");
 const index_out_of_range_Int = "22003";
 module.exports = {
     // ======  Account ======
@@ -353,4 +356,33 @@ module.exports = {
             next(err);
         }
     },
+    
+    
+    async Statistic(req, res, next){ 
+        const release_year = 2019
+        const current_year = new Date().getFullYear()
+        console.log(current_year);
+        const year = parseInt(req.query.year) || current_year
+        if(!Number.isInteger(parseInt(year)))
+            return next( new CustomError("Missing arguments, 400, Please try again"))
+        try{ 
+
+            let cash_monthly = await OrderModel.get_cash_monthly_in_year(year)
+            let order_count_monthly = await OrderModel.get_order_count_monthly_in_year(year);
+            
+            if(cash_monthly && cash_monthly.length < 12 && 
+                order_count_monthly && order_count_monthly.length < 12)
+                    return next( new CustomError("Missing arguments, 400, Please try again"))
+            cash_monthly = cash_monthly.map(item => { 
+                return item.total
+            })
+            order_count_monthly = order_count_monthly.map(item => { 
+                return item.total
+            })
+            res.render('admin/admin', {cash_monthly, order_count_monthly, year, release_year, current_year});
+        }
+        catch(err){ 
+            next(err)
+        }
+    }
 };

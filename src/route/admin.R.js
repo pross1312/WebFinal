@@ -25,27 +25,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage})
 
-const faker = require('../module/faker')
-const orderData = faker.generateOrders()
-router.get('/', (req, res) => {
-    // Mock data 
-    const cash_monthly = faker.cash_monthly(orderData, 2023);
-    const year = 2023
-    const order_count_monthly = faker.order_count_monthly(orderData, 2023);
-    const release_year = 2019
-    const current_year = new Date().getFullYear()
-    res.render('admin/admin', { orderData, cash_monthly, order_count_monthly, year, release_year, current_year});
-});
-
-router.get('/statistics/', (req, res, next) => { 
-    const year = parseInt(req.query.year )
-    const cash_monthly = faker.cash_monthly(orderData, year);
-    const order_count_monthly = faker.order_count_monthly(orderData, year);
-    const release_year = 2019
-    const current_year = new Date().getFullYear()
-    res.render('admin/admin', { orderData, cash_monthly, order_count_monthly, year, release_year, current_year});
-})
-
+router.get('/', adminController.Statistic);
+router.get('/statistics/', adminController.Statistic)
 
 router.get('/account/list', adminController.getAllAccount)
 router.post('/account/add', adminController.addAccount)

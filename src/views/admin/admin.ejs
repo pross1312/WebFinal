@@ -1,26 +1,35 @@
 <%- include("../partials/header") %>
 
 <style>
-    canvas{ 
-        max-height: calc(450px + 1vh);
+    canvas {
+        max-width: calc(700px + 11vw);
+        max-height: calc(400px + 1vh);
+    }
+    .container-bestSeller{ 
+        width: 360px;
     }
 </style>
 <%- include("partials/navbarAdmin") %>
-<div class="container-sm">
-    <h3 class="text-center">Order Statistics</h3>
-
-    <div>
+<div class="container-sm d-flex">
+    <div class="flex-grow-1">
+        <h4 class="text-center">Order Statistics</h4>
         <canvas id="orderChart"></canvas>
     </div>
-    <div class="content d-flex justify-content-center align-items-center">
-        <a href="<%- (year - 1 >= release_year) ? '/admin/statistics/?year=' + (year - 1) : 'javascript:void(0);' %>"><button class="btn px-4"><i class="fa fa-arrow-left"></i></button></a>
-        <h5 class="text-center"><%=year%></h5>
-        <a href="<%- (year + 1 <= current_year ) ? '/admin/statistics/?year=' + (year + 1) : 'javascript:void(0);' %>"><button class="btn px-4"><i class="fa fa-arrow-right"></i></button></a>
-    </div>
-    <div>
-        <h3 class="text-center my-3">The Best Selling Categories</h3>
+    <div class="container-bestSeller">
+        <h4 class="text-center">Best Selling Categories <br>Coming soon</h4>
         <canvas id="bestSellingChart"></canvas>
     </div>
+</div>
+<div class="container-sm d-flex justify-content-center align-items-center">
+    <a
+        href="<%- (year - 1 >= release_year) ? '/admin/statistics/?year=' + (year - 1) : 'javascript:void(0);' %>"
+        ><button class="btn px-4"><i class="fa fa-arrow-left"></i></button
+    ></a>
+    <h5 class="text-center"><%=year%></h5>
+    <a
+        href="<%- (year + 1 <= current_year ) ? '/admin/statistics/?year=' + (year + 1) : 'javascript:void(0);' %>"
+        ><button class="btn px-4"><i class="fa fa-arrow-right"></i></button
+    ></a>
 </div>
 
 <script>
@@ -28,8 +37,7 @@
         var myChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels:Array.from({length: 12}, (_, i) => i + 1), 
-                // labels: [<%- orderData.map(data => `'${data.date}'`).join(', ') %>],
+                labels:Array.from({length: 12}, (_, i) => i + 1),
                 datasets: [
                     {
                         label: 'Order Count',
@@ -69,21 +77,20 @@
             }
         });
 
-    var ctx2 = document.getElementById('bestSellingChart').getContext('2d');
-    var myChart = new Chart(ctx2, {
-            type: 'pie',
-            data: {
-                // array of category 
-                labels:['Phone', 'Laptop','Fashion','Others'], 
-                // order count with each category 
-                datasets: [
-                    {
-                        data: [30, 25,24, 10],
-                    },
-                ]
-            },
-        });
+    // var ctx2 = document.getElementById('bestSellingChart').getContext('2d');
+    // var myChart = new Chart(ctx2, {
+    //         type: 'pie',
+    //         data: {
+    //             // array of category
+    //             labels:['Phone', 'Laptop','Fashion','Others'],
+    //             // order count with each category
+    //             datasets: [
+    //                 {
+    //                     data: [30, 25,24, 10],
+    //                 },
+    //             ]
+    //         },
+    //     });
 </script>
-
 
 <%- include("../partials/footer") %>

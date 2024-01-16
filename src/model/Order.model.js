@@ -57,5 +57,51 @@ module.exports = {
     async next_id() {
         const id = Number((await db.exec("oneOrNone", `SELECT max(id) as id FROM "Order"`)).id) || 0;
         return id + 1;
-    }
+    }, 
+
+    async get_cash_monthly_in_year(year){ 
+        try{ 
+            return await db.exec('any', `WITH MonthSeries AS (
+                SELECT generate_series(1, 12) AS month
+            )
+            SELECT 
+                ms.month AS month,
+                COALESCE(SUM(pd.price * od.count), 0) AS total
+            FROM 
+                MonthSeries ms
+            LEFT JOIN 
+                "Order" od ON ms.month = DATE_PART('month', od.ts) AND DATE_PART('YEAR', od.ts) = ${year}
+            LEFT JOIN 
+                "Products" pd ON od.product = pd.id
+            GROUP BY 
+                ms.month
+            ORDER BY 
+                ms.month ASC;`)
+        }
+        catch(err){ 
+            throw(err)
+        }
+    }, 
+
+    async get_order_count_monthly_in_year(year){ 
+        try{ 
+            return await db.exec('any', `WITH MonthSeries AS (
+                SELECT generate_series(1, 12) AS month
+            )
+            SELECT 
+                ms.month AS month,
+                COUNT(od.*) AS total
+            FROM 
+                MonthSeries ms
+            LEFT JOIN 
+                "Order" od ON ms.month = DATE_PART('month', od.ts) AND DATE_PART('YEAR', od.ts) = ${year}
+            GROUP BY 
+                ms.month
+            ORDER BY 
+                ms.month ASC;`)
+        }
+        catch(err){ 
+            throw(err)
+        }
+    }, 
 };
