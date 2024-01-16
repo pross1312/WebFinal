@@ -7,8 +7,6 @@ const path = require("path");
 const PORT = process.env.PORT || 1234;
 const payment_req = require("./module/payment_req");
 const CustomError = require("./module/CustomErr");
-const product_data = require("./module/database");
-
 // config
 app.use("/resources", express.static(path.join(__dirname, "resources")));
 app.use("/image", express.static(path.join(__dirname, "resources", "productImages")));
@@ -51,15 +49,13 @@ app.use((req, res, next) => { // NOTE: payment_access_token should not be allowe
     next();
 });
 
-app.use('/user', require('./route/userRoute'));
-
 app.get('/', (req, res) => {
     let array = new Array(10);
     array.fill({role: "admin", text: "hello motherf jeqwoie jioqwje oucker"});
     array = array.concat(new Array(10).fill({role: "customer", text: "hello motherf jeqwoie jioqwje oucker"}))
                  .sort(() => (Math.random() > .5) ? 1 : -1);
     if (req.user?.type === "customer") {
-        res.redirect("/user");
+        res.render("user/homepage", {messages: array});
     } else if (req.user?.type === "admin") {
         res.redirect("/admin");
     } else {
@@ -128,8 +124,9 @@ const server = app.listen(13123, async () => {
                 category: Math.max(1, (Math.random()*3) >> 0),
                 image: "https://picsum.photos/200"
             });
-            require("./model/Product.model").add(data);
+            await require("./model/Product.model").add(data);
         }
+        require('./module/faker').generateMockData() 
     }
 });
 const ws_server = new ws.Server({noServer: true});
