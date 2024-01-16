@@ -66,6 +66,14 @@
             <li class="nav-item">
               <a class="nav-link text-dark" aria-current="page" href="/">Home</a>
             </li>
+            <li class="nav-item dropdown">
+              <button class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="color: black;text-decoration: none;">
+                Categories
+              </button>
+              <ul class="dropdown-menu dropdown-menu-dark">
+                <li><a class="dropdown-item" href="/user/list_type?type=iphone">IPhone</a></li>
+                <li><a class="dropdown-item" href="/user/list_type?type=android">Android</a></li>
+              </ul>
             <li class="nav-item">
               <a class="nav-link text-dark" href="/user/list?page=1&per_page=12">Categories</a>
             </li>
@@ -79,7 +87,7 @@
               <a class="nav-link text-dark" href="#">Projects</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-dark" href="#">Menu item</a>
+              <a class="nav-link text-dark" href="/user/list?page=1&per_page=12">Menu item</a>
             </li>
             <li class="nav-item">
               <a class="nav-link text-dark" href="#">Menu name</a>
@@ -145,6 +153,7 @@
                 <img src="<%=product.image%>" class="card-img-top" style="aspect-ratio: 1 / 1"/>
               </a>
               <div class="card-body d-flex flex-column">
+                <h5 class="card-title"><%=product.p_name%></h5>
                 <h5 class="card-title"><%=product.name%></h5>
                 <p class="card-text"><%=product.price%></p>
                 <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
