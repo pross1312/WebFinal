@@ -1,7 +1,9 @@
-const adminModel = require("../model/admin.M");
+const adminModel = require("../model/Admin.m");
 const accountModel = require("../model/Account.model");
 const productModel = require("../model/Product.model");
 const userModel = require("../model/User.model");
+const payment_req = require("../module/payment_req");
+const SocketModel = require("../model/Socket.model");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 const path = require("path");
@@ -16,6 +18,7 @@ const saltRounds = process.env.SALT || 10;
 const product_image_folder = process.env.PRODUCT_IMAGE_FOLDER;
 const utils = require("../module/utils");
 const CustomError = require("../module/CustomErr");
+const ChatModel = require("../model/Chat.model");
 const index_out_of_range_Int = "22003";
 module.exports = {
     // ======  Account ======
@@ -49,6 +52,11 @@ module.exports = {
                 );
                 if (type.toLowerCase() === "user") {
                     await userModel.add( new userModel.UserInfo({ email, name: "", avatar: "" }));
+                    await ChatModel.add(new ChatModel.ChatMessage({
+                        role: "admin",
+                        content: "Hi, how can i help you?",
+                        email: email,
+                    }));
                 }
                 res.status(200).send();
             }
@@ -356,8 +364,7 @@ module.exports = {
             next(err);
         }
     },
-    
-    
+
     async Statistic(req, res, next){ 
         const release_year = 2019
         const current_year = new Date().getFullYear()
@@ -384,5 +391,40 @@ module.exports = {
         catch(err){ 
             next(err)
         }
-    }
+    },
+    async list_chat(req, res, next) {
+        const {customer} = req.query;
+        if (customer === undefined) {
+            res.status(400).send("Missing argument");
+        } else try {
+            const chat = await ChatModel.list(customer);
+            res.status(200).setHeader("Content-Type", "application/json")
+                .send(JSON.stringify(chat));
+        } catch(err) {
+            next(err);
+        }
+    },
+    async chat(req, res, next) {
+        try {
+            let customers = await adminModel.getAll("UserInfo");
+            customers = customers.map(x => {return {...x, is_active: SocketModel.get(x.email) !== undefined}});
+            if (!customers) next(new Error("Server can not load account table"));
+            res.status(200).render("admin/chat", { customers });
+        } catch (err) {
+            next(err);
+        }
+    },
+    async send_chat(req, res, next) {
+        const {content, customer} = req.body;
+        if (content === undefined || customer === undefined) {
+            res.status(400).send("Missing content");
+        } else try {
+            await ChatModel.add(new ChatModel.ChatMessage({role: "admin", content, email: customer}));
+            SocketModel.send(customer, "[MSG] " + content);
+            res.status(200).send("OK");
+        } catch(err) {
+            next(err);
+        }
+    },
+
 };

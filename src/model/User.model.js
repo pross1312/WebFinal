@@ -1,11 +1,15 @@
 const db = require('../module/database');
+const path = require('path');
 
 module.exports = {
     UserInfo: class {
         constructor({ email, name, avatar }) {
             this.email = email;
             this.name = name;
-            this.avatar = avatar;
+            this.avatar = avatar?.trim();
+            if (this.avatar === "" || this.avatar === null || this.avatar === undefined) {
+                this.avatar = "/icon/no_avatar.jpg";
+            }
         }
     },
     async add(userinfo) {

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const adminController = require('../controller/admin.C')
+const adminController = require('../controller/Admin.C')
 const multer = require('multer');
 const path = require('path')
 require('dotenv').config()
@@ -43,4 +43,9 @@ router.get('/category/list', adminController.getAllCategory)
 router.post('/category/delete', adminController.deleteCategory)
 router.post('/category/add', adminController.addCategory)
 router.post('/category/update',adminController.updateCategory)
+
+// chat with customer
+router.get('/chat', adminController.chat);
+router.get('/list-chat', adminController.list_chat);
+router.post('/send-chat', adminController.send_chat);
 module.exports = router;
