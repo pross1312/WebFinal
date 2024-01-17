@@ -70,13 +70,7 @@ class HomePageController {
             : Number(req.query.per_page);
         const max_display_pages = 4;
         try {
-            let type;
-            if (req.params.product_id == "iphone"){
-                type = 1;
-            } else {
-                type = 2;
-            }
-
+            let type = req.query.type;
             let products = await productModel.getByCategory(type);
             if (!products) {
                 next(new Error("Error occurred, Please try again"));

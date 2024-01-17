@@ -6,7 +6,7 @@
       <div class="row gy-3">
         <!-- Left elements -->
         <div class="col-lg-2 col-sm-4 col-4">
-          <a href="/" target="_blank" class="float-start">
+          <a href="/" class="float-start">
             <img src="https://mdbootstrap.com/img/logo/mdb-transaprent-noshadows.png" height="35" />
           </a>
         </div>
@@ -28,9 +28,6 @@
             <div class="input-group float-center">
               <div class="form-outline">
                 <input type="search" class="form-control" id="pattern" name="pattern" placeholder="Search" required>
-                <label class="form-label" for="pattern">SEARCH</label>
-                <!-- <input type="search" id="form1" class="form-control" /> -->
-                <!-- <label class="form-label" for="form1">Search</label> -->
               </div>
               <button type="submit" class="btn btn-primary shadow-0">
                 <i class="fas fa-search"></i>
@@ -73,48 +70,13 @@
               Categories
             </button>
             <ul class="dropdown-menu dropdown-menu-dark">
+              <li><a class="dropdown-item" href="/user/list_type?type=phone">Phone</a></li>
               <li><a class="dropdown-item" href="/user/list_type?type=iphone">IPhone</a></li>
               <li><a class="dropdown-item" href="/user/list_type?type=android">Android</a></li>
             </ul>
-            <a class="nav-link text-dark" aria-current="page" href="#">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-dark" href="#">Categories</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-dark" href="#">Hot offers</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-dark" href="#">Gift boxes</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-dark" href="#">Projects</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-dark" href="/user/list?page=1&per_page=12">Menu item</a>
-            <a class="nav-link text-dark" href="#">Menu item</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-dark" href="#">Menu name</a>
-          </li>
-          <!-- Navbar dropdown -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-mdb-toggle="dropdown" aria-expanded="false">
-              Others
-            </a>
-            <!-- Dropdown menu -->
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li>
-                <a class="dropdown-item" href="#">Action</a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="#">Another action</a>
-              </li>
-              <li><hr class="dropdown-divider" /></li>
-              <li>
-                <a class="dropdown-item" href="#">Something else here</a>
-              </li>
-            </ul>
+            <a class="nav-link text-dark" href="/user/list?page=1&per_page=12">All Products</a>
           </li>
         </ul>
         <!-- Left links -->
@@ -129,24 +91,37 @@
 <div class="row">
     <!--Load products-->
       <% products.forEach(product => { %>
-      <div class="col-lg-3 col-md-6 col-sm-6 d-flex">
-        <div class="card w-100 my-2 shadow-2-strong">
-          <a href="/user/detail?product_id=<%= product.id %>">
-            <img src="<%=product.image%>" class="card-img-top" style="aspect-ratio: 1 / 1"/>
-          </a>
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title"><%=product.p_name%></h5>
-            <p class="card-text">$<%=product.price%></p>
-            <h5 class="card-title"><%=product.name%></h5>
-            <p class="card-text"><%=product.price%></p>
-            <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
-              <a href="#!" class="btn btn-primary shadow-0 me-1">Add to cart</a>
-              <a href="#!" class="btn btn-light border px-2 pt-2 icon-hover"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
+        <div class="col-lg-3 col-md-6 col-sm-6 d-flex">
+          <div class="card w-100 my-2 shadow-2-strong">
+            <a href="/user/detail?product_id=<%= product.id %>">
+              <img src="<%=product.image%>" class="card-img-top" style="aspect-ratio: 1 / 1"/>
+            </a>
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title"><%=product.p_name%></h5>
+              <h5 class="card-title"><%=product.name%></h5>
+              <p class="card-text">$<%=product.price%></p>
+              <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
+                <button onclick="add_to_cart(<%=product.id%>)" class="btn btn-primary shadow-0 me-1 w-100">Add to cart</button>
+                <a href="#!" class="btn btn-light border px-2 pt-2 icon-hover"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       <% }); %>   
   </div>
+  <script>
+    function add_to_cart(id){ 
+      if(!id)
+        return 
+      const count = 1
+      $.post('/customer/cart/add', {id,count})
+      .done(function(data){ 
+        toastr.success(data)
+      })
+      .fail(function(xhr, status, error){ 
+          toastr.error(xhr.responseText)
+      })
+    }
+  </script>
 <%- include("../partials/pagination") %>
 <%- include("../partials/footer") %>
