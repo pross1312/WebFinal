@@ -127,8 +127,9 @@ const server = app.listen(13123, async () => {
             });
             await require("./model/Product.model").add(data);
         }
-        require('./module/faker').generateMockData() 
+        await require('./module/faker').generateMockData()
     }
+
 });
 const ws_server = new ws.Server({noServer: true});
 ws_server.on("connection", (socket, req) => {

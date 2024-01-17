@@ -11,9 +11,9 @@ router.get("/create-order", (req, res, next) => {
         PaymentController.create_order(req, res, next);
     }
 });
-router.get("/register", (req, res, next) => {
-    res.render("payment/register", {error: null, email: req.user?.email});
-});
+// router.get("/register", (req, res, next) => {
+//     res.render("payment/register", {error: null, email: req.user?.email});
+// });
 router.post("/register", PaymentController.register);
 router.post("/login", PaymentController.login);
 router.get("/confirm-transaction", PaymentController.confirm_transaction);

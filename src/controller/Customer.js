@@ -19,7 +19,10 @@ module.exports = {
             res.status(400).send("Missing content");
         } else try {
             await ChatModel.add(new ChatModel.ChatMessage({role: "customer", content, email: req.user?.email}));
-            SocketModel.send("admin", `[MSG] [${req.user?.email}]${content}`);
+            const admin_sock = SocketModel.get("admin");
+            if (admin_sock !== undefined) {
+                admin_sock.send(`[MSG] [${req.user?.email}]${content}`);
+            }
             res.status(200).send("OK");
         } catch(err) {
             next(err);

@@ -56,6 +56,7 @@ module.exports = async (app) => {
                             content: "Hi, how can i help you?",
                             email: profile.email,
                         }));
+                        req._response.new_account = true;
                         done(null, acc);
                     } else if (acc.password !== null) {
                         // TODO: find a better way ?

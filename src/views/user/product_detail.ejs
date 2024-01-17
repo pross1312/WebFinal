@@ -139,17 +139,17 @@
 </section>
 <%}%>
 <script>
-  function add_to_cart(id){ 
-    if(!id)
-      return 
-    const count = 1
-    $.post('/customer/cart/add', {id,count})
-    .done(function(data){ 
-      toastr.success(data)
-    })
-    .fail(function(xhr, status, error){ 
-        toastr.error(xhr.responseText)
-    })
-  }
+   function add_to_cart(id){ 
+      if(!id)
+        return 
+      const count = 1
+      $.post('/customer/cart/add', {id,count})
+      .done(function(data){ 
+        toastr.success(data)
+      })
+      .fail(function(xhr, status, error){ 
+          toastr.error(xhr.responseText)
+      })
+    }
 </script>
 <%- include("../partials/footer") %>

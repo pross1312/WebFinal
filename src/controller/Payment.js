@@ -44,18 +44,14 @@ module.exports = {
                 });
                 return;
             }
-            // salt 10
-            const hashedPassword = await bcrypt.hash(
-                password,
-                !isNaN(process.env.SALT) ? Number(process.env.SALT) : 10
-            );
+
 
             const response = await payment_req.post("/register", JSON.stringify({
                 email: req.user?.email,
                 password
             }));
             if (response.code === 200) {
-                res.redirect('/payment/create-order');
+                res.redirect('/');
             } else {
                 res.render("payment/register", {
                     error: response.data,
@@ -66,21 +62,16 @@ module.exports = {
             next(err);
         }
     },
-    async google_login(req, res, next) {
-    },
     async create_order(req, res, next) {
         try {
-            const cart = await CartModel.get(req.user?.email);
-            // if (cart.products.length === 0) { // TODO: report error
-            // } else {
-                const amount = cart.products.reduce((acc, cur) => acc + Number(cur.count)*Number(cur.price), 0)
-                const order = new Order(cart);
-                unconfirmed_order.put(req.user?.email, order, 10*60*1000); // NOTE: automatically remove unconfirmed transaction after 10 mins
-                res.render("payment/create-order", {
-                    order: order,
-                    amount
-                });
-            // }
+            const cart = await CartModel.get(req.user?.email) || [];
+            const amount = cart.products.reduce((acc, cur) => acc + Number(cur.count)*Number(cur.price), 0)
+            const order = new Order(cart);
+            unconfirmed_order.put(req.user?.email, order, 10*60*1000); // NOTE: automatically remove unconfirmed transaction after 10 mins
+            res.render("payment/create-order", {
+                order: order,
+                amount
+            });
         } catch(err) {
             next(err);
         }

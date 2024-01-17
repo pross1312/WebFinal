@@ -4,6 +4,7 @@ const AccountModel = require("../model/Account.model");
 const bcrypt = require("bcrypt");
 const UserModel = require("../model/User.model");
 const private_pass = '$2b$10$9Nc8Lw0QOFgRJo.HCVjt5.kCIa3m3LpBVetXTVtnoDCN19ypICPzS' //123 
+const payment_req = require("./payment_req");
 module.exports = {
     generateOrders() {
         const orders = [];
@@ -49,7 +50,7 @@ module.exports = {
             emails.push(email)
             const password = private_pass;
             const name = faker.person.fullName()
-            const avatar = faker.image.avatarGitHub()  
+            const avatar = faker.image.avatarLegacy()  
             const type = "customer";
             const account = new AccountModel.Account({
                 email,
@@ -58,6 +59,10 @@ module.exports = {
             });
             await AccountModel.add(account)
             await UserModel.add(new UserModel.UserInfo({email, name, avatar}))
+            const response = await payment_req.post("/register", JSON.stringify({
+                email: email,
+                password: "123",
+            }));
             const order = new OrderModel.Order({
                 email,
                 ts: faker.date.past({ year: 5 }),
