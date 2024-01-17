@@ -62,7 +62,7 @@ module.exports = {
           if (product) {
             const result = await db.exec(
               "manyOrNone",
-              `SELECT pd.* FROM "Products" pd 
+              `SELECT pd.* FROM "Products" pd  
                WHERE pd.category = 1 AND pd.id != ${product.id}`
             );
       
@@ -81,8 +81,8 @@ module.exports = {
             if (category) {
               const result = await db.exec(
                 "manyOrNone",
-                `SELECT pd.* FROM "Products" pd 
-                 WHERE pd.category = ${category}`
+                `SELECT pd.* FROM "Products" pd LEFT JOIN "Category" ct ON ct.id = pd.category
+                WHERE ct.name = '${category}'`
               );
         
               if (!result) throw new CustomError( `Cant select data from "Products"`, 400, "");

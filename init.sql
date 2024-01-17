@@ -43,8 +43,8 @@ VALUES
   ('Apple iPhone 13 Promax 128GB','2', 829.99, 48, ', Gold. Dazzling 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/8.png'),
   ('Apple iPhone 13 - 256GB', '2', 779.99, 52, 'Blue. Vibrant 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/9.png'),
   ('Apple iPhone 13 - 128GB', '2', 789.99, 53, 'Green. Modern 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/10.png'),
-  ('Samsung Galaxy S23 Ultra', '2', 809.99, 47, 'Samsung Galaxy S23 Ultra (8GB|256GB)', '/image/11.png'),
-  ('iPhone', '3', 859.99, 42, 'Apple iPhone 13 - 512GB, Pink. Stylish 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/12.png');
+  ('Samsung Galaxy S23 Ultra', '3', 809.99, 47, 'Samsung Galaxy S23 Ultra (8GB|256GB)', '/image/11.png'),
+  ('iPhone', '2', 859.99, 42, 'Apple iPhone 13 - 512GB, Pink. Stylish 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/12.png');
 
 create table "Order"(
     id serial,

@@ -12,7 +12,8 @@ router.get('/', async (req, res) => {
         array = array.concat(new Array(10).fill({role: "customer", text: "hello motherf jeqwoie jioqwje oucker"}))
                     .sort(() => (Math.random() > .5) ? 1 : -1);
         let allProducts = await database.get_all();
-        res.render("user/homepage", { messages: array, products: allProducts });
+        let newProducts = allProducts.slice(0, 4);
+        res.render("user/homepage", { messages: array, products: newProducts });
     }
     catch (error) {
         console.error(error);
