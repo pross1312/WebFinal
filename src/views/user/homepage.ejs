@@ -1,4 +1,5 @@
 <%- include("../partials/header") %>
+
 <!--Main Navigation-->
 <header>
     <!-- Jumbotron -->
@@ -17,8 +18,8 @@
           <!-- Center elements -->
           <div class="order-lg-last col-lg-5 col-sm-8 col-8">
             <div class="d-flex float-end">
-              <a href="https://github.com/mdbootstrap/bootstrap-material-design" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" target="_blank"> <i class="fas fa-user-alt m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Sign in</p> </a>
-              <a href="https://github.com/mdbootstrap/bootstrap-material-design" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" target="_blank"> <i class="fas fa-heart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Wishlist</p> </a>
+              <a href="https://github.com/mdbootstrap/bootstrap-material-design" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" > <i class="fas fa-user-alt m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Sign in</p> </a>
+              <a href="/customer/cart" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" > <i class="fas fa-heart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Wishlist</p> </a>
               <a href="/payment/create-order" class="border rounded py-1 px-3 nav-link d-flex align-items-center"> <i class="fas fa-shopping-cart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">My cart</p> </a>
             </div>
           </div>
@@ -26,15 +27,19 @@
   
           <!-- Right elements -->
           <div class="col-lg-5 col-md-12 col-12">
-            <div class="input-group float-center">
-              <div class="form-outline">
-                <input type="search" id="form1" class="form-control" />
-                <label class="form-label" for="form1">Search</label>
+            <form action="/user/search">
+              <div class="input-group float-center">
+                <div class="form-outline">
+                  <input type="search" class="form-control" id="pattern" name="pattern" placeholder="Search" required>
+                  <label class="form-label" for="pattern">SEARCH</label>
+                  <!-- <input type="search" id="form1" class="form-control" /> -->
+                  <!-- <label class="form-label" for="form1">Search</label> -->
+                </div>
+                <button type="submit" class="btn btn-primary shadow-0">
+                  <i class="fas fa-search"></i>
+                </button>
               </div>
-              <button type="button" class="btn btn-primary shadow-0">
-                <i class="fas fa-search"></i>
-              </button>
-            </div>
+            </form>
           </div>
           <!-- Right elements -->
         </div>
@@ -66,9 +71,15 @@
             <li class="nav-item">
               <a class="nav-link text-dark" aria-current="page" href="#">Home</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link text-dark" href="#">Categories</a>
-            </li>
+            <li class="nav-item dropdown">
+              <button class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="color: black;text-decoration: none;">
+                Categories
+              </button>
+              <ul class="dropdown-menu dropdown-menu-dark">
+                <li><a class="dropdown-item" href="/user/list_type?type=phone">Phone</a></li>
+                <li><a class="dropdown-item" href="/user/list_type?type=iphone">IPhone</a></li>
+                <li><a class="dropdown-item" href="/user/list_type?type=android">Android</a></li>
+              </ul>
             <li class="nav-item">
               <a class="nav-link text-dark" href="#">Hot offers</a>
             </li>
@@ -79,7 +90,7 @@
               <a class="nav-link text-dark" href="#">Projects</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-dark" href="#">Menu item</a>
+              <a class="nav-link text-dark" href="/user/list?page=1&per_page=12">Menu item</a>
             </li>
             <li class="nav-item">
               <a class="nav-link text-dark" href="#">Menu name</a>
@@ -132,115 +143,30 @@
   </header>
   <!-- Products -->
   <section>
-    <div class="container my-5">
+    <div class="container my-5" >
       <header class="mb-4">
         <h3>New products</h3>
       </header>
   
       <div class="row">
-        <div class="col-lg-3 col-md-6 col-sm-6 d-flex">
-          <div class="card w-100 my-2 shadow-2-strong">
-            <img src="https://bootstrap-ecommerce.com/bootstrap5-ecommerce/images/items/1.webp" class="card-img-top" style="aspect-ratio: 1 / 1" />
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">GoPro HERO6 4K Action Camera - Black</h5>
-              <p class="card-text">$790.50</p>
-              <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
-                <a href="#!" class="btn btn-primary shadow-0 me-1">Add to cart</a>
-                <a href="#!" class="btn btn-light border px-2 pt-2 icon-hover"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
+        <% products.forEach(product => { %>
+          <div class="col-lg-3 col-md-6 col-sm-6 d-flex">
+            <div class="card w-100 my-2 shadow-2-strong">
+              <a href="/user/detail?product_id=<%= product.id %>">
+                <img src="<%=product.image%>" class="card-img-top" style="aspect-ratio: 1 / 1"/>
+              </a>
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title"><%=product.p_name%></h5>
+                <h5 class="card-title"><%=product.name%></h5>
+                <p class="card-text"><%=product.price%></p>
+                <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
+                  <button onclick="add_to_cart(<%=product.id%>)" class="btn btn-primary shadow-0 me-1">Add to cart</button>
+                  <a href="#!" class="btn btn-light border px-2 pt-2 icon-hover"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="col-lg-3 col-md-6 col-sm-6 d-flex">
-          <div class="card w-100 my-2 shadow-2-strong">
-            <img src="https://bootstrap-ecommerce.com/bootstrap5-ecommerce/images/items/2.webp" class="card-img-top" style="aspect-ratio: 1 / 1" />
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">Canon camera 20x zoom, Black color EOS 2000</h5>
-              <p class="card-text">$320.00</p>
-              <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
-                <a href="#!" class="btn btn-primary shadow-0 me-1">Add to cart</a>
-                <a href="#!" class="btn btn-light border px-2 pt-2 icon-hover"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6 col-sm-6 d-flex">
-          <div class="card w-100 my-2 shadow-2-strong">
-            <img src="https://bootstrap-ecommerce.com/bootstrap5-ecommerce/images/items/3.webp" class="card-img-top" style="aspect-ratio: 1 / 1" />
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">Xiaomi Redmi 8 Original Global Version 4GB</h5>
-              <p class="card-text">$120.00</p>
-              <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
-                <a href="#!" class="btn btn-primary shadow-0 me-1">Add to cart</a>
-                <a href="#!" class="btn btn-light border px-2 pt-2 icon-hover"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6 col-sm-6 d-flex">
-          <div class="card w-100 my-2 shadow-2-strong">
-            <img src="https://bootstrap-ecommerce.com/bootstrap5-ecommerce/images/items/4.webp" class="card-img-top" style="aspect-ratio: 1 / 1" />
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">Apple iPhone 12 Pro 6.1" RAM 6GB 512GB Unlocked</h5>
-              <p class="card-text">$120.00</p>
-              <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
-                <a href="#!" class="btn btn-primary shadow-0 me-1">Add to cart</a>
-                <a href="#!" class="btn btn-light border px-2 pt-2 icon-hover"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6 col-sm-6 d-flex">
-          <div class="card w-100 my-2 shadow-2-strong">
-            <img src="https://bootstrap-ecommerce.com/bootstrap5-ecommerce/images/items/5.webp" class="card-img-top" style="aspect-ratio: 1 / 1" />
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">Apple Watch Series 1 Sport Case 38mm Black</h5>
-              <p class="card-text">$790.50</p>
-              <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
-                <a href="#!" class="btn btn-primary shadow-0 me-1">Add to cart</a>
-                <a href="#!" class="btn btn-light border px-2 pt-2 icon-hover"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6 col-sm-6 d-flex">
-          <div class="card w-100 my-2 shadow-2-strong">
-            <img src="https://bootstrap-ecommerce.com/bootstrap5-ecommerce/images/items/6.webp" class="card-img-top" style="aspect-ratio: 1 / 1" />
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">T-shirts with multiple colors, for men and lady</h5>
-              <p class="card-text">$120.00</p>
-              <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
-                <a href="#!" class="btn btn-primary shadow-0 me-1">Add to cart</a>
-                <a href="#!" class="btn btn-light border px-2 pt-2 icon-hover"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6 col-sm-6 d-flex">
-          <div class="card w-100 my-2 shadow-2-strong">
-            <img src="https://bootstrap-ecommerce.com/bootstrap5-ecommerce/images/items/7.webp" class="card-img-top" style="aspect-ratio: 1 / 1" />
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">Gaming Headset 32db Blackbuilt in mic</h5>
-              <p class="card-text">$99.50</p>
-              <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
-                <a href="#!" class="btn btn-primary shadow-0 me-1">Add to cart</a>
-                <a href="#!" class="btn btn-light border icon-hover px-2 pt-2"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6 col-sm-6 d-flex">
-          <div class="card w-100 my-2 shadow-2-strong">
-            <img src="https://bootstrap-ecommerce.com/bootstrap5-ecommerce/images/items/8.webp" class="card-img-top" style="aspect-ratio: 1 / 1" />
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">T-shirts with multiple colors, for men and lady</h5>
-              <p class="card-text">$120.00</p>
-              <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
-                <a href="#!" class="btn btn-primary shadow-0 me-1">Add to cart</a>
-                <a href="#!" class="btn btn-light border px-2 pt-2 icon-hover"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
-              </div>
-            </div>
-          </div>
+        <% }); %>   
         </div>
       </div>
     </div>
@@ -552,4 +478,18 @@
   </footer>
   <!-- Footer -->
 
+  <script>
+    function add_to_cart(id){ 
+      if(!id)
+        return 
+      const count = 1
+      $.post('/customer/cart/add', {id,count})
+      .done(function(data){ 
+        toastr.success(data)
+      })
+      .fail(function(xhr, status, error){ 
+          toastr.error(xhr.responseText)
+      })
+    }
+  </script>
   <%- include("../partials/footer") %>

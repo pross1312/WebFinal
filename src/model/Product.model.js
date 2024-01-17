@@ -55,5 +55,62 @@ module.exports = {
         );
         if (!result) throw new CustomError( `Cant select data from "Products"`, 400, "");
         return result;
-    }
+    },
+    async getRelatedProducts(product) {
+        try {
+          if (product) {
+            const result = await db.exec(
+              "manyOrNone",
+              `SELECT pd.* FROM "Products" pd  
+               WHERE pd.category = 1 AND pd.id != ${product.id}`
+            );
+      
+            if (!result) throw new CustomError( `Cant select data from "Products"`, 400, "");
+            return result;
+          } else {
+            throw new Error("Missing arguments");
+          }
+        } catch (err) {
+          throw err;
+        }
+      },
+
+    async getByCategory(category){
+        try {
+            if (category) {
+              const result = await db.exec(
+                "manyOrNone",
+                `SELECT pd.* FROM "Products" pd LEFT JOIN "Category" ct ON ct.id = pd.category
+                WHERE ct.name = '${category}'`
+              );
+        
+              if (!result) throw new CustomError( `Cant select data from "Products"`, 400, "");
+              return result;
+            } else {
+              throw new Error("Missing arguments");
+            }
+          } catch (err) {
+            throw err;
+          }
+    },
+
+    async getByPattern(pattern){
+        try {
+            if (pattern) {
+              const result = await db.exec(
+                "manyOrNone",
+                `SELECT pd.* FROM "Products" pd 
+                 WHERE LOWER(pd.p_name) LIKE '%' || LOWER('${pattern}') || '%';`
+              );
+              console.log(pattern)
+              if (!result) throw new CustomError( `Cant select data from "Products"`, 400, "");
+              return result;
+            } else {
+              throw new Error("Missing arguments");
+            }
+        } catch (err) {
+        throw err;
+        }
+    },
+
 };
