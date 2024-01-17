@@ -9,4 +9,5 @@ router.get('/cart', CustomerController.get_cart)
 router.post('/cart/delete',CustomerController.delete_cart)
 router.post('/cart/decrease',CustomerController.decrease_cart)
 router.post('/cart/add',CustomerController.add_to_cart)
+router.get('/transaction', CustomerController.getTransaction)
 module.exports = router;

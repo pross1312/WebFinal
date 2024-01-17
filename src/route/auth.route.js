@@ -8,7 +8,7 @@ router.post(
     "/login",
     passport.authenticate("local", {
         failureMessage: true,
-        failureRedirect: "/auth/login",
+        failureRedirect: "/user",
     }),
     async (req, res) => {
         if (req.body.remember) {
@@ -38,7 +38,6 @@ router.get("/google/callback", (req, res, next) => {
         res.redirect("/");
     }
 });
-
 
 router.get("/login", (req, res) => {
     if (req.isAuthenticated()) {

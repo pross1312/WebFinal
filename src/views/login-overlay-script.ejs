@@ -1,0 +1,14 @@
+<script>
+    function display_login(){ 
+        $.get('/login-overlay')
+         .done(function(data){ 
+             let node = $(`${data}`);
+             console.log(node);
+             document.getElementsByTagName("body")[0].prepend(node.get()[0]);
+         })
+         .fail(function(xhr, status, error){ 
+             toastr.error(xhr.responseText)
+         })
+    }
+</script>
+

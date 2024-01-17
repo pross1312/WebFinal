@@ -77,11 +77,15 @@ module.exports = async (app) => {
             async (email, password, done) => {
                 try {
                     const acc = await AccountModel.get(email);
-                    if (acc.password === null) {
+                    if (acc == null) {
+                        done(null, false, {
+                            message: 'Incorrect email or password',
+                        });
+                    } else if (acc.password === null) {
                         done(null, false, {
                             message: "To access this account, please log in using your Google credentials."
                         });
-                    } else if (acc && bcrypt.compareSync(password, acc.password)) {
+                    } else if (bcrypt.compareSync(password, acc.password)) {
                         done(null, acc);
                     } else {
                         done(null, false, {

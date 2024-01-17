@@ -154,10 +154,14 @@
     }
 
     .user-name {
+        line-break: loose;
+        word-break: normal;
         padding: 0px 6px;
         font-weight: 500;
         font-size: calc(12px + 0.5vw);
         object-fit: cover;
+        margin-top: auto;
+        margin-bottom: auto;
     }
     .user-avatar {
         max-width: 50px;
@@ -248,7 +252,7 @@
             <div class="user">
                 <img
                     class="user-avatar"
-                    src="https://i.stack.imgur.com/frlIf.png"
+                    src="<%-avatar%>"
                     alt=""
                 />
                 <p class="user-name"><%= email %></p>
@@ -265,25 +269,13 @@
             </div>
         </div>
         <div class="purchase-button">
-            <button class=""><a href="/payment/create-order">Purchase</a></button>
+            <a class="w-100" href="/payment/create-order"><button class="">Purchase</button></a>
         </div>
     </div>
 </div>
 
+  <%- include('add_to_cart.ejs') %>
 <script>
-   function add_to_cart(id){ 
-      if(!id)
-        return 
-      const count = 1
-      $.post('/customer/cart/add', {id,count})
-      .done(function(data){ 
-        toastr.success(data)
-        location.reload()
-      })
-      .fail(function(xhr, status, error){ 
-          toastr.error(xhr.responseText)
-      })
-    }
     function decrease(id, count){ 
         if(!id){ 
             toastr.error("Missing arguments")
