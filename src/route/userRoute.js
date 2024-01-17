@@ -31,15 +31,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.use((req, res, next) => {
-    // authentication guard
-    if (req.isAuthenticated()) {
-        next();
-    } else {
-        res.redirect("/user");
-    }
-});
-
 router.get('/detail', async(req, res) => {
     const productId = req.query.product_id;
     let product = await database.get(productId);
