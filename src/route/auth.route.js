@@ -11,11 +11,6 @@ router.post(
         failureRedirect: "/auth/login",
     }),
     async (req, res) => {
-        try { // NOTE: test data
-            for (let i = 15; i < 20; i++) {
-                await CartModel.add(req.user?.email, i, 5);
-            }
-        } catch(err) { }
         if (req.body.remember) {
             req.session.cookie.maxAge = 10 * 60 * 1000; // 10mins
         } else {
@@ -37,11 +32,6 @@ router.get("/google/callback", (req, res, next) => {
     console.log("OK");
     next()
 }, passport.authenticate("google"), async (req, res) => {
-    try { // NOTE: test data
-        for (let i = 15; i < 20; i++) {
-            await CartModel.add(req.user?.email, i, 5);
-        }
-    } catch(err) {}
     if (res.new_account) {
         res.render("payment/register", {error: null, email: req.user?.email});
     } else {
