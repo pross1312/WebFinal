@@ -1,5 +1,7 @@
 // const productModel = require('../model/MockDataProduct');
 const productModel = require("../model/Product.model");
+const adminModel = require("../model/Admin.m");
+const utils = require("../module/utils");
 const {
     dynamic_scroll_pagination,
     calc_total_page,
@@ -10,8 +12,9 @@ class HomePageController {
         try {
             const allProducts = await productModel.getAllProducts();
             res.render('user/homepage', { 
-            products: allProducts,
-        });
+                products: allProducts,
+                is_login: req.isAuthenticated(),
+            });
 
         } catch (error) {
           console.error("error: ", error);
@@ -26,7 +29,9 @@ class HomePageController {
         const max_display_pages = 4;
         try {
             let products = await productModel.get_all();
-            if (!products) {
+            let cates = await adminModel.getAll("Category");
+            cates = utils.divideCategories(cates);
+            if (!products || !cates) {
                 next(new Error("Error occurred, Please try again"));
             } else {
                 const { pages, items, total_pages } = dynamic_scroll_pagination(
@@ -36,11 +41,13 @@ class HomePageController {
                     products
                 );
                 res.render("user/product_list", {
+                    cates,
                     products: items,
                     pages,
                     total_pages,
                     current_page: page,
                     base_url: "/user/list?",
+                    is_login: req.isAuthenticated(),
                 });
             }
         } catch (err) {
@@ -55,7 +62,8 @@ class HomePageController {
                 next(new Error("Error occurred, Please try again"));
             } else {
                 res.render("user/product_detail", {
-                    product
+                    product,
+                    is_login: req.isAuthenticated(),
                 });
             }
         } catch (err) {
@@ -72,7 +80,9 @@ class HomePageController {
         try {
             let type = req.query.type;
             let products = await productModel.getByCategory(type);
-            if (!products) {
+            let cates = await adminModel.getAll("Category");
+            cates = utils.divideCategories(cates);
+            if (!products || !cates) {
                 next(new Error("Error occurred, Please try again"));
             } else {
                 const { pages, items, total_pages } = dynamic_scroll_pagination(
@@ -82,11 +92,13 @@ class HomePageController {
                     products
                 );
                 res.render("user/product_list", {
+                    cates,
                     products: items,
                     pages,
                     total_pages,
                     current_page: page,
                     base_url: "/user/list?",
+                    is_login: req.isAuthenticated(),
                 });
             }
         } catch (err) {
@@ -99,11 +111,13 @@ class HomePageController {
         const per_page = isNaN(req.query.per_page)
             ? 12
             : Number(req.query.per_page);
-        const max_display_pages = 4;
+        const max_display_pages = 6;
         try {
             let pattern = req.query.pattern
             let products = await productModel.getByPattern(pattern);
-            if (!products) {
+            let cates = await adminModel.getAll("Category");
+            cates = utils.divideCategories(cates);
+            if (!products || !cates) {
                 next(new Error("Error occurred, Please try again"));
             } else {
                 const { pages, items, total_pages } = dynamic_scroll_pagination(
@@ -113,11 +127,13 @@ class HomePageController {
                     products
                 );
                 res.render("user/product_list", {
+                    cates,
                     products: items,
                     pages,
                     total_pages,
                     current_page: page,
-                    base_url: "/user/list?",
+                    base_url: `/user/search?pattern=${pattern}&`,
+                    is_login: req.isAuthenticated()
                 });
             }
         } catch (err) {

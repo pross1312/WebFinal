@@ -43,7 +43,7 @@ module.exports = {
                         content: "Hi, how can i help you?",
                         email: auth.email
                     }));
-                    res.render('login', {error: null});
+                    res.redirect("/user");
                 } else {
                     res.render("register", {error: response.data});
                 }

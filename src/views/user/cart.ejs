@@ -265,25 +265,13 @@
             </div>
         </div>
         <div class="purchase-button">
-            <button class=""><a href="/payment/create-order">Purchase</a></button>
+            <a class="w-100" href="/payment/create-order"><button class="">Purchase</button></a>
         </div>
     </div>
 </div>
 
+  <%- include('add_to_cart.ejs') %>
 <script>
-   function add_to_cart(id){ 
-      if(!id)
-        return 
-      const count = 1
-      $.post('/customer/cart/add', {id,count})
-      .done(function(data){ 
-        toastr.success(data)
-        location.reload()
-      })
-      .fail(function(xhr, status, error){ 
-          toastr.error(xhr.responseText)
-      })
-    }
     function decrease(id, count){ 
         if(!id){ 
             toastr.error("Missing arguments")

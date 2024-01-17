@@ -1,0 +1,21 @@
+<%- include('../login-overlay-script') %>
+<script>
+    <% if (is_login) { %>
+            function add_to_cart(id){ 
+                if(!id)
+                    return 
+                const count = 1
+                $.post('/customer/cart/add', {id,count})
+                    .done(function(data){ 
+                        toastr.success(data)
+                    })
+                    .fail(function(xhr, status, error){ 
+                        toastr.error(xhr.responseText)
+                    })
+            }
+    <% } else { %>
+            function add_to_cart(id){
+                display_login();
+            }
+    <% } %>
+</script>

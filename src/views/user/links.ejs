@@ -1,0 +1,46 @@
+<!-- Jumbotron -->
+<div class="p-3 text-center bg-white border-bottom">
+<div class="container">
+  <div class="row gy-3">
+    <!-- Left elements -->
+    <div class="col-lg-2 col-sm-4 col-4">
+      <a href="/" class="float-start">
+        <img src="https://mdbootstrap.com/img/logo/mdb-transaprent-noshadows.png" height="35" />
+      </a>
+    </div>
+    <!-- Left elements -->
+
+    <!-- Center elements -->
+    <div class="order-lg-last col-lg-5 col-sm-8 col-8">
+      <div class="d-flex float-end">
+      <% if (is_login) { %>
+        <a href="#" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" > <i class="fas fa-heart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Wishlist</p> </a>
+        <a href="/customer/cart" class="border rounded py-1 px-3 nav-link d-flex align-items-center"> <i class="fas fa-shopping-cart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">My cart</p> </a>
+        <a href="/logout" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" > <i class="fas fa-user-alt m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Sign out</p> </a>
+      <% } else { %>
+        <%- include('../login-overlay-script') %>
+        <a style="cursor: pointer" onclick="display_login()" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" > <i class="fas fa-user-alt m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Sign in</p> </a>
+      <% } %>
+      </div>
+    </div>
+    <!-- Center elements -->
+
+    <!-- Right elements -->
+    <div class="col-lg-5 col-md-12 col-12">
+      <form action="/user/search">
+        <div class="input-group float-center">
+          <div class="form-outline">
+            <input type="search" class="form-control" id="pattern" name="pattern" placeholder="Search" required>
+          </div>
+          <button type="submit" class="btn btn-primary shadow-0">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+    <!-- Right elements -->
+  </div>
+</div>
+</div>
+<!-- Jumbotron -->
+

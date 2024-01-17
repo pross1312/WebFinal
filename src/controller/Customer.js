@@ -58,6 +58,7 @@ module.exports = {
                 products: data.products,
                 items,
                 total,
+                is_login: req.isAuthenticated(),
             });
         } catch (err) {
             next(err);

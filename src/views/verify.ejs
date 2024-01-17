@@ -1,5 +1,4 @@
 <%- include("partials/header") %>
-
 <style>
 body {
   background: linear-gradient(135deg, #12385e, #003d66);
@@ -95,7 +94,7 @@ a:hover {
 }
 </style>
 
-<div class="container">
+<div class="container" data-bs-theme="dark">
     <form action="/auth/verify-register" method="POST" class="register-form" onsubmit="on_submit_register(event)">
         <h1>Register</h1>
         <div class="input-group">
@@ -142,4 +141,3 @@ a:hover {
 <% } %>
 
 <%- include("partials/footer") %>
-

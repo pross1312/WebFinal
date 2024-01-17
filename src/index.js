@@ -32,14 +32,24 @@ app.use((req, res, next) => {
     next();
 });
 
+app.get("/login-overlay", (req, res) => { res.render("login-overlay", {error: null}); });
 app.use("/auth", require("./route/auth.route"));
+app.use('/user', require('./route/userRoute'))
+
+app.get('/', (req, res, next) => {
+    if (req.user?.type === "admin") {
+        res.redirect("/admin");
+    } else {
+        res.redirect("/user");
+    }
+});
 
 app.use((req, res, next) => {
     // authentication guard
     if (req.isAuthenticated()) {
         next();
     } else {
-        res.redirect("/auth/login");
+        res.redirect("/user");
     }
 });
 
@@ -49,20 +59,6 @@ app.use((req, res, next) => { // NOTE: payment_access_token should not be allowe
     next();
 });
 
-app.use('/user', require('./route/userRoute'))
-app.get('/', (req, res) => {
-    let array = new Array(10);
-    array.fill({role: "admin", text: "hello motherf jeqwoie jioqwje oucker"});
-    array = array.concat(new Array(10).fill({role: "customer", text: "hello motherf jeqwoie jioqwje oucker"}))
-                 .sort(() => (Math.random() > .5) ? 1 : -1);
-    if (req.user?.type === "customer") {
-        res.redirect("/user");
-    } else if (req.user?.type === "admin") {
-        res.redirect("/admin");
-    } else {
-        next(new Error("Invalid type " + req.user?.type));
-    }
-});
 
 app.use("/customer", (req, res, next) => {
     if (req.user?.type === "customer") {

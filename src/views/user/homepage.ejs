@@ -1,5 +1,4 @@
 <%- include("../partials/header") %>
-<div >
 <!--Main Navigation-->
 <style>
   .carousel-item img{ 
@@ -20,175 +19,14 @@
     color: #000;
     text-decoration: none;
   }
-  
-
-  .cateActive:hover .menu{ 
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .menu{ 
-    position: absolute;
-    z-index: 100;
-    display: none;
-    background: #242526;
-    color: #fff;
-    border-radius: 2px;
-  }
-  .menu a{ 
-    color: #fff;
-  }
-  .menu > li {
-    display: inline-block;
-    padding: 10px 20px;
-    border-bottom: 1px solid #ccc;
-  }
-
-  .menu li:hover{ 
-    background-color: #0d6efd;
-  }
-  .menu li {
-    position: relative;
-  }
-  .menu li:hover > .sub-menu {
-    display: block;
-  }
-  .sub-menu {
-    position: absolute;
-    top: 0;
-    left: 100%;
-    width: 140px;
-    background: #242526;
-    display: none;
-    border-radius: 2px; 
-  }
-
-  .sub-menu a:hover{
-    display: block;
-    background: #0d6efd;
-  }
-
-  .sub-menu a {
-    display: block;
-    padding: 10px 20px;
-    color: #fff;
-    border-bottom: 1px solid #ccc;
-  }
-
-  .sub-menu .sub-menu {
-    left: 100%;
-    top: 0;
-    display: none;
-  }
-
 </style>
 <div class="container-sm">
   <header>
-      <!-- Jumbotron -->
-      <%- include('./chat') %>
-      <div class="p-3 text-center bg-white border-bottom">
-        <div class="container">
-          <div class="row gy-3">
-            <!-- Left elements -->
-            <div class="col-lg-2 col-sm-4 col-4">
-              <a href="/" class="float-start">
-                <img src="https://mdbootstrap.com/img/logo/mdb-transaprent-noshadows.png" height="35" />
-              </a>
-            </div>
-            <!-- Left elements -->
-  
-            <!-- Center elements -->
-            <div class="order-lg-last col-lg-5 col-sm-8 col-8">
-              <div class="d-flex float-end">
-                <a href="#" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" > <i class="fas fa-user-alt m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Sign in</p> </a>
-                <a href="#" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" > <i class="fas fa-heart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Wishlist</p> </a>
-                <a href="/payment/create-order" class="border rounded py-1 px-3 nav-link d-flex align-items-center"> <i class="fas fa-shopping-cart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">My cart</p> </a>
-              </div>
-            </div>
-            <!-- Center elements -->
-  
-            <!-- Right elements -->
-            <div class="col-lg-5 col-md-12 col-12">
-              <form action="/user/search">
-                <div class="input-group float-center">
-                  <div class="form-outline">
-                    <input type="search" class="form-control" id="pattern" name="pattern" placeholder="Search" required>
-                  </div>
-                  <button type="submit" class="btn btn-primary shadow-0">
-                    <i class="fas fa-search"></i>
-                  </button>
-                </div>
-              </form>
-            </div>
-            <!-- Right elements -->
-          </div>
-        </div>
-      </div>
-      <!-- Jumbotron -->
-  
-      <!-- Navbar -->
-      <nav class="navbar navbar-expand-lg navbar-light bg-white">
-        <!-- Container wrapper -->
-        <div class="container justify-content-center justify-content-md-between">
-          <!-- Toggle button -->
-          <button
-                  class="navbar-toggler border py-2 text-dark"
-                  type="button"
-                  data-mdb-toggle="collapse"
-                  data-mdb-target="#navbarLeftAlignExample"
-                  aria-controls="navbarLeftAlignExample"
-                  aria-expanded="false"
-                  aria-label="Toggle navigation"
-                  >
-            <i class="fas fa-bars"></i>
-          </button>
-  
-          <!-- Collapsible wrapper -->
-          <div class="collapse navbar-collapse" id="navbarLeftAlignExample">
-            <!-- Left links -->
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link text-dark" aria-current="page" href="#">Home</a>
-              </li>
-              <li class="nav-item cateActive">
-                <a class="nav-link text-dark" aria-current="page" href="#">Category</a>
-             
-                <ul class="menu">
-                  <% cates.forEach(category => { %>
-                    <li>
-                      <a href="/user/list_type?type=<%= category.name %>"><%= category.name %></a>
-                      <% if (category.children.length > 0) { %>
-                        <ul class="sub-menu">
-                          <% category.children.forEach(subCategory => { %>
-                            <li>
-                              <a href="/user/list_type?type=<%= subCategory.name %>"><%= subCategory.name %></a>
-                              <% if (subCategory.children.length > 0) { %>
-                                <ul class="sub-menu">
-                                  <% subCategory.children.forEach(child => { %>
-                                    <li>
-                                      <a href="/user/list_type?type=<%= child.name %>"><%= child.name %></a>
-                                    </li>
-                                  <% }); %>
-                                </ul>
-                              <% } %>
-                            </li>
-                          <% }); %>
-                        </ul>
-                      <% } %>
-                    </li>
-                  <% }); %>
-                </ul>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link text-dark" href="/user/list?page=1&per_page=12">All Products</a>
-              </li>
-            </ul>
-            <!-- Left links -->
-          </div>
-        </div>
-        <!-- Container wrapper -->
-      </nav>
-      <!-- Navbar -->
+      <% if (is_login) { %>
+          <%- include('./chat') %>
+      <% } %>
+      <%- include('links') %> 
+      <%- include('usernavbar') %> 
       <!-- Slider -->
       <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
@@ -242,7 +80,6 @@
           <% }); %>
           </div>
         </div>
-      </div>
     </section>
     <!-- Products -->
   
@@ -354,20 +191,11 @@
         <i class="fab fa-lg fa-cc-paypal text-dark"></i>
       </div>
     </div>
-</div>
+  <% if (error) {%>
   <script>
-    function add_to_cart(id){ 
-      if(!id)
-        return 
-      const count = 1
-      $.post('/customer/cart/add', {id,count})
-      .done(function(data){ 
-        toastr.success(data)
-      })
-      .fail(function(xhr, status, error){ 
-          toastr.error(xhr.responseText)
-      })
-    }
+      toastr.error('<%= error %>');
   </script>
+  <% } %>
+  <%- include('add_to_cart.ejs') %>
   <%- include("../partials/footer") %>
 </div>
