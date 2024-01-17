@@ -25,6 +25,7 @@
         border-radius: 6px;
         padding: 0px 12px;
         box-shadow: 10px 10px 5px #aaaaaa2d;
+        overflow:hidden;
     }
 
     .products {
@@ -176,7 +177,24 @@
     .bill-info {
         padding: 0px 20px;
     }
+    a {
+        text-decoration: none;
+        color: white;
+    }
 </style>
+<div class="p-3 text-center bg-white border-bottom">
+    <div class="container">
+      <div class="row gy-3">
+        <!-- Left elements -->
+        <div class="col-lg-2 col-sm-4 col-4">
+          <a href="/" class="float-start">
+            <img src="https://mdbootstrap.com/img/logo/mdb-transaprent-noshadows.png" height="35" />
+          </a>
+        </div>
+        <!-- Left elements -->
+      </div>
+    </div>
+  </div>
 <div class="container">
     <div class="left-container">
         <h2 class="product-heading">Cart</h2>
@@ -209,7 +227,7 @@
                       </div>
                       <div class="amount">
                           <p class="amount-title">Amount</p>
-                          <p class="product-amount"><span class="decrease" onclick="decrease(<%= product.id %>)">-</span> <%= product.count %> <span class="increase" onclick="add_to_cart(<%= product.id %>)">+</span></p>
+                          <p class="product-amount"><span class="decrease" onclick="decrease(<%= product.id %>, <%= product.count %>)">-</span> <%= product.count %> <span class="increase" onclick="add_to_cart(<%= product.id %>)">+</span></p>
                       </div>
                       <div class="intoMoney">
                         <p class="intoMoney-title">Into Money</p>
@@ -217,7 +235,7 @@
                       </div>
                     <%} else { %>
                         <p class="product-unitPrice"><%= product.price %></p>
-                        <p class="product-amount"><span class="decrease" onclick="decrease(<%= product.id %>)">-</span> <%= product.count %> <span class="increase" onclick="add_to_cart(<%= product.id %>)">+</span></p>
+                        <p class="product-amount"><span class="decrease" onclick="decrease(<%= product.id %>, <%= product.count %>)">-</span> <%= product.count %> <span class="increase" onclick="add_to_cart(<%= product.id %>)">+</span></p>
                         <p class="product-intoMoney"><%- parseFloat(product.price * product.count).toFixed(2) %></p>
                     <% } %>
                     <img src="/icon/icons8-delete.svg" alt="" class="btnDelete" onclick="deleteProduct(<%= product.id %>)"/>
@@ -247,7 +265,7 @@
             </div>
         </div>
         <div class="purchase-button">
-            <button class="">Purchase</button>
+            <button class=""><a href="/payment/create-order">Purchase</a></button>
         </div>
     </div>
 </div>
@@ -266,18 +284,18 @@
           toastr.error(xhr.responseText)
       })
     }
-    function decrease(id){ 
+    function decrease(id, count){ 
         if(!id){ 
             toastr.error("Missing arguments")
             return
         }
-        $.post('/customer/cart/decrease', {id})
+        $.post('/customer/cart/decrease', {id, count})
         .done(function(data){ 
-                location.reload()
-            })
-            .fail(function(xhr, status, error){ 
-                toastr.error(xhr.responseText)
-            })
+            location.reload()
+        })
+        .fail(function(xhr, status, error){ 
+            toastr.error(xhr.responseText)
+        })
     }
     function deleteProduct(id){ 
         $.post('/customer/cart/delete', {id})
