@@ -137,7 +137,7 @@
       <h3>Pricing and Availability</h3>
       <p><strong>Price:</strong> $<%= product.price %></p>
       <p><strong>Stock Quantity:</strong> <%= product.stockQuantity %> units</p>
-      <a href="#!" class="btn btn-primary shadow-0 me-1">Add to cart</a>
+      <button onclick="add_to_cart(<%=product.id%>)" class="btn btn-primary shadow-0 me-1">Add to cart</button>
       <a href="#!" class="btn btn-light border px-2 pt-2 icon-hover"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
     </div>
   </div>
@@ -152,16 +152,17 @@
   </div>
   <div class="row mx-auto container-fluid">
     <% relatedProduct.forEach(product => { %>
-      <div class="text-center col-lg-3 col-md-4 col-12">
+      <div class="col-lg-3 col-md-6 col-sm-6 d-flex">
         <div class="card w-100 my-2 shadow-2-strong">
           <a href="/user/detail?product_id=<%= product.id %>">
             <img src="<%=product.image%>" class="card-img-top" style="aspect-ratio: 1 / 1"/>
           </a>
           <div class="card-body d-flex flex-column">
             <h5 class="card-title"><%=product.p_name%></h5>
+            <h5 class="card-title"><%=product.name%></h5>
             <p class="card-text">$<%=product.price%></p>
             <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
-              <a href="#!" class="btn btn-primary shadow-0 me-1">Add to cart</a>
+              <button onclick="add_to_cart(<%=product.id%>)" class="btn btn-primary shadow-0 me-1 w-100">Add to cart</button>
               <a href="#!" class="btn btn-light border px-2 pt-2 icon-hover"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
             </div>
           </div>
@@ -171,4 +172,18 @@
   </div>
 </section>
 <%}%>
+<script>
+  function add_to_cart(id){ 
+    if(!id)
+      return 
+    const count = 1
+    $.post('/customer/cart/add', {id,count})
+    .done(function(data){ 
+      toastr.success(data)
+    })
+    .fail(function(xhr, status, error){ 
+        toastr.error(xhr.responseText)
+    })
+  }
+</script>
 <%- include("../partials/footer") %>
