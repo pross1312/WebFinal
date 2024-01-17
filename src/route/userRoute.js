@@ -4,6 +4,8 @@ const homepage = require('../controller/homepageController');
 const pagination_util = require('../module/utils')
 const database = require('../model/Product.model');
 const homepageController = require('../controller/homepageController');
+const adminModel = require('../model/Admin.M')
+const utils = require('../module/utils')
 
 router.get('/', async (req, res) => {
     try {
@@ -13,7 +15,19 @@ router.get('/', async (req, res) => {
                     .sort(() => (Math.random() > .5) ? 1 : -1);
         let allProducts = await database.get_all();
         let newProducts = allProducts.slice(0, 4);
-        res.render("user/homepage", { messages: array, products: newProducts });
+        let cates = await adminModel.getAll("Category");
+        cates = utils.divideCategories(cates);
+        if (!cates) next(new Error("Error occurred, Please try again"));
+        else {
+            cates = cates.map((cate) => {
+                return {
+                    ...cate,
+                    parent_id: utils.findNameCate(cates, cate.parent_id),
+                };
+            });
+        }
+        console.log(cates);
+        res.render("user/homepage", { messages: array, products: newProducts, cates});
     }
     catch (error) {
         console.error(error);

@@ -1,251 +1,360 @@
 <%- include("../partials/header") %>
 <div >
 <!--Main Navigation-->
-<header>
-    <!-- Jumbotron -->
-    <%- include('./chat') %>
-    <div class="p-3 text-center bg-white border-bottom">
-      <div class="container">
-        <div class="row gy-3">
-          <!-- Left elements -->
-          <div class="col-lg-2 col-sm-4 col-4">
-            <a href="/" class="float-start">
-              <img src="https://mdbootstrap.com/img/logo/mdb-transaprent-noshadows.png" height="35" />
-            </a>
-          </div>
-          <!-- Left elements -->
+<style>
+  .carousel-item img{ 
+    max-width: 100%;
+    max-height: 420px;
+    min-height: 420px;
+    object-fit: cover;
+    margin-top: -80px; /* hot change*/ 
+    object-position: center 80px
+  }
+
+  ul{ 
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  a{ 
+    color: #000;
+    text-decoration: none;
+  }
   
-          <!-- Center elements -->
-          <div class="order-lg-last col-lg-5 col-sm-8 col-8">
-            <div class="d-flex float-end">
-              <a href="#" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" > <i class="fas fa-user-alt m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Sign in</p> </a>
-              <a href="#" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" > <i class="fas fa-heart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Wishlist</p> </a>
-              <a href="/payment/create-order" class="border rounded py-1 px-3 nav-link d-flex align-items-center"> <i class="fas fa-shopping-cart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">My cart</p> </a>
-            </div>
-          </div>
-          <!-- Center elements -->
+
+  .cateActive:hover .menu{ 
+    display: flex;
+    flex-direction: column;
+  }
   
-          <!-- Right elements -->
-          <div class="col-lg-5 col-md-12 col-12">
-            <form action="/user/search">
-              <div class="input-group float-center">
-                <div class="form-outline">
-                  <input type="search" class="form-control" id="pattern" name="pattern" placeholder="Search" required>
-                </div>
-                <button type="submit" class="btn btn-primary shadow-0">
-                  <i class="fas fa-search"></i>
-                </button>
-              </div>
-            </form>
-          </div>
-          <!-- Right elements -->
-        </div>
-      </div>
-    </div>
-    <!-- Jumbotron -->
-  
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white">
-      <!-- Container wrapper -->
-      <div class="container justify-content-center justify-content-md-between">
-        <!-- Toggle button -->
-        <button
-                class="navbar-toggler border py-2 text-dark"
-                type="button"
-                data-mdb-toggle="collapse"
-                data-mdb-target="#navbarLeftAlignExample"
-                aria-controls="navbarLeftAlignExample"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-                >
-          <i class="fas fa-bars"></i>
-        </button>
-  
-        <!-- Collapsible wrapper -->
-        <div class="collapse navbar-collapse" id="navbarLeftAlignExample">
-          <!-- Left links -->
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link text-dark" aria-current="page" href="#">Home</a>
-            </li>
-            <li class="nav-item dropdown">
-              <button class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="color: black;text-decoration: none;">
-                Categories
-              </button>
-              <ul class="dropdown-menu dropdown-menu-dark">
-                <li><a class="dropdown-item" href="/user/list_type?type=phone">Phone</a></li>
-                <li><a class="dropdown-item" href="/user/list_type?type=iphone">IPhone</a></li>
-                <li><a class="dropdown-item" href="/user/list_type?type=android">Android</a></li>
-              </ul>
-            <li class="nav-item">
-              <a class="nav-link text-dark" href="/user/list?page=1&per_page=12">All Products</a>
-            </li>
-          </ul>
-          <!-- Left links -->
-        </div>
-      </div>
-      <!-- Container wrapper -->
-    </nav>
-    <!-- Navbar -->
-    <!-- Jumbotron -->
-    <div class="bg-primary text-white py-5">
-      <div class="container py-5">
-        <h1>
-          Best products & <br />
-          brands in our store
-        </h1>
-        <p>
-          Trendy Products, Factory Prices, Excellent Service
-        </p>
-        <a href="/user/list?page=1&per_page=12">
-          <button type="button" class="btn btn-light shadow-0 text-primary pt-2 border border-white">
-            <span class="pt-1">Purchase now</span>
-          </button>
-        </a>
-      </div>
-    </div>
-    <!-- Jumbotron -->
-  </header>
-  <!-- Products -->
-  <section>
-    <div class="container my-5" >
-      <header class="mb-4">
-        <h3>New products</h3>
-      </header>
-  
-      <div class="row">
-        <% products.forEach(product => { %>
-          <div class="col-lg-3 col-md-6 col-sm-6 d-flex">
-            <div class="card w-100 my-2 shadow-2-strong">
-              <a href="/user/detail?product_id=<%= product.id %>">
-                <img src="<%=product.image%>" class="card-img-top" style="aspect-ratio: 1 / 1"/>
+  .menu{ 
+    position: absolute;
+    z-index: 100;
+    display: none;
+    background: #242526;
+    color: #fff;
+    border-radius: 2px;
+  }
+  .menu a{ 
+    color: #fff;
+  }
+  .menu > li {
+    display: inline-block;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .menu li:hover{ 
+    background-color: #0d6efd;
+  }
+  .menu li {
+    position: relative;
+  }
+  .menu li:hover > .sub-menu {
+    display: block;
+  }
+  .sub-menu {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: 140px;
+    background: #242526;
+    display: none;
+    border-radius: 2px; 
+  }
+
+  .sub-menu a:hover{
+    display: block;
+    background: #0d6efd;
+  }
+
+  .sub-menu a {
+    display: block;
+    padding: 10px 20px;
+    color: #fff;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .sub-menu .sub-menu {
+    left: 100%;
+    top: 0;
+    display: none;
+  }
+
+</style>
+<div class="container-sm">
+  <header>
+      <!-- Jumbotron -->
+      <%- include('./chat') %>
+      <div class="p-3 text-center bg-white border-bottom">
+        <div class="container">
+          <div class="row gy-3">
+            <!-- Left elements -->
+            <div class="col-lg-2 col-sm-4 col-4">
+              <a href="/" class="float-start">
+                <img src="https://mdbootstrap.com/img/logo/mdb-transaprent-noshadows.png" height="35" />
               </a>
-              <div class="card-body d-flex flex-column">
-                <h5 class="card-title"><%=product.p_name%></h5>
-                <h5 class="card-title"><%=product.name%></h5>
-                <p class="card-text">$<%=product.price%></p>
-                <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
-                  <button onclick="add_to_cart(<%=product.id%>)" class="btn btn-primary shadow-0 me-1 w-100">Add to cart</button>
-                  <a href="#!" class="btn btn-light border px-2 pt-2 icon-hover"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
+            </div>
+            <!-- Left elements -->
+  
+            <!-- Center elements -->
+            <div class="order-lg-last col-lg-5 col-sm-8 col-8">
+              <div class="d-flex float-end">
+                <a href="#" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" > <i class="fas fa-user-alt m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Sign in</p> </a>
+                <a href="#" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" > <i class="fas fa-heart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Wishlist</p> </a>
+                <a href="/payment/create-order" class="border rounded py-1 px-3 nav-link d-flex align-items-center"> <i class="fas fa-shopping-cart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">My cart</p> </a>
+              </div>
+            </div>
+            <!-- Center elements -->
+  
+            <!-- Right elements -->
+            <div class="col-lg-5 col-md-12 col-12">
+              <form action="/user/search">
+                <div class="input-group float-center">
+                  <div class="form-outline">
+                    <input type="search" class="form-control" id="pattern" name="pattern" placeholder="Search" required>
+                  </div>
+                  <button type="submit" class="btn btn-primary shadow-0">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </div>
+              </form>
+            </div>
+            <!-- Right elements -->
+          </div>
+        </div>
+      </div>
+      <!-- Jumbotron -->
+  
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <!-- Container wrapper -->
+        <div class="container justify-content-center justify-content-md-between">
+          <!-- Toggle button -->
+          <button
+                  class="navbar-toggler border py-2 text-dark"
+                  type="button"
+                  data-mdb-toggle="collapse"
+                  data-mdb-target="#navbarLeftAlignExample"
+                  aria-controls="navbarLeftAlignExample"
+                  aria-expanded="false"
+                  aria-label="Toggle navigation"
+                  >
+            <i class="fas fa-bars"></i>
+          </button>
+  
+          <!-- Collapsible wrapper -->
+          <div class="collapse navbar-collapse" id="navbarLeftAlignExample">
+            <!-- Left links -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link text-dark" aria-current="page" href="#">Home</a>
+              </li>
+              <li class="nav-item cateActive">
+                <a class="nav-link text-dark" aria-current="page" href="#">Category</a>
+             
+                <ul class="menu">
+                  <% cates.forEach(category => { %>
+                    <li>
+                      <a href="/user/list_type?type=<%= category.name %>"><%= category.name %></a>
+                      <% if (category.children.length > 0) { %>
+                        <ul class="sub-menu">
+                          <% category.children.forEach(subCategory => { %>
+                            <li>
+                              <a href="/user/list_type?type=<%= subCategory.name %>"><%= subCategory.name %></a>
+                              <% if (subCategory.children.length > 0) { %>
+                                <ul class="sub-menu">
+                                  <% subCategory.children.forEach(child => { %>
+                                    <li>
+                                      <a href="/user/list_type?type=<%= child.name %>"><%= child.name %></a>
+                                    </li>
+                                  <% }); %>
+                                </ul>
+                              <% } %>
+                            </li>
+                          <% }); %>
+                        </ul>
+                      <% } %>
+                    </li>
+                  <% }); %>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-dark" href="/user/list?page=1&per_page=12">All Products</a>
+              </li>
+            </ul>
+            <!-- Left links -->
+          </div>
+        </div>
+        <!-- Container wrapper -->
+      </nav>
+      <!-- Navbar -->
+      <!-- Slider -->
+      <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="resources/slide-1.jpg" class="d-block w-100" alt="Slider Image 1">
+          </div>
+          <div class="carousel-item">
+            <img src="resources/slide-2.jpg" class="d-block w-100" alt="Slider Image 2">
+          </div>
+          <div class="carousel-item">
+            <img src="resources/slide-3.jpg" class="d-block w-100" alt="Slider Image 2">
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+      <!-- End Slider -->
+  
+    </header>
+    <!-- Products -->
+    <section>
+      <div class="container my-5" >
+        <header class="mb-4">
+          <h3>New products</h3>
+        </header>
+  
+        <div class="row">
+          <% products.forEach(product => { %>
+            <div class="col-lg-3 col-md-6 col-sm-6 d-flex">
+              <div class="card w-100 my-2 shadow-2-strong">
+                <a href="/user/detail?product_id=<%= product.id %>">
+                  <img src="<%=product.image%>" class="card-img-top" style="aspect-ratio: 1 / 1"/>
+                </a>
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title"><%=product.p_name%></h5>
+                  <h5 class="card-title"><%=product.name%></h5>
+                  <p class="card-text">$<%=product.price%></p>
+                  <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
+                    <button onclick="add_to_cart(<%=product.id%>)" class="btn btn-primary shadow-0 me-1 w-100">Add to cart</button>
+                    <a href="#!" class="btn btn-light border px-2 pt-2 icon-hover"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
+                  </div>
                 </div>
               </div>
             </div>
+          <% }); %>
           </div>
-        <% }); %>   
         </div>
       </div>
-    </div>
-  </section>
-  <!-- Products -->
+    </section>
+    <!-- Products -->
   
-  <!-- Feature -->
-  <section class="mt-5" style="background-color: #f5f5f5;">
-    <div class="container text-dark pt-3">
-      <header class="pt-4 pb-3">
-        <h3>Why choose us</h3>
-      </header>
+    <!-- Feature -->
+    <section class="mt-5" style="background-color: #f5f5f5;">
+      <div class="container text-dark pt-3">
+        <header class="pt-4 pb-3">
+          <h3>Why choose us</h3>
+        </header>
   
-      <div class="row mb-4">
-        <div class="col-lg-4 col-md-6">
-          <figure class="d-flex align-items-center mb-4">
-            <span class="rounded-circle bg-white p-3 d-flex me-2 mb-2">
-              <i class="fas fa-camera-retro fa-2x fa-fw text-primary floating"></i>
-            </span>
-            <figcaption class="info">
-              <h6 class="title">Reasonable prices</h6>
-              <p>Our store offers a wide range of products at affordable prices, ensuring that you get great value for your money.</p>
-            </figcaption>
-          </figure>
-          <!-- itemside // -->
+        <div class="row mb-4">
+          <div class="col-lg-4 col-md-6">
+            <figure class="d-flex align-items-center mb-4">
+              <span class="rounded-circle bg-white p-3 d-flex me-2 mb-2">
+                <i class="fas fa-camera-retro fa-2x fa-fw text-primary floating"></i>
+              </span>
+              <figcaption class="info">
+                <h6 class="title">Reasonable prices</h6>
+                <p>Our store offers a wide range of products at affordable prices, ensuring that you get great value for your money.</p>
+              </figcaption>
+            </figure>
+            <!-- itemside // -->
+          </div>
+          <!-- col // -->
+          <div class="col-lg-4 col-md-6">
+            <figure class="d-flex align-items-center mb-4">
+              <span class="rounded-circle bg-white p-3 d-flex me-2 mb-2">
+                <i class="fas fa-star fa-2x fa-fw text-primary floating"></i>
+              </span>
+              <figcaption class="info">
+                <h6 class="title">Best quality</h6>
+                <p>We take pride in providing products of the highest quality, crafted with meticulous attention to detail and designed to exceed your expectations.</p>
+              </figcaption>
+            </figure>
+            <!-- itemside // -->
+          </div>
+          <!-- col // -->
+          <div class="col-lg-4 col-md-6">
+            <figure class="d-flex align-items-center mb-4">
+              <span class="rounded-circle bg-white p-3 d-flex me-2 mb-2">
+                <i class="fas fa-plane fa-2x fa-fw text-primary floating"></i>
+              </span>
+              <figcaption class="info">
+                <h6 class="title">Worldwide shipping</h6>
+                <p>No matter where you are in the world, we offer convenient and reliable shipping services to ensure that your order reaches you promptly and safely.</p>
+              </figcaption>
+            </figure>
+            <!-- itemside // -->
+          </div>
+          <!-- col // -->
+          <div class="col-lg-4 col-md-6">
+            <figure class="d-flex align-items-center mb-4">
+              <span class="rounded-circle bg-white p-3 d-flex me-2 mb-2">
+                <i class="fas fa-users fa-2x fa-fw text-primary floating"></i>
+              </span>
+              <figcaption class="info">
+                <h6 class="title">Customer satisfaction</h6>
+                <p>Our top priority is your satisfaction, and we strive to deliver exceptional customer service, addressing your needs and concerns to ensure a positive experience.</p>
+              </figcaption>
+            </figure>
+            <!-- itemside // -->
+          </div>
+          <!-- col // -->
+          <div class="col-lg-4 col-md-6">
+            <figure class="d-flex align-items-center mb-4">
+              <span class="rounded-circle bg-white p-3 d-flex me-2 mb-2">
+                <i class="fas fa-thumbs-up fa-2x fa-fw text-primary floating"></i>
+              </span>
+              <figcaption class="info">
+                <h6 class="title">Happy customers</h6>
+                <p>We are delighted to have a vast number of happy customers who have experienced our exceptional products and services and have shared their positive feedback.</p>
+              </figcaption>
+            </figure>
+            <!-- itemside // -->
+          </div>
+          <!-- col // -->
+          <div class="col-lg-4 col-md-6">
+            <figure class="d-flex align-items-center mb-4">
+              <span class="rounded-circle bg-white p-3 d-flex me-2 mb-2">
+                <i class="fas fa-box fa-2x fa-fw text-primary floating"></i>
+              </span>
+              <figcaption class="info">
+                <h6 class="title">Thousand items</h6>
+                <p>Our extensive inventory boasts a wide selection of over a thousand items, catering to various preferences and ensuring that you find exactly what you're looking for.</p>
+              </figcaption>
+            </figure>
+            <!-- itemside // -->
+          </div>
+          <!-- col // -->
         </div>
-        <!-- col // -->
-        <div class="col-lg-4 col-md-6">
-          <figure class="d-flex align-items-center mb-4">
-            <span class="rounded-circle bg-white p-3 d-flex me-2 mb-2">
-              <i class="fas fa-star fa-2x fa-fw text-primary floating"></i>
-            </span>
-            <figcaption class="info">
-              <h6 class="title">Best quality</h6>
-              <p>We take pride in providing products of the highest quality, crafted with meticulous attention to detail and designed to exceed your expectations.</p>
-            </figcaption>
-          </figure>
-          <!-- itemside // -->
-        </div>
-        <!-- col // -->
-        <div class="col-lg-4 col-md-6">
-          <figure class="d-flex align-items-center mb-4">
-            <span class="rounded-circle bg-white p-3 d-flex me-2 mb-2">
-              <i class="fas fa-plane fa-2x fa-fw text-primary floating"></i>
-            </span>
-            <figcaption class="info">
-              <h6 class="title">Worldwide shipping</h6>
-              <p>No matter where you are in the world, we offer convenient and reliable shipping services to ensure that your order reaches you promptly and safely.</p>
-            </figcaption>
-          </figure>
-          <!-- itemside // -->
-        </div>
-        <!-- col // -->
-        <div class="col-lg-4 col-md-6">
-          <figure class="d-flex align-items-center mb-4">
-            <span class="rounded-circle bg-white p-3 d-flex me-2 mb-2">
-              <i class="fas fa-users fa-2x fa-fw text-primary floating"></i>
-            </span>
-            <figcaption class="info">
-              <h6 class="title">Customer satisfaction</h6>
-              <p>Our top priority is your satisfaction, and we strive to deliver exceptional customer service, addressing your needs and concerns to ensure a positive experience.</p>
-            </figcaption>
-          </figure>
-          <!-- itemside // -->
-        </div>
-        <!-- col // -->
-        <div class="col-lg-4 col-md-6">
-          <figure class="d-flex align-items-center mb-4">
-            <span class="rounded-circle bg-white p-3 d-flex me-2 mb-2">
-              <i class="fas fa-thumbs-up fa-2x fa-fw text-primary floating"></i>
-            </span>
-            <figcaption class="info">
-              <h6 class="title">Happy customers</h6>
-              <p>We are delighted to have a vast number of happy customers who have experienced our exceptional products and services and have shared their positive feedback.</p>
-            </figcaption>
-          </figure>
-          <!-- itemside // -->
-        </div>
-        <!-- col // -->
-        <div class="col-lg-4 col-md-6">
-          <figure class="d-flex align-items-center mb-4">
-            <span class="rounded-circle bg-white p-3 d-flex me-2 mb-2">
-              <i class="fas fa-box fa-2x fa-fw text-primary floating"></i>
-            </span>
-            <figcaption class="info">
-              <h6 class="title">Thousand items</h6>
-              <p>Our extensive inventory boasts a wide selection of over a thousand items, catering to various preferences and ensuring that you find exactly what you're looking for.</p>
-            </figcaption>
-          </figure>
-          <!-- itemside // -->
-        </div>
-        <!-- col // -->
       </div>
-    </div>
-    <!-- container end.// -->
-  </section>
-  <!-- Feature -->
-  <div class="footer mt-auto text-center">
+      <!-- container end.// -->
+    </section>
+    <!-- Feature -->
     <div class="footer mt-auto text-center">
-        <!-- Content -->
-        <a href="/" class="">
-            <img src="https://mdbootstrap.com/img/logo/mdb-transaprent-noshadows.png" height="35" />
-        </a>
-        <p class="mt-2 text-dark">
-            © 2023 Copyright: 21127617 - 21127720 - 21127642 (Group 10)
-        </p>
+      <div class="footer mt-auto text-center">
+          <!-- Content -->
+          <a href="/" class="">
+              <img src="https://mdbootstrap.com/img/logo/mdb-transaprent-noshadows.png" height="35" />
+          </a>
+          <p class="mt-2 text-dark">
+              © 2023 Copyright: 21127617 - 21127720 - 21127642 (Group 10)
+          </p>
+      </div>
+      <div>
+        <i class="fab fa-lg fa-cc-visa text-dark"></i>
+        <i class="fab fa-lg fa-cc-amex text-dark"></i>
+        <i class="fab fa-lg fa-cc-mastercard text-dark"></i>
+        <i class="fab fa-lg fa-cc-paypal text-dark"></i>
+      </div>
     </div>
-    <div>
-      <i class="fab fa-lg fa-cc-visa text-dark"></i>
-      <i class="fab fa-lg fa-cc-amex text-dark"></i>
-      <i class="fab fa-lg fa-cc-mastercard text-dark"></i>
-      <i class="fab fa-lg fa-cc-paypal text-dark"></i>
-    </div>
-  </div>
+</div>
   <script>
     function add_to_cart(id){ 
       if(!id)
