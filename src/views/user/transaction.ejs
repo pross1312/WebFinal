@@ -44,7 +44,7 @@
           <div class="container">
             <div class="row gy-3">
               <!-- Left elements -->
-              <div class="col-lg-2 col-sm-4 col-4">
+              <div class="col-lg-1 col-sm-4 col-4">
                 <a href="/" class="float-start">
                   <img src="https://mdbootstrap.com/img/logo/mdb-transaprent-noshadows.png" height="35" />
                 </a>
@@ -52,17 +52,18 @@
               <!-- Left elements -->
     
               <!-- Center elements -->
-              <div class="order-lg-last col-lg-5 col-sm-8 col-8">
+              <div class="order-lg-last col-lg-7 col-sm-8 col-8">
                 <div class="d-flex float-end">
-                  <a href="#" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" > <i class="fas fa-heart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Wishlist</p> </a>
-                  <a href="/payment/create-order" class="border rounded py-1 px-3 nav-link d-flex align-items-center"> <i class="fas fa-shopping-cart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">My cart</p> </a>
+                    <a href="#" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" > <i class="fas fa-heart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Wishlist</p> </a>
+                    <a href="/customer/cart" class="border rounded py-1 px-3 nav-link d-flex align-items-center"> <i class="fas fa-shopping-cart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">My cart</p> </a>
+                    <a href="/logout" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" > <i class="fas fa-user-alt m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Sign out</p> </a>
                 </div>
               </div>
               <!-- Center elements -->
 
               <!-- Right elements -->
               <!-- Keeping this for proper aligment -->
-              <div class="col-lg-5 col-md-12 col-12">
+              <div class="col-lg-4 col-md-12 col-12">
               </div>
               <!-- Right elements -->
 
@@ -127,5 +128,10 @@
             </div>
         </div>
     </div>
+<% if (error) {%>
+<script>
+    toastr.error('<%= error %>');
+</script>
+<% } %>
 </div>
 <%- include("../partials/footer") %>

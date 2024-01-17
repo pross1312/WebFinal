@@ -45,9 +45,12 @@ h1 {
     margin-bottom: 10px;
     border-top: 1px solid #d0d0d0;
     border-bottom: 1px solid #d0d0d0;
+    padding: 13px 0px;
 }
 
 .product-name {
+    font-size: 1.2em;
+    text-align: left;
     color: #555;
     font-weight: bold;
 }
@@ -61,7 +64,7 @@ h1 {
     font-weight: bold;
 }
 .total-amount {
-    margin-top: auto;
+    margin-top: 15px;
     margin-bottom: auto;
     color: #555;
 }
@@ -135,8 +138,10 @@ h1 {
         <% for (var product of order.products) {  %>
         <div class="item">
             <span>
+            <span class="my-auto">
                 <span><img class="image" src="<%-product.image%>"/></span>
-                <span class="p-1 text-start product-name fs-4"><%=product.p_name %></span>
+            </span>
+            <span class="my-auto text-start product-name"><%=product.p_name %></span>
             </span>
             <span class="count text-primary">x <%= product.count %></span>
         </div>

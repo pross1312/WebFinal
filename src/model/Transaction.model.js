@@ -1,5 +1,6 @@
 const db = require('../module/database');
 const ProductModel = require("./Product.model");
+const payment_req = require("../module/payment_req");
 
 
 module.exports = {
@@ -13,13 +14,4 @@ module.exports = {
             this.amount = amount;
         }
     },
-    
-    async getAllTransaction() {
-        const result = await db.exec(
-            "manyOrNone",
-            `SELECT tr.* FROM "Transaction" tr`
-        );
-        if (!result) throw new CustomError( `Cant select data from "Transaction"`, 400, "");
-        return result;
-    }
 };

@@ -1,0 +1,135 @@
+<div>
+<style>
+  ul{ 
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  a{ 
+    color: #000;
+    text-decoration: none;
+  }
+  .cateActive:hover .menu{ 
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .menu{ 
+    position: absolute;
+    z-index: 100;
+    display: none;
+    background: #242526;
+    color: #fff;
+    border-radius: 2px;
+  }
+  .menu a{ 
+    color: #fff;
+  }
+  .menu > li {
+    display: inline-block;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .menu li:hover{ 
+    background-color: #0d6efd;
+  }
+  .menu li {
+    position: relative;
+  }
+  .menu li:hover > .sub-menu {
+    display: block;
+  }
+  .sub-menu {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: 140px;
+    background: #242526;
+    display: none;
+    border-radius: 2px; 
+  }
+
+  .sub-menu a:hover{
+    display: block;
+    background: #0d6efd;
+  }
+
+  .sub-menu a {
+    display: block;
+    padding: 10px 20px;
+    color: #fff;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .sub-menu .sub-menu {
+    left: 100%;
+    top: 0;
+    display: none;
+  }
+</style>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white">
+<!-- Container wrapper -->
+<div class="container justify-content-center justify-content-md-between">
+  <!-- Toggle button -->
+  <button
+          class="navbar-toggler border py-2 text-dark"
+          type="button"
+          data-mdb-toggle="collapse"
+          data-mdb-target="#navbarLeftAlignExample"
+          aria-controls="navbarLeftAlignExample"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+          >
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Collapsible wrapper -->
+  <div class="collapse navbar-collapse" id="navbarLeftAlignExample">
+    <!-- Left links -->
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <li class="nav-item">
+        <a class="nav-link text-dark" aria-current="page" href="/user">Home</a>
+      </li>
+      <li class="nav-item cateActive">
+        <a class="nav-link text-dark" aria-current="page" href="#">Category</a>
+     
+        <ul class="menu">
+          <% cates.forEach(category => { %>
+            <li>
+              <a href="/user/list_type?type=<%= category.name %>"><%= category.name %></a>
+              <% if (category.children.length > 0) { %>
+                <ul class="sub-menu">
+                  <% category.children.forEach(subCategory => { %>
+                    <li>
+                      <a href="/user/list_type?type=<%= subCategory.name %>"><%= subCategory.name %></a>
+                      <% if (subCategory.children.length > 0) { %>
+                        <ul class="sub-menu">
+                          <% subCategory.children.forEach(child => { %>
+                            <li>
+                              <a href="/user/list_type?type=<%= child.name %>"><%= child.name %></a>
+                            </li>
+                          <% }); %>
+                        </ul>
+                      <% } %>
+                    </li>
+                  <% }); %>
+                </ul>
+              <% } %>
+            </li>
+          <% }); %>
+        </ul>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-dark" href="/user/list?page=1&per_page=12">All Products</a>
+      </li>
+    </ul>
+    <!-- Left links -->
+  </div>
+</div>
+<!-- Container wrapper -->
+</nav>
+<!-- Navbar -->
+
+</div>

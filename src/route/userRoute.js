@@ -8,11 +8,6 @@ const utils = require('../module/utils')
 
 router.get('/', async (req, res) => {
     try {
-        let array = new Array(10);
-        array.fill({role: "admin", text: "hello motherf jeqwoie jioqwje oucker"});
-        array = array.concat(new Array(10).fill({role: "customer", text: "hello motherf jeqwoie jioqwje oucker"}))
-                    .sort(() => (Math.random() > .5) ? 1 : -1);
-
         let allProducts = await database.get_all();
         let newProducts = allProducts.slice(0, 4);
 
@@ -28,8 +23,8 @@ router.get('/', async (req, res) => {
                 };
             });
         }
-        console.log(cates);
-        res.render("user/homepage", { messages: array, products: newProducts, cates});
+        const error = req.session?.messages?.pop();
+        res.render("user/homepage", { is_login: req.isAuthenticated(), products: newProducts, cates, error});
     }
     catch (error) {
         console.error(error);
@@ -41,21 +36,19 @@ router.get('/detail', async(req, res) => {
     const productId = req.query.product_id;
     let product = await database.get(productId);
     let relatedProduct = await database.getRelatedProducts(product);
-
     let cates = await adminModel.getAll("Category");
     cates = utils.divideCategories(cates);
-    if (!cates) next(new Error("Error occurred, Please try again"));
-  
     res.render("user/product_detail", { 
+        cates,
         product,
         relatedProduct,
-        cates
+        is_login: req.isAuthenticated(),
+        error: null
     });
 });
 
 router.get('/list', homepageController.getAllProduct)
 router.get('/list_type', homepageController.getByCategory)
 router.get('/search', homepageController.getSearch)
-router.get('/transaction', homepageController.getTransaction)
 
 module.exports = router;

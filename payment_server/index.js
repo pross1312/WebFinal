@@ -73,6 +73,18 @@ app.post("/register", async (req, res, next) => {
     }
 });
 
+app.post("/all-transaction", async (req, res, next) => {
+    try {
+        const result = await db.exec(
+            "manyOrNone",
+            `SELECT tr.* FROM "Transaction" tr`
+        ) || [];
+        res.status(200).setHeader("Content-Type", "application/json").send(JSON.stringify(result));
+    } catch(err) {
+        next(err);
+    }
+});
+
 app.post("/transaction/create", async (req, res, next) => {
     const transaction = req.body;
     const authorization = req.headers.authorization;
