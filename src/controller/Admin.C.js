@@ -23,10 +23,23 @@ const index_out_of_range_Int = "22003";
 module.exports = {
     // ======  Account ======
     async getAllAccount(req, res, next) {
+        const page = isNaN(req.query.page) ? 1 : Number(req.query.page);
+        const per_page = isNaN(req.query.per_page)
+            ? 10
+            : Number(req.query.per_page);
+        const max_display_pages = 8;
         try {
-            const accounts = await adminModel.getAll("Account");
-            if (!accounts) next(new Error("Server can not load account table"));
-            res.status(200).render("admin/manageAccount", { accounts });
+            const raw_accounts = await adminModel.getAll("Account");
+            if (!raw_accounts) next(new Error("Server can not load account table"));
+            else {
+                const { pages, items: accounts, total_pages } = dynamic_scroll_pagination(
+                    max_display_pages,
+                    per_page,
+                    page,
+                    raw_accounts
+                );
+                res.status(200).render("admin/manageAccount", { current_page: page, max_display_pages, pages, per_page, accounts, total_pages, base_url: "/admin/account/list?" });
+            }
         } catch (err) {
             next(err);
         }
@@ -52,8 +65,8 @@ module.exports = {
                 );
                 if (type.toLowerCase() === "customer") {
                     const response = await payment_req.post("/register", JSON.stringify({
-                        email: auth.email,
-                        password: auth.password,
+                        email: email,
+                        password: password,
                     }));
                     if (response.code !== 200) {
                         return next(response.data);
@@ -426,7 +439,10 @@ module.exports = {
             res.status(400).send("Missing content");
         } else try {
             await ChatModel.add(new ChatModel.ChatMessage({role: "admin", content, email: customer}));
-            SocketModel.send(customer, "[MSG] " + content);
+            const sock = SocketModel.get(customer);
+            if (sock !== undefined) {
+                sock.send("[MSG] " + content);
+            }
             res.status(200).send("OK");
         } catch(err) {
             next(err);

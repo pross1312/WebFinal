@@ -37,25 +37,22 @@ module.exports = {
             let acc = await AccountModel.get(req.user?.email);
             if (acc === null) {
                 next(new CustomError("Should not allow user access this page if their main account is not existed"));
-            } else if (acc.password) {
-                res.render('payment/register', {
-                    error: "Payment account existed, please login with your main account.",
-                    email: req.user?.email,
-                });
-                return;
             }
-            // salt 10
-            const hashedPassword = await bcrypt.hash(
-                password,
-                !isNaN(process.env.SALT) ? Number(process.env.SALT) : 10
-            );
+            // } else if (acc.password) {
+            //     res.render('payment/register', {
+            //         error: "Payment account existed, please login with your main account.",
+            //         email: req.user?.email,
+            //     });
+            //     return;
+            // }
+
 
             const response = await payment_req.post("/register", JSON.stringify({
                 email: req.user?.email,
                 password
             }));
             if (response.code === 200) {
-                res.redirect('/payment/create-order');
+                res.redirect('/');
             } else {
                 res.render("payment/register", {
                     error: response.data,

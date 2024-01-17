@@ -42,7 +42,11 @@ router.get("/google/callback", (req, res, next) => {
             await CartModel.add(req.user?.email, i, 5);
         }
     } catch(err) {}
-    res.redirect("/");
+    if (res.new_account) {
+        res.render("payment/register", {error: null, email: req.user?.email});
+    } else {
+        res.redirect("/");
+    }
 });
 
 

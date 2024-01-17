@@ -49,7 +49,7 @@ module.exports = {
             emails.push(email)
             const password = private_pass;
             const name = faker.person.fullName()
-            const avatar = faker.image.avatarGitHub()  
+            const avatar = faker.image.avatarLegacy()  
             const type = "customer";
             const account = new AccountModel.Account({
                 email,

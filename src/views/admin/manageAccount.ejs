@@ -33,6 +33,12 @@
             <% }); %>
         </tbody>
     </table>
+
+    <!-- ======= Pagination =======-->
+    <%- include("../partials/pagination") %>
+    <!-- ======= END Pagination =======-->
+
+
     <button type="button" class="btn btn-success p-3 mt-4" onclick="showCreateForm()">Add New Account</button>
     <!-- Create Account Modal -->
     <%- include("partials/modal", { 
