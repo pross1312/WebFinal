@@ -10,8 +10,11 @@ class TimeoutMap {
     put(key, obj, timeout) {
         if (!key) throw new Error("Invalid key");
         if (this.data[key] !== undefined) {
-            const [data, timeout] = this.data[key];
-            clearTimeout(timeout);
+            const obj = this.data[key];
+            if (!(obj instanceof TimeoutError)) {
+                const [_, timeout] = obj;
+                clearTimeout(timeout);
+            }
         }
         this.data[key] = [obj, setTimeout(() => {
             this.data[key] = new TimeoutError("Time out");

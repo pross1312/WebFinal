@@ -115,10 +115,18 @@ h1 {
     max-height: 50px;
 }
 
+.error {
+    margin-top: 15px;
+    color: darkred;
+    text-align: center;
+}
 </style>
 <div class="container">
+    <% if (order.products.length > 0) {%>
     <h1>Confirm Order</h1>
+    <% } %>
     <div class="order-details">
+        <% if (order.products.length > 0) {%>
         <% for (var product of order.products) {  %>
         <div class="item">
             <span>
@@ -128,11 +136,20 @@ h1 {
             <span class="count text-primary">x <%= product.count %></span>
         </div>
         <% } %>
+        <% } else { %>
+        <h1 class="error"> No products in cart </h1>
+        <% } %>
     </div>
+    <% if (order.products.length > 0) {%>
     <div class="total-amount"><span class="label">Total:</span>&nbsp;<%-amount%></div>
+    <% } %>
     <div class="buttons">
+        <% if (order.products.length > 0) {%>
         <a href="/payment/cancel-order" class="button cancel-btn">Cancel</a>
         <a href="/payment/confirm-order" class="button confirm-btn">Confirm Order</a>
+        <% } else { %>
+        <a href="/" class="button cancel-btn">Back</a>
+        <% } %>
     </div>
 </div>
 </div>

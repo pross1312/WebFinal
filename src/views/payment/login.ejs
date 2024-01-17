@@ -1,6 +1,6 @@
 <%- include("../partials/header") %>
 
-<div id="container" data-bs-theme="light">
+<div data-bs-theme="dark">
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -64,6 +64,7 @@ input[type="submit"]:hover {
     background-color: #001e55;
 }
 </style>
+<div id="container">
     <h1>Login</h1>
     <form action="/payment/login" method="POST" onsubmit="submit_login(event)">
         <div class="form-floating my-1">
@@ -99,6 +100,5 @@ input[type="submit"]:hover {
         // }).catch(err => toastr.error(err));
     }
 </script>
-
+</div>
 <%- include("../partials/footer") %>
-
