@@ -1,0 +1,137 @@
+<%- include("../partials/header") %>
+<style>
+    body {
+        margin-top: 20px;
+    }
+
+    .card {
+        box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+    }
+
+    .avatar.sm {
+        width: 2.25rem;
+        height: 2.25rem;
+        font-size: .818125rem;
+    }
+
+    .table-nowrap .table td,
+    .table-nowrap .table th {
+        white-space: nowrap;
+    }
+
+    .table>:not(caption)>*>* {
+        padding: 0.75rem 1.25rem;
+        border-bottom-width: 1px;
+    }
+
+    table th {
+        font-weight: 600;
+        background-color: #eeecfd !important;
+    }
+
+    .fa-arrow-up {
+        color: #00CED1;
+    }
+
+    .fa-arrow-down {
+        color: #FF00FF;
+    }
+</style>
+<div class="container-sm">
+    <header>
+        <!-- Jumbotron -->
+        <div class="p-3 text-center bg-white border-bottom">
+          <div class="container">
+            <div class="row gy-3">
+              <!-- Left elements -->
+              <div class="col-lg-1 col-sm-4 col-4">
+                <a href="/" class="float-start">
+                  <img src="https://mdbootstrap.com/img/logo/mdb-transaprent-noshadows.png" height="35" />
+                </a>
+              </div>
+              <!-- Left elements -->
+    
+              <!-- Center elements -->
+              <div class="order-lg-last col-lg-7 col-sm-8 col-8">
+                <div class="d-flex float-end">
+                    <a href="#" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" > <i class="fas fa-heart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Wishlist</p> </a>
+                    <a href="/customer/cart" class="border rounded py-1 px-3 nav-link d-flex align-items-center"> <i class="fas fa-shopping-cart m-1 me-md-2"></i><p class="d-none d-md-block mb-0">My cart</p> </a>
+                    <a href="/logout" class="me-1 border rounded py-1 px-3 nav-link d-flex align-items-center" > <i class="fas fa-user-alt m-1 me-md-2"></i><p class="d-none d-md-block mb-0">Sign out</p> </a>
+                </div>
+              </div>
+              <!-- Center elements -->
+
+              <!-- Right elements -->
+              <!-- Keeping this for proper aligment -->
+              <div class="col-lg-4 col-md-12 col-12">
+              </div>
+              <!-- Right elements -->
+
+            </div>
+          </div>
+        </div>
+        <!-- Jumbotron -->
+    
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white">
+          <!-- Container wrapper -->
+          <div class="container justify-content-center justify-content-md-between">
+            <!-- Toggle button -->
+            <button
+                    class="navbar-toggler border py-2 text-dark"
+                    type="button"
+                    data-mdb-toggle="collapse"
+                    data-mdb-target="#navbarLeftAlignExample"
+                    aria-controls="navbarLeftAlignExample"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+            >
+              <i class="fas fa-bars"></i>
+            </button>
+          </div>
+          <!-- Container wrapper -->
+        </nav>
+        
+<div class="container">
+    <div class="row">
+        <div class="col-12 mb-3 mb-lg-5">
+            <div class="position-relative card table-nowrap table-card">
+                <div class="card-header align-items-center">
+                    <h5 class="mb-0">Latest Transactions</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead class="small text-uppercase bg-body text-muted">
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Time</th>
+                                <th>Initiator</th>
+                                <th>Receiver</th>
+                                <th>Amount</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% transactions.forEach(transaction => { %>
+                                <tr class="align-middle"></tr>
+                                    <td><%=transaction.id%></td>
+                                    <td><%=transaction.ts%></td>
+                                    <td><%=transaction.initiator%></td>
+                                    <td><%=transaction.receiver%></td>
+                                    <td><%=transaction.amount%></td>
+                                    <td><%=transaction.description%></td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+<% if (error) {%>
+<script>
+    toastr.error('<%= error %>');
+</script>
+<% } %>
+</div>
+<%- include("../partials/footer") %>

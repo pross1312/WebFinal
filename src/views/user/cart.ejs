@@ -154,10 +154,14 @@
     }
 
     .user-name {
+        line-break: loose;
+        word-break: normal;
         padding: 0px 6px;
         font-weight: 500;
         font-size: calc(12px + 0.5vw);
         object-fit: cover;
+        margin-top: auto;
+        margin-bottom: auto;
     }
     .user-avatar {
         max-width: 50px;
@@ -248,7 +252,7 @@
             <div class="user">
                 <img
                     class="user-avatar"
-                    src="https://i.stack.imgur.com/frlIf.png"
+                    src="<%-avatar%>"
                     alt=""
                 />
                 <p class="user-name"><%= email %></p>

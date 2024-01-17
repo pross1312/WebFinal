@@ -3,6 +3,8 @@ const SocketModel = require("../model/Socket.model");
 const active_customers = {};
 const CartModel = require("../model/Cart.model");
 const CustomError = require("../module/CustomErr");
+const UserModel = require("../model/User.model");
+const payment_req = require("../module/payment_req");
 module.exports = {
     async list_chat(req, res, next) {
         try {
@@ -42,6 +44,7 @@ module.exports = {
         if (!email) next(new CustomError("Please try again"), 500);
         try {
             const data = await CartModel.get(email);
+            const userinfo = await UserModel.get(email);
             if (!data || data.length === 0) {
                 next(new CustomError("Please try again"), 500);
             }
@@ -55,6 +58,7 @@ module.exports = {
             ).toFixed(2);
             res.status(200).render("user/cart", {
                 email,
+                avatar: userinfo?.avatar,
                 products: data.products,
                 items,
                 total,
@@ -102,4 +106,27 @@ module.exports = {
             next(err);
         }
     },
+
+    async getTransaction(req, res, next) {
+        try {
+            const response = await payment_req.post("/all-transaction", JSON.stringify({email: req.user?.email}));
+            if (response.code !== 200) {
+                res.render("user/transaction", {error: response.data, transactions: []});
+            } else {
+                let transactions = JSON.parse(response.data);
+
+                //get integer part of amount(which is a decimal somehow)
+                transactions.forEach(transaction => {
+                    transaction.amount = Math.floor(transaction.amount)
+                })
+
+                res.render("user/transaction", {
+                    transactions,
+                    error: null,
+                });
+            }
+        } catch (err) {
+            next(err);
+        }
+    }
 };
