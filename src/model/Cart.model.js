@@ -23,11 +23,13 @@ module.exports = {
                 [email, product_id]);
             if (data != null) {
                 // TODO: handle this case
-                throw new CustomError("Product is already in cart", 400, "");
+                // throw new CustomError("Product is already in cart", 400, "");
+            await db.update("Cart",`count = count + 1 `, ` email = '${email}' AND product = '${product_id}'`)
             }
-            await db.add("Cart", ["email", "product", "count"], {
-                email, product: product_id, count
-            });
+            else 
+                await db.add("Cart", ["email", "product", "count"], {
+                    email, product: product_id, count
+                });
         } else throw new Error('Missing arguments');
     },
     async get(email) {
@@ -52,6 +54,30 @@ module.exports = {
                 [email]
             );
         } else throw new Error('Missing arguments');
-    }
+    }, 
+    async delete_product(email, id){ 
+        try{ 
+            if (email && id) {
+                await db.exec(
+                    'any',
+                    `DELETE FROM "Cart" WHERE email = '${email}' and product = '${id}'`,
+                    []
+                );
+            } else throw new Error('Missing arguments');
+        }
+        catch(err){ 
+            throw(err)
+        }
+    }, 
+    async decrease_cart(email, product_id){ 
+        try{ 
+            if (email && product_id) {
+                await db.update("Cart",`count = count - 1 `, ` email = '${email}' AND product = '${product_id}'`)
+            } else throw new Error('Missing arguments');
+        }
+        catch(err){ 
+            throw(err)
+        }
+    }    
 };
 

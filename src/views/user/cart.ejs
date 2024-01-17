@@ -31,21 +31,11 @@
         margin-top: 40px;
         position: relative;
     }
-    .product-tilte{ 
-        position: absolute;
-        display: flex;
-        top: 0;
-        left: calc(300px + 4vw);
-    }
-    .product-tilte p{ 
-        font-size: 14px;
-        font-weight: 500;
-        margin-left: 50px;
-    }
+ 
     .product {
         display: flex;
         padding: 16px 0px;
-        justify-content: space-between;
+        gap: 0px 40px;
         align-items: center;
         text-align: left;
         border-bottom: 1px solid #bebebe;
@@ -56,6 +46,31 @@
         object-fit: cover;
     }
 
+    .unitPrice, .amount, .intoMoney{ 
+        min-width: 100px; 
+        max-width: 100px;
+        position: relative;
+    }
+    .product-unitPrice{ 
+        min-width: 100px; 
+        max-width: 100px;
+        text-align: left;
+    }
+    .unitPrice-title, .amount-title, .intoMoney-title{
+        position: absolute;
+        top: -40px;
+        left: 0;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    .amount-title{ 
+        left: 12px;
+    }
+    .product-amount{ 
+        min-width: 100px; 
+        max-width: 100px;
+        text-align: left;
+    }
     .imgOfficial {
         position: absolute;
         top: calc(-14px - 0.3vw);
@@ -71,16 +86,27 @@
         word-wrap: break-word;
     }
 
+    .intoMoney{ 
+        max-width: 120px;
+        min-width: 120px;
+    }
+
     .product-intoMoney {
         color: var(--main-color);
         font-weight: 700;
         max-width: 120px;
         min-width: 120px;
     }
+
+    .increase, .decrease{ 
+        cursor: pointer;
+        padding: 0px 12px;
+    }
     .btnDelete {
         width: 30px;
         height: 30px;
         cursor: pointer;
+        justify-items: end;
     }
 
     .purchase-button {
@@ -156,11 +182,6 @@
         <h2 class="product-heading">Cart</h2>
         <!-- product here -->
         <div class="products">
-            <div class="product-tilte">
-                <p>Unit Price</p>
-                <p>Amount</p>
-                <p>Into Money</p>
-            </div>
         <% products.forEach((product, index) => { %>
                 <div class="product">
                     <img
@@ -178,10 +199,28 @@
                             <%= product.p_name %>
                         </p>
                     </div>
-                    <p class="product-unitPrice"> <%= product.price %></p>
-                    <p class="prodcut-amount"><%= product.count %></p>
-                    <p class="product-intoMoney"><%- parseFloat(product.price * product.count).toFixed(2) %></p>
-                    <img src="/icon/icons8-delete.svg" alt="" class="btnDelete" />
+                    
+                    <% if (index === 0) { %>
+                      <div class="unitPrice">
+                            <p class="unitPrice-title">Unit Price</p>
+                            <p class="product-unitPrice">
+                                <%= product.price %>
+                            </p>
+                      </div>
+                      <div class="amount">
+                          <p class="amount-title">Amount</p>
+                          <p class="product-amount"><span class="decrease" onclick="decrease(<%= product.id %>)">-</span> <%= product.count %> <span class="increase" onclick="add_to_cart(<%= product.id %>)">+</span></p>
+                      </div>
+                      <div class="intoMoney">
+                        <p class="intoMoney-title">Into Money</p>
+                          <p class="product-intoMoney"><%- parseFloat(product.price * product.count).toFixed(2) %></p>
+                      </div>
+                    <%} else { %>
+                        <p class="product-unitPrice"><%= product.price %></p>
+                        <p class="product-amount"><span class="decrease" onclick="decrease(<%= product.id %>)">-</span> <%= product.count %> <span class="increase" onclick="add_to_cart(<%= product.id %>)">+</span></p>
+                        <p class="product-intoMoney"><%- parseFloat(product.price * product.count).toFixed(2) %></p>
+                    <% } %>
+                    <img src="/icon/icons8-delete.svg" alt="" class="btnDelete" onclick="deleteProduct(<%= product.id %>)"/>
                 </div>
         <% }); %>
          </div>
@@ -202,7 +241,7 @@
                     <p class="total-item--count"><%= items %></p>
                 </div>
                 <div class="total-Funds">
-                    <p class="total-Funds--label">Total Funds:</p>
+                    <p class="total-Funds--label">Total: </p>
                     <p class="total-Funds--count"><%= total %></p>
                 </div>
             </div>
@@ -213,4 +252,41 @@
     </div>
 </div>
 
+<script>
+   function add_to_cart(id){ 
+      if(!id)
+        return 
+      const count = 1
+      $.post('/customer/cart/add', {id,count})
+      .done(function(data){ 
+        toastr.success(data)
+        location.reload()
+      })
+      .fail(function(xhr, status, error){ 
+          toastr.error(xhr.responseText)
+      })
+    }
+    function decrease(id){ 
+        if(!id){ 
+            toastr.error("Missing arguments")
+            return
+        }
+        $.post('/customer/cart/decrease', {id})
+        .done(function(data){ 
+                location.reload()
+            })
+            .fail(function(xhr, status, error){ 
+                toastr.error(xhr.responseText)
+            })
+    }
+    function deleteProduct(id){ 
+        $.post('/customer/cart/delete', {id})
+        .done(function(data){ 
+                location.reload()
+            })
+            .fail(function(xhr, status, error){ 
+                toastr.error(xhr.responseText)
+            })
+    }
+</script>
 <%- include("../partials/footer") %>
