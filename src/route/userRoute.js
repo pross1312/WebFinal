@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const homepage = require('../controller/homepageController');
-const pagination_util = require('../module/utils')
 const database = require('../model/Product.model');
 const homepageController = require('../controller/homepageController');
 const adminModel = require('../model/Admin.m')
@@ -13,11 +12,14 @@ router.get('/', async (req, res) => {
         array.fill({role: "admin", text: "hello motherf jeqwoie jioqwje oucker"});
         array = array.concat(new Array(10).fill({role: "customer", text: "hello motherf jeqwoie jioqwje oucker"}))
                     .sort(() => (Math.random() > .5) ? 1 : -1);
+
         let allProducts = await database.get_all();
         let newProducts = allProducts.slice(0, 4);
+
         let cates = await adminModel.getAll("Category");
         cates = utils.divideCategories(cates);
         if (!cates) next(new Error("Error occurred, Please try again"));
+
         else {
             cates = cates.map((cate) => {
                 return {
@@ -39,10 +41,15 @@ router.get('/detail', async(req, res) => {
     const productId = req.query.product_id;
     let product = await database.get(productId);
     let relatedProduct = await database.getRelatedProducts(product);
+
+    let cates = await adminModel.getAll("Category");
+    cates = utils.divideCategories(cates);
+    if (!cates) next(new Error("Error occurred, Please try again"));
   
     res.render("user/product_detail", { 
         product,
-        relatedProduct
+        relatedProduct,
+        cates
     });
 });
 
