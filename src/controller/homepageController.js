@@ -1,5 +1,6 @@
 // const productModel = require('../model/MockDataProduct');
 const productModel = require("../model/Product.model");
+const transactionModel = require("../model/Transaction.model");
 const {
     dynamic_scroll_pagination,
     calc_total_page,
@@ -125,6 +126,23 @@ class HomePageController {
         }
     }
 
+    async getTransaction(req, res, next) {
+        try {
+            let transactions = await transactionModel.getAllTransaction();
+
+            //get integer part of amount(which is a decimal somehow)
+            transactions.forEach(transaction => {
+                transaction.amount = Math.floor(transaction.amount)
+            })
+
+            transactions.ts = Math.floor(transactions.ts)
+            res.render("user/transaction", {
+                transactions,
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 module.exports = new HomePageController();

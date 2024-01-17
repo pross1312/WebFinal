@@ -4,7 +4,7 @@ const homepage = require('../controller/homepageController');
 const pagination_util = require('../module/utils')
 const database = require('../model/Product.model');
 const homepageController = require('../controller/homepageController');
-const adminModel = require('../model/Admin.M')
+const adminModel = require('../model/Admin.m')
 const utils = require('../module/utils')
 
 router.get('/', async (req, res) => {
@@ -48,7 +48,7 @@ router.get('/detail', async(req, res) => {
 
 router.get('/list', homepageController.getAllProduct)
 router.get('/list_type', homepageController.getByCategory)
-
 router.get('/search', homepageController.getSearch)
+router.get('/transaction', homepageController.getTransaction)
 
 module.exports = router;
