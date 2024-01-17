@@ -49,13 +49,14 @@ app.use((req, res, next) => { // NOTE: payment_access_token should not be allowe
     next();
 });
 
+app.use('/user', require('./route/userRoute'))
 app.get('/', (req, res) => {
     let array = new Array(10);
     array.fill({role: "admin", text: "hello motherf jeqwoie jioqwje oucker"});
     array = array.concat(new Array(10).fill({role: "customer", text: "hello motherf jeqwoie jioqwje oucker"}))
                  .sort(() => (Math.random() > .5) ? 1 : -1);
     if (req.user?.type === "customer") {
-        res.render("user/homepage", {messages: array});
+        res.redirect("/user");
     } else if (req.user?.type === "admin") {
         res.redirect("/admin");
     } else {
