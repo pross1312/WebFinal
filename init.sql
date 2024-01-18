@@ -22,7 +22,7 @@ create table "Category"(
 
 -- mock data
 insert into "Category" (name, parent_id) values ('Apple', null);
-insert into "Category" (name, parent_id) values ('Iphone 7', 1);
+insert into "Category" (name, parent_id) values ('Iphone 14', 1);
 insert into "Category" (name, parent_id) values ('Iphone 13', 1);
 insert into "Category" (name, parent_id) values ('Iphone 13', 3);
 insert into "Category" (name, parent_id) values ('Iphone 13 Pro Max', 3);
@@ -56,18 +56,36 @@ CREATE TABLE "Products" (
 
 INSERT INTO "Products" (p_name, category, price, "stockQuantity", description, image)
 VALUES 
-  ('Apple iPhone 13 - 256GB', '4', 849.99, 45, 'Product Red. Beautiful 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/5.png'),
-  ('Apple iPhone 13 - 512GB', '4', 899.99, 40, 'White. Sleek 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/6.png'),
-  ('Apple iPhone 13 - 64GB,', '4', 769.99, 55, 'lack. Elegant 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/7.png'),
-  ('Apple iPhone 13 Promax 128GB','5', 829.99, 48, ', Gold. Dazzling 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/8.png'),
-  ('Apple iPhone 13 - 256GB', '4', 779.99, 52, 'Blue. Vibrant 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/9.png'),
-  ('Apple iPhone 13 - 128GB', '4', 789.99, 53, 'Green. Modern 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/10.png'),
-  ('Apple iPhone 13 - 512GB', '4', 859.99, 42, 'Apple iPhone 13 - 512GB, Pink. Stylish 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/12.png'),
+  ('Apple iPhone 14 Promax Black', '2', 18429.99, 45, '6.7 inches, LTPO Super Retina XDR OLED, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/37.png'),
+  ('Apple iPhone 14 Promax Gold', '2', 18429.99, 45, '6.7 inches, LTPO Super Retina XDR OLED, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/38.png'),
+  ('Apple iPhone 14 Promax Purple', '2', 18429.99, 45, '6.7 inches, LTPO Super Retina XDR OLED, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/39.png'),
+  ('Apple iPhone 14 Promax White', '2', 18429.99, 45, '6.7 inches, LTPO Super Retina XDR OLED, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/40.png'),
+  ('Apple iPhone 13 - 256GB', '4', 18249.99, 45, 'Beautiful 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/5.png'),
+  ('Apple iPhone 13 - 512GB', '4', 18929.99, 40, 'White. Sleek 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/6.png'),
+  ('Apple iPhone 13 - 64GB,', '4', 12769.99, 55, 'lack. Elegant 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/7.png'),
+  ('Apple iPhone 13 Promax Gold (4GB|128GB)','5', 18329.99, 48, ', Gold. Dazzling 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/8.png'),
+  ('Apple iPhone 13 Promax Gold (8GB|256GB)','5', 18329.99, 48, ', Gold. Dazzling 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/8.png'),
+  ('Apple iPhone 13 Promax Blue (8GB|256GB)','5', 18329.99, 48, ', Blue. Dazzling 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/35.png'),
+  ('Apple iPhone 13 Promax Green (8GB|256GB)','5', 18329.99, 48, ', Green. Dazzling 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/36.png'),
+  ('Apple iPhone 13 Promax Black (4GB|128GB)','5', 18239.99, 48, ', Black. Dazzling 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/34.png'),
+  ('Apple iPhone 13 Promax Black (8GB|256GB)','5', 18239.99, 48, ', Black. Dazzling 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/34.png'),
+  ('Apple iPhone 13 Promax Black (16GB | 512GB)','5', 18239.99, 48, ', Black. Dazzling 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/34.png'),
+  ('Apple iPhone 13 - 256GB', '4', 17379.99, 52, 'Blue. Vibrant 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/9.png'),
+  ('Apple iPhone 13 - 128GB', '4', 17839.99, 53, 'Green. Modern 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/10.png'),
+  ('Apple iPhone 13 - 512GB', '4', 18539.99, 42, 'Apple iPhone 13 - 512GB, Pink. Stylish 6.1-inch A15 Bionic chip, Dual-camera system with 12MP Ultra-Wide and Wide cameras.', '/image/12.png'),
 -- Samsung
-  ('Samsung Galaxy S23 Ultra Black', '7', 1809.99, 47, 'Samsung Galaxy S23 Ultra (8GB|256GB)', '/image/11.png'),
-  ('Samsung Galaxy S23 Ultra Mint', '7', 1809.99, 47, 'Samsung Galaxy S23 Ultra (8GB|256GB)', '/image/13.png'),
-  ('Samsung Galaxy S23 Ultra Red', '7', 1809.99, 47, 'Samsung Galaxy S23 Ultra (8GB|256GB)', '/image/14.png'),
-  ('Samsung Galaxy Z Flip 4 - Black', '8', 1809.99, 47, 'Samsung Galaxy Z Flip 4 (8GB|128GB)', '/image/15.png'),
+  ('Samsung Galaxy S23 Ultra Black (8GB|256GB)', '7', 1809.99, 47, 'Samsung Galaxy S23 Ultra (8GB|256GB)', '/image/11.png'),
+  ('Samsung Galaxy S23 Ultra Black (4GB|128GB)', '7', 1809.99, 47, 'Samsung Galaxy S23 Ultra (8GB|256GB)', '/image/11.png'),
+  ('Samsung Galaxy S23 Ultra Mint (8GB|256GB)', '7', 1809.99, 47, 'Samsung Galaxy S23 Ultra (8GB|256GB)', '/image/13.png'),
+  ('Samsung Galaxy S23 Ultra Mint (4GB|128GB)', '7', 1809.99, 47, 'Samsung Galaxy S23 Ultra (8GB|256GB)', '/image/13.png'),
+  ('Samsung Galaxy S23 Ultra Red (8GB|256GB)', '7', 1809.99, 47, 'Samsung Galaxy S23 Ultra (8GB|256GB)', '/image/14.png'),
+  ('Samsung Galaxy S23 Ultra Red (4GB|128GB)', '7', 1809.99, 47, 'Samsung Galaxy S23 Ultra (8GB|256GB)', '/image/14.png'),
+  ('Samsung Galaxy S23 Ultra Cream (8GB|256GB)', '7', 1819.99, 47, 'Samsung Galaxy S23 Ultra (8GB|256GB)', '/image/32.png'),
+  ('Samsung Galaxy S23 Ultra Cream (4GB|128GB)', '7', 1819.99, 47, 'Samsung Galaxy S23 Ultra (8GB|256GB)', '/image/32.png'),
+  ('Samsung Galaxy S23 Ultra Blue (8GB|256GB)', '7', 1843.99, 47, 'Samsung Galaxy S23 Ultra (8GB|256GB)', '/image/33.png'),
+  ('Samsung Galaxy S23 Ultra Blue (4GB|128GB)', '7', 1843.99, 47, 'Samsung Galaxy S23 Ultra (8GB|256GB)', '/image/33.png'),
+  ('Samsung Galaxy Z Flip 4 - Black (8GB|256GB)', '8', 1809.99, 47, 'Samsung Galaxy Z Flip 4 (8GB|128GB)', '/image/15.png'),
+  ('Samsung Galaxy Z Flip 4 - Black (4GB|128GB)', '8', 1809.99, 47, 'Samsung Galaxy Z Flip 4 (8GB|128GB)', '/image/15.png'),
   ('Samsung Galaxy Z Flip 4 - Gold', '8', 1809.99, 47, 'Samsung Galaxy Z Flip 4 (16GB|252GB)', '/image/16.png'),
 
 -- Google
@@ -85,6 +103,7 @@ VALUES
   ('Oppo Find N2 Flip - Black', '13', 13239.99, 47, 'Oppo Find N2 Flip 8GB|256GB, AMOLED Chính 6.8" & Phụ 3.26" Full HD+, 32 MP, MediaTek Dimensity 9000+ 8 nhân', '/image/26.png'),
 
 -- Xiaomi 
+  ('Xiaomi Redmi Note 12 - Black', '16', 13359.99, 47, 'Xiaomi Redmi Note 12 8GB|128GB, AMOLED 6.67" Full HD+, 120Hz, Camera 13 MP, Snapdragon 685 8 nhân', '/image/27.png'),
   ('Xiaomi Redmi Note 12 - Black', '16', 13359.99, 47, 'Xiaomi Redmi Note 12 8GB|128GB, AMOLED 6.67" Full HD+, 120Hz, Camera 13 MP, Snapdragon 685 8 nhân', '/image/27.png'),
   ('Xiaomi Redmi Note 12 - Blue', '16', 13359.99, 47, 'Xiaomi Redmi Note 12 8GB|128GB, AMOLED 6.67" Full HD+, 120Hz, Camera 13 MP, Snapdragon 685 8 nhân', '/image/28.png'),
   ('Xiaomi Redmi Note 12 - Green', '16', 13359.99, 47, 'Xiaomi Redmi Note 12 8GB|128GB, AMOLED 6.67" Full HD+, 120Hz, Camera 13 MP, Snapdragon 685 8 nhân', '/image/29.png'),
