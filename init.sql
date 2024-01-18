@@ -114,9 +114,10 @@ create table "Order"(
     id serial,
     ts timestamp,
     email varchar(512) references "UserInfo"(email),
-    product serial references "Products"(id),
+    product serial,
     count int not null check (count > 0),
-    primary key(email, ts, product)
+    p_id serial,
+    primary key(email, ts, p_id)
 );
 
 create table "Cart"(
