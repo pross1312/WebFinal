@@ -55,11 +55,16 @@ module.exports = {
     async register(req, res, next) {
         // update with jquery
         const {email, password} = req.body;
+        const password_regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
         if (!email || !password) {
             res.render('register', {error: "Can't load your data"});
             return;
         }
         try {
+            if (!password_regex.test(password)) {
+                res.render('register', {error: "Password must have minimum 8 characters, at least 1 letter and 1 number"});
+                return;
+            }
             let acc = await AccountModel.get(email);
             if (acc) {
                 res.render('register', {error: "Email existed"});
