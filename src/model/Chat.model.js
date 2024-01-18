@@ -28,5 +28,15 @@ module.exports = {
             return result;
         } else throw new Error("Missing arguments");
     },
+    async delete(email){ 
+        if (email) {
+            const result = await db.exec(
+                "any",
+                `DELETE FROM "ChatMessage" WHERE email = $1`,
+                email
+            );
+            return result;
+        } else throw new Error("Missing arguments");
+    }
 };
 

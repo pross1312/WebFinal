@@ -69,6 +69,20 @@ module.exports = {
             throw(err)
         }
     }, 
+    async delete_product_to_DB(id){ 
+        try{ 
+            if (id) {
+                await db.exec(
+                    'any',
+                    `DELETE FROM "Cart" WHERE product = '${id}'`,
+                    []
+                );
+            } else throw new Error('Missing arguments');
+        }
+        catch(err){ 
+            throw(err)
+        }
+    }, 
     async decrease_cart(email, product_id){ 
         try{ 
             if (email && product_id) {

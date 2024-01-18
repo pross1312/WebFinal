@@ -8,8 +8,8 @@ const bcrypt = require("bcrypt");
 require("dotenv").config();
 const path = require("path");
 var _ = require("lodash");
-const faker = require('../module/faker')
 const OrderModel = require('../model/Order.model')
+const faker = require('../module/faker')
 const {
     dynamic_scroll_pagination,
     calc_total_page,
@@ -20,6 +20,7 @@ const utils = require("../module/utils");
 const CustomError = require("../module/CustomErr");
 const ChatModel = require("../model/Chat.model");
 const index_out_of_range_Int = "22003";
+const CartModel = require('../model/Cart.model')
 module.exports = {
     // ======  Account ======
     async getAllAccount(req, res, next) {
@@ -99,7 +100,12 @@ module.exports = {
                 if (!result) {
                     return res.status(400).send("Not Found Email in Database");
                 }
+                await OrderModel.delete(email_delete)
+                await CartModel.clear(email_delete)
+                await ChatModel.delete(email_delete)
                 await accountModel.delete(email_delete);
+                // delete Transaction
+                // delete payment account 
                 res.status(200).send("Delete Successfully");
             } catch (err) {
                 next(err);
@@ -260,11 +266,12 @@ module.exports = {
             if (!Number.isInteger(parseInt(productId))) {
                 return res.status(400).send("Invalid Product id");
             }
-            const result = await adminModel.deleteProduct(productId);
-            if (!result) {
-                error = new Error("Invalid Product id");
-                error.code = index_out_of_range_Int;
-            }
+            const data = await productModel.get(productId)
+            if(!data)
+                return res.status(400).send("The product not exist in database")
+            await CartModel.delete_product_to_DB(productId)
+            await OrderModel.remove_product(productId)
+            await adminModel.deleteProduct(productId);
             return res.status(200).send("Delete Successful");
         } catch (err) {
             if (err.code === index_out_of_range_Int)
