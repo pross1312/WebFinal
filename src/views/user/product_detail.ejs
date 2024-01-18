@@ -1,8 +1,31 @@
 <%- include("../partials/header") %>
 <header>
-    <%- include('links') %> 
-    <%- include('usernavbar') %> 
-  </header>
+  <%- include('links') %> 
+  <%- include('usernavbar') %> 
+
+  <style>
+    @media screen and (min-width:576px) {
+      .carousel-inner{
+        padding-left: 3em;
+        display: flex;
+      }
+
+      .carousel-item{
+          display: block;
+          margin-right: 0;
+          flex: 0 0 calc(100%/5)
+      }
+    }
+
+    .carousel-control-prev, .carousel-control-next{ 
+      width: 6vh;
+      height: 6vh;
+      background-color: blue;
+      border-radius: 50%;
+      top: 50%;
+    }
+  </style>
+</header>
   
 <section class="container product my-5 pt-5">
   <header class="mb-4 text-center">
@@ -35,26 +58,59 @@
     <hr class="mx-auto">
   </div>
   <div class="row mx-auto container-fluid">
-    <% relatedProduct.forEach(product => { %>
-      <div class="col-lg-3 col-md-6 col-sm-6 d-flex">
-        <div class="card w-100 my-2 shadow-2-strong">
-          <a href="/user/detail?product_id=<%= product.id %>">
-            <img src="<%=product.image%>" class="card-img-top" style="aspect-ratio: 1 / 1"/>
-          </a>
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title"><%=product.p_name%></h5>
-            <h5 class="card-title"><%=product.name%></h5>
-            <p class="card-text">$<%=product.price%></p>
-            <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
-              <button onclick="add_to_cart(<%=product.id%>)" class="btn btn-primary shadow-0 me-1 w-100">Add to cart</button>
-              <a href="#!" class="btn btn-light border px-2 pt-2 icon-hover"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
+    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+      <div class="carousel-inner">
+        <% relatedProduct.forEach((product, index) => { %>
+            <div class="carousel-item <%= (index === 0) ? 'active' : '' %>">
+              <div class="card my-2 shadow-2-strong" style="max-width: 300px;">
+                <a href="/user/detail?product_id=<%= product.id %>">
+                  <img src="<%= product.image %>" class="card-img-top" style="aspect-ratio: 1 / 1; max-width: 100%; height: auto;">
+                </a>
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title"><%= product.p_name %></h5>
+                  <h5 class="card-title"><%= product.name %></h5>
+                  <p class="card-text">$<%= product.price %></p>
+                  <div class="card-footer d-flex align-items-end pt-3 px-0 pb-0 mt-auto">
+                    <button onclick="add_to_cart(<%= product.id %>)" class="btn btn-primary shadow-0 me-1 w-100">Add to cart</button>
+                    <a href="#!" class="btn btn-light border px-2 pt-2 icon-hover"><i class="fas fa-heart fa-lg text-secondary px-1"></i></a>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+        <% }); %> 
       </div>
-    <% }); %>   
+      <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </div>
   </div>
 </section>
+
+<script>
+  var carouselWidth = $('.carousel-inner')[0].scrollWidth;
+  var cardWidth = $('.carousel-item').width();
+
+  var scrollPos = 0
+  scrollPos = scrollPos + cardWidth;
+
+  $('.carousel-control-next').on('click', function() {
+    if(scrollPos < (carouselWidth - cardWidth * 5)) {
+      scrollPos += cardWidth;
+      $('.carousel-inner').animate({scrollLeft: scrollPos}, 700)
+    }
+  })
+
+  $('.carousel-control-prev').on('click', function() {
+    if(scrollPos > 0) {
+      scrollPos -= cardWidth;
+      $('.carousel-inner').animate({scrollLeft: scrollPos}, 700)
+    }
+  })
+</script>
 <%}%>
   <%- include('add_to_cart.ejs') %>
 <%- include("../partials/footer") %>

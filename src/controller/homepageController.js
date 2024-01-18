@@ -27,6 +27,11 @@ class HomePageController {
             ? 12
             : Number(req.query.per_page);
         const max_display_pages = 4;
+
+        let cates = await adminModel.getAll("Category");
+        cates = utils.divideCategories(cates);
+        if (!cates) next(new Error("Error occurred, Please try again"));
+
         try {
             let products = await productModel.get_all();
             let cates = await adminModel.getAll("Category");
@@ -58,6 +63,11 @@ class HomePageController {
     async getByID(req, res, next){ 
         try {
             let product = await productModel.get(req.params.product_id);
+
+            let cates = await adminModel.getAll("Category");
+            cates = utils.divideCategories(cates);
+            if (!cates) next(new Error("Error occurred, Please try again"));
+
             if (!product) {
                 next(new Error("Error occurred, Please try again"));
             } else {
@@ -89,7 +99,7 @@ class HomePageController {
                     max_display_pages,
                     per_page,
                     page,
-                    products
+                    products,
                 );
                 res.render("user/product_list", {
                     cates,

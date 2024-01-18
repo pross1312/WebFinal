@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const homepage = require('../controller/homepageController');
-const pagination_util = require('../module/utils')
 const database = require('../model/Product.model');
 const homepageController = require('../controller/homepageController');
 const adminModel = require('../model/Admin.m')
@@ -11,9 +10,11 @@ router.get('/', async (req, res) => {
     try {
         let allProducts = await database.get_all();
         let newProducts = allProducts.slice(0, 4);
+
         let cates = await adminModel.getAll("Category");
         cates = utils.divideCategories(cates);
         if (!cates) next(new Error("Error occurred, Please try again"));
+
         else {
             cates = cates.map((cate) => {
                 return {
